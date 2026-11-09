@@ -130,7 +130,7 @@ export function SeguimientoPedido({ inicial }: { inicial: PedidoPublico }) {
                   <span
                     className={`grid size-8 place-items-center rounded-full border-2 transition-colors duration-300 ${
                       hecho
-                        ? "border-outline bg-ink text-bg"
+                        ? "border-outline bg-hoja text-white"
                         : actual
                           ? "border-outline bg-brand text-[#1e1a17]"
                           : "border-line bg-surface text-ink-soft"

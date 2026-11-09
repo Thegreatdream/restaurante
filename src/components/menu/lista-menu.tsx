@@ -46,7 +46,7 @@ export function ListaMenu({ categorias }: { categorias: Categoria[] }) {
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <h3 className="text-[17px] leading-tight font-bold break-words">{p.name}</h3>
                       {p.badge && (
-                        <span className="rounded-full bg-coral-soft px-2 py-0.5 text-[11px] font-bold tracking-wide text-coral-ink uppercase">
+                        <span className="rounded-full bg-hoja-soft px-2 py-0.5 text-[11px] font-bold tracking-wide text-hoja-ink uppercase">
                           {p.badge}
                         </span>
                       )}

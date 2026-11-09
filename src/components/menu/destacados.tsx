@@ -45,7 +45,7 @@ export function Destacados({ categorias }: { categorias: Categoria[] }) {
               />
               <div className="flex flex-1 flex-col p-4">
                 {p.badge && (
-                  <span className="mb-1.5 self-start rounded-full bg-coral-soft px-2 py-0.5 text-[11px] font-bold tracking-wide text-coral-ink uppercase">
+                  <span className="mb-1.5 self-start rounded-full bg-hoja-soft px-2 py-0.5 text-[11px] font-bold tracking-wide text-hoja-ink uppercase">
                     {p.badge}
                   </span>
                 )}

@@ -12,7 +12,7 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
           <h1 className="font-display text-[2.6rem] leading-[0.9] font-extrabold tracking-[-0.03em] uppercase sm:text-6xl md:text-[5.25rem]">
             ¡Bienvenido<span className="text-brand">!</span>
           </h1>
-          <span aria-hidden className="mt-5 block h-1 w-14 rounded-full bg-coral md:mt-7" />
+          <span aria-hidden className="mt-5 block h-1 w-14 rounded-full bg-brand md:mt-7" />
           <p className="mt-5 max-w-[22ch] pr-24 text-lg leading-snug font-semibold sm:pr-0 md:mt-7 md:max-w-[28ch] md:text-2xl">
             {saludo()}, soy Tato. ¿Qué se te antoja hoy?
           </p>
@@ -23,15 +23,15 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
             <a href="#menu" className="btn">
               Ver el menú <Flecha />
             </a>
-            <p className="text-sm font-semibold text-band-soft">
+            <p className="hidden text-sm font-semibold text-band-soft sm:block">
               Domicilio {ajustes.delivery_fee > 0 ? cop(ajustes.delivery_fee) : "gratis"}
             </p>
           </div>
         </div>
 
-        {/* Computador: Tato sale por encima de su panel naranja con ramitas */}
+        {/* Computador: Tato (naranja) sale por encima de su panel verde hoja con ramitas: colores complementarios */}
         <div className="relative hidden md:block">
-          <div className="patron-panel relative ml-auto aspect-[5/4] w-full max-w-[460px] rounded-[2rem] border-2 border-outline bg-brand shadow-[6px_6px_0_#000]">
+          <div className="patron-panel relative ml-auto aspect-[5/4] w-full max-w-[460px] rounded-[2rem] border-2 border-outline bg-hoja shadow-[6px_6px_0_#000]">
             <Tato
               pose="bienvenida"
               priority
@@ -42,7 +42,11 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
         </div>
       </div>
 
-      {/* Celular: Tato asomado en la esquina */}
+      {/* Celular: Tato asomado en la esquina, sobre un círculo verde hoja */}
+      <div
+        aria-hidden
+        className="patron-panel absolute -right-10 -bottom-12 size-[180px] rounded-full border-2 border-outline bg-hoja sm:size-[220px] md:hidden"
+      />
       <Tato
         pose="bienvenida"
         priority

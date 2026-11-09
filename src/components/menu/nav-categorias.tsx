@@ -33,7 +33,7 @@ export function NavCategorias({ categorias }: { categorias: Categoria[] }) {
   return (
     <nav
       aria-label="Categorías del menú"
-      className="sticky top-0 z-10 -mx-4 mt-5 bg-bg/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-sm md:mx-0 md:px-0"
+      className="barra-material sticky top-0 z-10 -mx-4 mt-5 px-4 pt-[env(safe-area-inset-top)] md:mx-0 md:px-0"
     >
       <div ref={barra} className="flex gap-2 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {categorias.map((c) => {

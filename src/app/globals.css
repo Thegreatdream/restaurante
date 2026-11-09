@@ -18,7 +18,11 @@
   --coral-ink: #a83a22; /* coral oscuro para texto: 5.5:1 sobre coral-soft */
   --outline: #1e1a17;
   --shadow: #1e1a17;
-  --ok: #3f8f5a;
+  --ok: #2e6a4e;
+  /* Verde hoja: contrapunto frío del naranja de Tato */
+  --hoja: #2e6a4e;
+  --hoja-soft: #dcecdf;
+  --hoja-ink: #1f4d38;
   /* Textura del mundo de Tato: ramitas, hojas, tronco y tenedor, casi invisible */
   --patron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%237a4a24' stroke-opacity='0.13' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 74c18-14 34-22 56-26'/%3E%3Cpath d='M48 60c3-12 14-18 24-15-3 11-13 17-24 15z'/%3E%3Cpath d='M60 52c-4-9-1-17 6-21 3 8 0 16-6 21z'/%3E%3Ccircle cx='160' cy='48' r='16'/%3E%3Ccircle cx='160' cy='48' r='9'/%3E%3Ccircle cx='160' cy='48' r='3'/%3E%3Cpath d='M140 160c14-6 30-4 44 6'/%3E%3Cpath d='M152 158c-2-9 2-16 10-18 1 9-3 15-10 18z'/%3E%3Cpath d='M52 150v26M46 150v8a6 6 0 0 0 12 0v-8M52 176v14'/%3E%3Cpath d='M110 108h.01M196 116h.01M98 196h.01M14 128h.01M200 196h.01' stroke-width='4'/%3E%3C/svg%3E");
   /* Franja oscura de marca (portada y pie) */
@@ -45,6 +49,9 @@
     --outline: #0b0806;
     --shadow: #000000;
     --ok: #7cc792;
+    --hoja: #3f8a64;
+    --hoja-soft: #1d3427;
+    --hoja-ink: #9fdcb5;
     --patron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23fbefc4' stroke-opacity='0.06' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 74c18-14 34-22 56-26'/%3E%3Cpath d='M48 60c3-12 14-18 24-15-3 11-13 17-24 15z'/%3E%3Cpath d='M60 52c-4-9-1-17 6-21 3 8 0 16-6 21z'/%3E%3Ccircle cx='160' cy='48' r='16'/%3E%3Ccircle cx='160' cy='48' r='9'/%3E%3Ccircle cx='160' cy='48' r='3'/%3E%3Cpath d='M140 160c14-6 30-4 44 6'/%3E%3Cpath d='M152 158c-2-9 2-16 10-18 1 9-3 15-10 18z'/%3E%3Cpath d='M52 150v26M46 150v8a6 6 0 0 0 12 0v-8M52 176v14'/%3E%3Cpath d='M110 108h.01M196 116h.01M98 196h.01M14 128h.01M200 196h.01' stroke-width='4'/%3E%3C/svg%3E");
     --band: #0d0805;
     --band-ink: #fbefc4;
@@ -65,6 +72,9 @@
   --color-coral: var(--coral);
   --color-coral-soft: var(--coral-soft);
   --color-coral-ink: var(--coral-ink);
+  --color-hoja: var(--hoja);
+  --color-hoja-soft: var(--hoja-soft);
+  --color-hoja-ink: var(--hoja-ink);
   --color-band: var(--band);
   --color-band-ink: var(--band-ink);
   --color-band-soft: var(--band-soft);
@@ -371,7 +381,7 @@ a {
   transform: none;
   transition:
     opacity 200ms ease,
-    transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1); /* pequeño rebote, es un momento juguetón */
+    transform 320ms var(--ease-out); /* sin rebote: aparece, no fue lanzado (apple-design) */
 }
 @media (min-width: 768px) {
   .globo-tato {
@@ -486,5 +496,36 @@ a {
   .levanta:hover,
   .levanta:hover .marco-foto > * {
     transform: none;
+  }
+}
+
+/* Selector de cantidad: nace desde el botón + que reemplaza (origen a la derecha) */
+@keyframes selector-nace {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+.selector-nace {
+  transform-origin: 100% 50%;
+  animation: selector-nace 180ms var(--ease-out) both;
+}
+
+/* Barra de categorías translúcida: el menú pasa por debajo (material, no una franja opaca) */
+.barra-material {
+  background: color-mix(in oklab, var(--bg) 78%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  backdrop-filter: blur(16px) saturate(170%);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .barra-material {
+    background: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .selector-nace {
+    animation: tato-solo-opacidad 160ms ease both;
   }
 }
