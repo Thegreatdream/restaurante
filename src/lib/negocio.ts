@@ -7,4 +7,10 @@ export const NEGOCIO = {
     texto: "Paga al recibir con Nequi o Bancolombia. El domiciliario te muestra el número.",
   },
   zonaHoraria: "America/Bogota",
-} as const;
+
+  // Datos de contacto. Lo que quede vacío ("") no se muestra en la web.
+  horario: "", // p. ej. "Todos los días, 11 a. m. – 9 p. m."
+  whatsapp: "", // solo números con indicativo, p. ej. "573001234567"
+  zona: "", // p. ej. "Chapinero y Teusaquillo"
+  instagram: "", // usuario sin @, p. ej. "dondetato"
+};

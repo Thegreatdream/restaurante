@@ -25,7 +25,8 @@ export async function obtenerMenu(): Promise<{ categorias: Categoria[]; ajustes:
   const [{ data: categorias, error }, { data: ajustes }] = await Promise.all([
     supabase
       .from("categories")
-      .select("id, name, slug, position, products(id, category_id, name, description, price, badge, position)")
+      // products(*) trae también image_url cuando la columna existe (migración 0002), sin romper si aún no.
+      .select("id, name, slug, position, products(*)")
       .eq("is_active", true)
       .eq("products.is_available", true)
       .order("position")

@@ -21,6 +21,11 @@
   --ok: #3f8f5a;
   /* Textura del mundo de Tato: ramitas, hojas, tronco y tenedor, casi invisible */
   --patron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%237a4a24' stroke-opacity='0.13' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 74c18-14 34-22 56-26'/%3E%3Cpath d='M48 60c3-12 14-18 24-15-3 11-13 17-24 15z'/%3E%3Cpath d='M60 52c-4-9-1-17 6-21 3 8 0 16-6 21z'/%3E%3Ccircle cx='160' cy='48' r='16'/%3E%3Ccircle cx='160' cy='48' r='9'/%3E%3Ccircle cx='160' cy='48' r='3'/%3E%3Cpath d='M140 160c14-6 30-4 44 6'/%3E%3Cpath d='M152 158c-2-9 2-16 10-18 1 9-3 15-10 18z'/%3E%3Cpath d='M52 150v26M46 150v8a6 6 0 0 0 12 0v-8M52 176v14'/%3E%3Cpath d='M110 108h.01M196 116h.01M98 196h.01M14 128h.01M200 196h.01' stroke-width='4'/%3E%3C/svg%3E");
+  /* Franja oscura de marca (portada y pie) */
+  --band: #2b1d15;
+  --band-ink: #fbefc4;
+  --band-soft: #cbb79c;
+  --patron-panel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23ffffff' stroke-opacity='0.32' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 74c18-14 34-22 56-26'/%3E%3Cpath d='M48 60c3-12 14-18 24-15-3 11-13 17-24 15z'/%3E%3Cpath d='M60 52c-4-9-1-17 6-21 3 8 0 16-6 21z'/%3E%3Ccircle cx='160' cy='48' r='16'/%3E%3Ccircle cx='160' cy='48' r='9'/%3E%3Ccircle cx='160' cy='48' r='3'/%3E%3Cpath d='M140 160c14-6 30-4 44 6'/%3E%3Cpath d='M152 158c-2-9 2-16 10-18 1 9-3 15-10 18z'/%3E%3Cpath d='M52 150v26M46 150v8a6 6 0 0 0 12 0v-8M52 176v14'/%3E%3Cpath d='M110 108h.01M196 116h.01M98 196h.01M14 128h.01M200 196h.01' stroke-width='4'/%3E%3C/svg%3E");
   color-scheme: light;
 }
 
@@ -41,6 +46,9 @@
     --shadow: #000000;
     --ok: #7cc792;
     --patron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23fbefc4' stroke-opacity='0.06' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 74c18-14 34-22 56-26'/%3E%3Cpath d='M48 60c3-12 14-18 24-15-3 11-13 17-24 15z'/%3E%3Cpath d='M60 52c-4-9-1-17 6-21 3 8 0 16-6 21z'/%3E%3Ccircle cx='160' cy='48' r='16'/%3E%3Ccircle cx='160' cy='48' r='9'/%3E%3Ccircle cx='160' cy='48' r='3'/%3E%3Cpath d='M140 160c14-6 30-4 44 6'/%3E%3Cpath d='M152 158c-2-9 2-16 10-18 1 9-3 15-10 18z'/%3E%3Cpath d='M52 150v26M46 150v8a6 6 0 0 0 12 0v-8M52 176v14'/%3E%3Cpath d='M110 108h.01M196 116h.01M98 196h.01M14 128h.01M200 196h.01' stroke-width='4'/%3E%3C/svg%3E");
+    --band: #0d0805;
+    --band-ink: #fbefc4;
+    --band-soft: #bfa98e;
     color-scheme: dark;
   }
 }
@@ -57,6 +65,9 @@
   --color-coral: var(--coral);
   --color-coral-soft: var(--coral-soft);
   --color-coral-ink: var(--coral-ink);
+  --color-band: var(--band);
+  --color-band-ink: var(--band-ink);
+  --color-band-soft: var(--band-soft);
   --color-outline: var(--outline);
   --color-ok: var(--ok);
   --font-sans: var(--font-cuerpo);
@@ -396,5 +407,84 @@ a {
 @keyframes tato-solo-opacidad {
   from {
     opacity: 0;
+  }
+}
+
+/* =====================================================================
+   Piezas de la portada y el menú
+   ===================================================================== */
+.patron-panel {
+  background-image: var(--patron-panel);
+  background-size: 180px 180px;
+}
+
+/* Tarjeta con enlace o acción: sube 2 px al pasar el mouse (solo con mouse) */
+.levanta {
+  transition:
+    transform 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .levanta:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 5px 0 var(--shadow);
+  }
+}
+
+/* Foto o dibujo del plato: acercamiento leve dentro de su marco */
+.marco-foto > * {
+  transition: transform 400ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .levanta:hover .marco-foto > * {
+    transform: scale(1.03);
+  }
+}
+
+/* Entrada única de la portada al cargar */
+@keyframes portada-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+.portada-entra > * {
+  animation: portada-entra 520ms var(--ease-out) both;
+}
+.portada-entra > :nth-child(2) {
+  animation-delay: 60ms;
+}
+.portada-entra > :nth-child(3) {
+  animation-delay: 120ms;
+}
+.portada-entra > :nth-child(4) {
+  animation-delay: 180ms;
+}
+.portada-entra > :nth-child(5) {
+  animation-delay: 240ms;
+}
+
+/* Carril de destacados: se desliza con el dedo, con imán suave */
+.carril {
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1rem;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.carril::-webkit-scrollbar {
+  display: none;
+}
+.carril > * {
+  scroll-snap-align: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portada-entra > * {
+    animation: tato-solo-opacidad 240ms ease both;
+  }
+  .levanta,
+  .levanta:hover,
+  .levanta:hover .marco-foto > * {
+    transform: none;
   }
 }

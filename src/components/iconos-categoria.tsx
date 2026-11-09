@@ -15,12 +15,13 @@ const base = {
   "aria-hidden": true,
 };
 
-// Plato humeante con cubiertos
+// Campana de servir: "el plato del día"
 const Plato = ({ className }: P) => (
   <svg {...base} className={className}>
-    <path d="M5 19h22a11 6.5 0 0 1-22 0Z" fill="var(--icono-relleno)" />
-    <path d="M3.5 19h25" />
-    <path d="M12 9c-1-1.5 1-2.5 0-4M16 10c-1-1.5 1-2.5 0-4M20 9c-1-1.5 1-2.5 0-4" />
+    <path d="M6 22a10 10 0 0 1 20 0Z" fill="var(--icono-relleno)" />
+    <path d="M16 12V9.5M14 9h4" />
+    <path d="M3.5 22h25M5 26h22" />
+    <path d="M10.5 17.5a6 6 0 0 1 3-3" />
   </svg>
 );
 

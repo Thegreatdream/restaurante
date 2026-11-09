@@ -5,13 +5,14 @@ import { cop } from "@/lib/formato";
 import type { Categoria } from "@/lib/tipos";
 import { SelectorCantidad } from "@/components/carrito/selector-cantidad";
 import { IconoCategoria } from "@/components/iconos-categoria";
+import { ImagenPlato } from "./imagen-plato";
 
 export function ListaMenu({ categorias }: { categorias: Categoria[] }) {
   const { items } = useCarrito();
   const cantidadDe = (id: string) => items.find((i) => i.id === id)?.qty ?? 0;
 
   return (
-    <div className="space-y-9 pb-32 md:pb-16">
+    <div className="space-y-9 pb-16">
       {categorias.map((c) => (
         <section key={c.id} id={c.slug} aria-labelledby={`t-${c.slug}`} className="scroll-mt-20">
           <h2 id={`t-${c.slug}`} className="flex items-center gap-3 font-display text-2xl font-extrabold tracking-tight">
@@ -30,11 +31,18 @@ export function ListaMenu({ categorias }: { categorias: Categoria[] }) {
               return (
                 <li
                   key={p.id}
-                  className={`flex gap-4 p-4 transition-colors duration-200 xl:rounded-2xl xl:border-2 ${
+                  className={`flex gap-3.5 p-4 transition-colors duration-200 xl:rounded-2xl xl:border-2 ${
                     cantidad > 0 ? "bg-surface-2/60 xl:border-outline" : "xl:border-line xl:bg-surface"
                   }`}
                 >
-                  <div className="min-w-0 flex-1">
+                  <ImagenPlato
+                    slug={c.slug}
+                    nombre={p.name}
+                    imagen={p.image_url}
+                    sizes="88px"
+                    className="size-[76px] shrink-0 rounded-xl border-2 border-outline md:size-[88px]"
+                  />
+                  <div className="flex min-w-0 flex-1 flex-col">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <h3 className="text-[17px] leading-tight font-bold break-words">{p.name}</h3>
                       {p.badge && (
@@ -46,10 +54,10 @@ export function ListaMenu({ categorias }: { categorias: Categoria[] }) {
                     {p.description && (
                       <p className="mt-1 line-clamp-2 text-sm leading-snug text-ink-soft">{p.description}</p>
                     )}
-                    <p className="tabular mt-2 text-[15px] font-bold">{cop(p.price)}</p>
-                  </div>
-                  <div className="flex shrink-0 items-center self-center">
-                    <SelectorCantidad producto={{ id: p.id, name: p.name, price: p.price, badge: p.badge }} cantidad={cantidad} />
+                    <div className="mt-auto flex items-center justify-between gap-3 pt-2">
+                      <p className="tabular text-[15px] font-extrabold whitespace-nowrap">{cop(p.price)}</p>
+                      <SelectorCantidad producto={{ id: p.id, name: p.name, price: p.price, badge: p.badge }} cantidad={cantidad} />
+                    </div>
                   </div>
                 </li>
               );

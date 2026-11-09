@@ -6,6 +6,8 @@ export type Producto = {
   price: number;
   badge: string | null;
   position: number;
+  /** Foto del plato (opcional). Sin foto se muestra el dibujo de la categoría. */
+  image_url?: string | null;
 };
 
 export type Categoria = {
