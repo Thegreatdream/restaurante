@@ -9,7 +9,7 @@ export const NEGOCIO = {
   zonaHoraria: "America/Bogota",
 
   // Datos de contacto. Lo que quede vacío ("") no se muestra en la web.
-  horario: "", // p. ej. "Todos los días, 11 a. m. – 9 p. m."
+  horario: "De 12 m. a 5 p. m.",
   whatsapp: "", // solo números con indicativo, p. ej. "573001234567"
   zona: "", // p. ej. "Chapinero y Teusaquillo"
   instagram: "", // usuario sin @, p. ej. "dondetato"
