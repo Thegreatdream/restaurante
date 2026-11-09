@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Categoria } from "@/lib/tipos";
+import { IconoCategoria } from "@/components/iconos-categoria";
 
 /** Pestañas de categorías: se quedan arriba al bajar y marcan la sección visible. */
 export function NavCategorias({ categorias }: { categorias: Categoria[] }) {
@@ -44,10 +45,13 @@ export function NavCategorias({ categorias }: { categorias: Categoria[] }) {
               data-slug={c.slug}
               aria-current={esActiva ? "true" : undefined}
               onClick={() => setActiva(c.slug)}
-              className={`flex min-h-11 shrink-0 items-center rounded-full border-2 px-4 text-sm font-bold whitespace-nowrap transition-colors duration-150 ${
-                esActiva ? "border-outline bg-ink text-bg" : "border-line bg-surface text-ink"
+              className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full border-2 pr-4 pl-3 text-sm font-bold whitespace-nowrap transition-colors duration-150 ${
+                esActiva
+                  ? "border-outline bg-ink text-bg [--icono-relleno:var(--brand)]"
+                  : "border-line bg-surface text-ink [--icono-relleno:var(--surface-2)]"
               }`}
             >
+              <IconoCategoria slug={c.slug} className="size-5 shrink-0" />
               {c.name}
             </a>
           );

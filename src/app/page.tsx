@@ -4,6 +4,7 @@ import { NavCategorias } from "@/components/menu/nav-categorias";
 import { ListaMenu } from "@/components/menu/lista-menu";
 import { ResumenCarrito } from "@/components/carrito/resumen-carrito";
 import { CarritoMovil } from "@/components/carrito/carrito-movil";
+import { GloboTato } from "@/components/carrito/globo-tato";
 import { obtenerMenu } from "@/lib/menu";
 
 export const revalidate = 60; // el menú se refresca como máximo cada minuto
@@ -34,6 +35,7 @@ export default async function Inicio() {
         </aside>
       </main>
       <CarritoMovil ajustes={ajustes} />
+      <GloboTato />
     </>
   );
 }

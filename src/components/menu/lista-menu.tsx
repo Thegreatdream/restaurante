@@ -4,6 +4,7 @@ import { useCarrito } from "@/lib/carrito";
 import { cop } from "@/lib/formato";
 import type { Categoria } from "@/lib/tipos";
 import { SelectorCantidad } from "@/components/carrito/selector-cantidad";
+import { IconoCategoria } from "@/components/iconos-categoria";
 
 export function ListaMenu({ categorias }: { categorias: Categoria[] }) {
   const { items } = useCarrito();
@@ -13,7 +14,13 @@ export function ListaMenu({ categorias }: { categorias: Categoria[] }) {
     <div className="space-y-9 pb-32 md:pb-16">
       {categorias.map((c) => (
         <section key={c.id} id={c.slug} aria-labelledby={`t-${c.slug}`} className="scroll-mt-20">
-          <h2 id={`t-${c.slug}`} className="font-display text-2xl font-extrabold tracking-tight">
+          <h2 id={`t-${c.slug}`} className="flex items-center gap-3 font-display text-2xl font-extrabold tracking-tight">
+            <span
+              aria-hidden
+              className="grid size-10 shrink-0 place-items-center rounded-full border-2 border-outline bg-brand text-[#1e1a17] [--icono-relleno:var(--surface)]"
+            >
+              <IconoCategoria slug={c.slug} className="size-6" />
+            </span>
             {c.name}
           </h2>
           {/* Celular: una lista continua. Computador ancho: dos columnas de tarjetas. */}
@@ -42,7 +49,7 @@ export function ListaMenu({ categorias }: { categorias: Categoria[] }) {
                     <p className="tabular mt-2 text-[15px] font-bold">{cop(p.price)}</p>
                   </div>
                   <div className="flex shrink-0 items-center self-center">
-                    <SelectorCantidad producto={{ id: p.id, name: p.name, price: p.price }} cantidad={cantidad} />
+                    <SelectorCantidad producto={{ id: p.id, name: p.name, price: p.price, badge: p.badge }} cantidad={cantidad} />
                   </div>
                 </li>
               );

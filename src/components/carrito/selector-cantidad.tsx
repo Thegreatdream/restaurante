@@ -8,7 +8,7 @@ export function SelectorCantidad({
   producto,
   cantidad,
 }: {
-  producto: { id: string; name: string; price: number };
+  producto: { id: string; name: string; price: number; badge?: string | null };
   cantidad: number;
 }) {
   if (cantidad === 0) {

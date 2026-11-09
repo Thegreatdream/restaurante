@@ -57,14 +57,32 @@ function suscribir(o: () => void) {
   };
 }
 
+/** Aviso de "se agregó algo" (lo usa el globito de Tato). */
+export type EventoAgregar = { nombre: string; favorito: boolean; esNuevo: boolean; totalPlatos: number };
+const oyentesAgregar = new Set<(e: EventoAgregar) => void>();
+export function escucharAgregar(fn: (e: EventoAgregar) => void) {
+  oyentesAgregar.add(fn);
+  return () => {
+    oyentesAgregar.delete(fn);
+  };
+}
+
 export const carrito = {
-  agregar(p: { id: string; name: string; price: number }) {
+  agregar(p: { id: string; name: string; price: number; badge?: string | null }) {
     const existe = estado.items.find((i) => i.id === p.id);
+    const item = { id: p.id, name: p.name, price: p.price };
     guardar({
       items: existe
         ? estado.items.map((i) => (i.id === p.id ? { ...i, qty: Math.min(i.qty + 1, MAX_POR_PLATO) } : i))
-        : [...estado.items, { ...p, qty: 1 }],
+        : [...estado.items, { ...item, qty: 1 }],
     });
+    const evento: EventoAgregar = {
+      nombre: p.name,
+      favorito: Boolean(p.badge && /tato/i.test(p.badge)),
+      esNuevo: !existe,
+      totalPlatos: estado.items.reduce((n, i) => n + i.qty, 0),
+    };
+    oyentesAgregar.forEach((o) => o(evento));
   },
   quitar(id: string) {
     guardar({

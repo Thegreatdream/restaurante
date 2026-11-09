@@ -1,5 +1,5 @@
 import { Tato } from "@/components/tato";
-import { cop } from "@/lib/formato";
+import { cop, saludo } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
 
 export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
@@ -11,7 +11,7 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
         </h1>
         <div className="relative z-10 pr-[104px] md:max-w-[34rem] md:pr-0">
           <p className="mt-3 max-w-[30ch] text-[15px] leading-snug text-pretty text-ink-soft md:mt-4 md:text-lg">
-            Soy Tato. Elige tus platos y te los llevamos calientitos hasta la puerta.
+            {saludo()}, soy Tato. ¿Qué se te antoja hoy? Te lo llevamos calientito hasta la puerta.
           </p>
           <ul className="mt-4 flex flex-wrap gap-2 text-[13px] font-semibold md:mt-6 md:text-sm">
             <li className="rounded-full border-2 border-outline bg-surface px-3 py-1">
