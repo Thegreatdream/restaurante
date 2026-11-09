@@ -1,0 +1,31 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { supabaseServidor } from "@/lib/supabase/server";
+import { enviarCorreoDespacho } from "@/lib/correo";
+
+export async function despacharPedido(id: string): Promise<{ ok: boolean; correo?: boolean; mensaje?: string }> {
+  const supabase = await supabaseServidor();
+
+  // La seguridad (RLS) solo deja actualizar al personal; nadie más puede despachar.
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ status: "en_camino" })
+    .eq("id", id)
+    .in("status", ["recibido", "preparando"])
+    .select("id, daily_number, customer_name, customer_email, address, total, payment_method, order_items(product_name, quantity)")
+    .maybeSingle();
+
+  if (error) return { ok: false, mensaje: "No se pudo marcar como despachado. Intenta de nuevo." };
+  if (!data) return { ok: false, mensaje: "Este pedido ya estaba despachado." };
+
+  const correo = await enviarCorreoDespacho(data);
+  if (correo) await supabase.from("orders").update({ email_sent_at: new Date().toISOString() }).eq("id", id);
+  return { ok: true, correo };
+}
+
+export async function cerrarSesion() {
+  const supabase = await supabaseServidor();
+  await supabase.auth.signOut();
+  redirect("/cocina/ingresar");
+}

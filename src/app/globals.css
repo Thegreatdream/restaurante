@@ -1,0 +1,341 @@
+@import "tailwindcss";
+
+/* =====================================================================
+   Paleta sacada de Tato: pelaje naranja, barriga crema, delantal coral,
+   gorro blanco y el contorno negro grueso del dibujo.
+   ===================================================================== */
+:root {
+  --bg: #fff8ec;
+  --surface: #ffffff;
+  --surface-2: #fbefc4; /* crema de la barriga */
+  --ink: #1e1a17; /* contorno */
+  --ink-soft: #6b5c50;
+  --line: #ecdcc0;
+  --brand: #ee9a4d; /* pelaje */
+  --brand-strong: #e07f2c;
+  --coral: #e8664a; /* delantal */
+  --coral-soft: #fde3da;
+  --outline: #1e1a17;
+  --shadow: #1e1a17;
+  --ok: #3f8f5a;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17110d;
+    --surface: #221a15;
+    --surface-2: #2e231b;
+    --ink: #fbefc4;
+    --ink-soft: #c2ad94;
+    --line: #3b2e24;
+    --brand: #f0a055;
+    --brand-strong: #f6b26f;
+    --coral: #f07e5f;
+    --coral-soft: #3f2219;
+    --outline: #0b0806;
+    --shadow: #000000;
+    --ok: #7cc792;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-coral: var(--coral);
+  --color-coral-soft: var(--coral-soft);
+  --color-outline: var(--outline);
+  --color-ok: var(--ok);
+  --font-sans: var(--font-cuerpo);
+  --font-display: var(--font-titulo);
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* ---------- Base móvil ---------- */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-padding-top: 7rem;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100dvh;
+  font-feature-settings: "tnum" 0;
+  overscroll-behavior-y: none;
+}
+
+input,
+textarea,
+select {
+  font-size: 16px; /* evita el zoom automático del iPhone */
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* ---------- Estilo "calcomanía": borde de contorno + sombra sólida ---------- */
+.sticker {
+  border: 2px solid var(--outline);
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+
+/* Botón principal */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  border: 2px solid var(--outline);
+  background: var(--brand);
+  color: #1e1a17;
+  font-weight: 700;
+  box-shadow: 3px 3px 0 var(--shadow);
+  transition:
+    transform 140ms var(--ease-out),
+    box-shadow 140ms var(--ease-out),
+    background-color 160ms ease;
+  user-select: none;
+}
+.btn:active {
+  transform: translate(2px, 2px) scale(0.98);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-ghost {
+  background: var(--surface);
+  color: var(--ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn:not(:disabled):hover {
+    background: var(--brand-strong);
+  }
+  .btn-ghost:not(:disabled):hover {
+    background: var(--surface-2);
+  }
+}
+
+/* Botón redondo pequeño (+ / −) */
+.btn-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 2px solid var(--outline);
+  background: var(--surface);
+  color: var(--ink);
+  transition: transform 120ms var(--ease-out);
+}
+.btn-icon:active {
+  transform: scale(0.92);
+}
+.btn-icon.is-add {
+  background: var(--brand);
+  color: #1e1a17;
+}
+
+/* Campos */
+.campo {
+  width: 100%;
+  min-height: 3.25rem;
+  border-radius: 0.875rem;
+  border: 2px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0.75rem 0.9rem;
+  transition: border-color 160ms ease;
+}
+.campo::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+.campo:focus {
+  outline: none;
+  border-color: var(--outline);
+}
+.campo[aria-invalid="true"] {
+  border-color: var(--coral);
+}
+
+:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ---------- Entradas suaves ---------- */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.aparecer {
+  animation: aparecer 320ms var(--ease-out) both;
+}
+
+/* Contador del carrito que "late" al agregar */
+@keyframes latido {
+  40% {
+    transform: scale(1.18);
+  }
+}
+.latido {
+  animation: latido 260ms var(--ease-out);
+}
+
+/* =====================================================================
+   Tato: una animación distinta por estado
+   ===================================================================== */
+.tato {
+  transform-origin: 50% 100%;
+}
+
+/* Entrada común: sube y aparece (nunca desde scale(0)) */
+@keyframes tato-entra {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+}
+
+/* Bienvenida: entra y saluda con un pequeño balanceo */
+@keyframes tato-saluda {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-4deg);
+  }
+  40% {
+    transform: rotate(3deg);
+  }
+  60% {
+    transform: rotate(-2deg);
+  }
+  80% {
+    transform: rotate(1deg);
+  }
+}
+.tato-bienvenida {
+  animation:
+    tato-entra 480ms var(--ease-out) both,
+    tato-saluda 1100ms var(--ease-in-out) 520ms both;
+}
+
+/* Libreta: respiración suave, como si estuviera anotando */
+@keyframes tato-respira {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.012, 1.022);
+  }
+}
+.tato-libreta {
+  animation:
+    tato-entra 420ms var(--ease-out) both,
+    tato-respira 3.2s ease-in-out 420ms infinite;
+}
+
+/* Cocinando: se mece de lado a lado, ocupado */
+@keyframes tato-cocina {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-4px) rotate(-1.5deg);
+  }
+  75% {
+    transform: translateY(-4px) rotate(1.5deg);
+  }
+}
+.tato-cocinando {
+  animation:
+    tato-entra 420ms var(--ease-out) both,
+    tato-cocina 1.6s ease-in-out 420ms infinite;
+}
+
+/* Moto: llega desde la izquierda y rebota por el camino */
+@keyframes tato-llega {
+  from {
+    opacity: 0;
+    transform: translateX(-40px) rotate(-3deg);
+  }
+}
+@keyframes tato-rebota {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.tato-moto {
+  animation:
+    tato-llega 520ms var(--ease-out) both,
+    tato-rebota 520ms ease-in-out 520ms infinite;
+}
+
+/* Sombra en el piso que acompaña a Tato */
+.tato-piso {
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--shadow) 22%, transparent), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tato-bienvenida,
+  .tato-libreta,
+  .tato-cocinando,
+  .tato-moto {
+    animation: tato-solo-opacidad 240ms ease both;
+  }
+  .aparecer,
+  .latido {
+    animation: tato-solo-opacidad 200ms ease both;
+  }
+  .btn,
+  .btn-icon {
+    transition: background-color 160ms ease;
+  }
+  .btn:active,
+  .btn-icon:active {
+    transform: none;
+  }
+}
+@keyframes tato-solo-opacidad {
+  from {
+    opacity: 0;
+  }
+}
