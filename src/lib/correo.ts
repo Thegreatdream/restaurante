@@ -2,6 +2,7 @@ import "server-only";
 import { Resend } from "resend";
 import { NEGOCIO } from "@/lib/negocio";
 import { cop } from "@/lib/formato";
+import { urlSitio } from "@/lib/sitio";
 
 type PedidoCorreo = {
   id: string;
@@ -24,7 +25,7 @@ export async function enviarCorreoDespacho(p: PedidoCorreo): Promise<boolean> {
     console.warn("RESEND_API_KEY no está configurada: no se envió el correo.");
     return false;
   }
-  const sitio = (process.env.NEXT_PUBLIC_SITIO_URL ?? "").replace(/\/$/, "");
+  const sitio = urlSitio();
   const remitente = process.env.CORREO_REMITENTE ?? `${NEGOCIO.nombre} <onboarding@resend.dev>`;
   const nombre = escapar(p.customer_name.split(" ")[0]);
   const enlace = sitio ? `${sitio}/pedido/${p.id}` : null;

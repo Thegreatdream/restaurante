@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import { NEGOCIO } from "@/lib/negocio";
+import { urlSitio } from "@/lib/sitio";
 import "./globals.css";
 
 const titulo = Bricolage_Grotesque({
@@ -15,7 +16,7 @@ const cuerpo = Figtree({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITIO_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(urlSitio()),
   title: { default: `${NEGOCIO.nombre} · Pide a domicilio`, template: `%s · ${NEGOCIO.nombre}` },
   description: `${NEGOCIO.lema}. Pide en línea y sigue tu pedido en tiempo real.`,
   openGraph: {
