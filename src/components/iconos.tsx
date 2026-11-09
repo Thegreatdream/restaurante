@@ -37,7 +37,12 @@ export const Atras = ({ className }: P) => (
     <path d="M19 12H5M11 6l-6 6 6 6" />
   </svg>
 );
-export const Check = ({ className }: P) => (
+export const Chevron = ({ className }: P) => (
+  <svg {...base} className={className}>
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+);
+export const Check =({ className }: P) => (
   <svg {...base} className={className}>
     <path d="m5 12 5 5 9-10" />
   </svg>

@@ -22,16 +22,21 @@ export function Tato({
   className = "",
   priority = false,
   sizes = "(min-width: 768px) 280px, 200px",
+  quieto = false,
 }: {
   pose: PoseTato;
   className?: string;
   priority?: boolean;
   sizes?: string;
+  /** Sin animación ni sombra: para apariciones pequeñas y secundarias. */
+  quieto?: boolean;
 }) {
   const { src, alt } = POSES[pose];
+  // El contenedor no fija su posición: quien lo usa decide (relative por defecto, o absolute).
+  const posicion = /\b(absolute|fixed|sticky)\b/.test(className) ? "" : "relative";
   return (
-    <div className={`relative ${className}`}>
-      <div aria-hidden className="tato-piso absolute inset-x-[12%] -bottom-1 h-[7%]" />
+    <div className={`${posicion} ${className}`}>
+      {!quieto && <div aria-hidden className="tato-piso absolute inset-x-[12%] -bottom-1 h-[7%]" />}
       {/* key = pose: al cambiar de estado se vuelve a montar y corre su animación de entrada */}
       <Image
         key={pose}
@@ -42,7 +47,7 @@ export function Tato({
         sizes={sizes}
         priority={priority}
         draggable={false}
-        className={`tato tato-${pose} relative h-auto w-full select-none`}
+        className={`${quieto ? "" : `tato tato-${pose}`} relative h-auto w-full select-none`}
       />
     </div>
   );

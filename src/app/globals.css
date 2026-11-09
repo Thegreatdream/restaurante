@@ -15,6 +15,7 @@
   --brand-strong: #e07f2c;
   --coral: #e8664a; /* delantal */
   --coral-soft: #fde3da;
+  --coral-ink: #a83a22; /* coral oscuro para texto: 5.5:1 sobre coral-soft */
   --outline: #1e1a17;
   --shadow: #1e1a17;
   --ok: #3f8f5a;
@@ -33,6 +34,7 @@
     --brand-strong: #f6b26f;
     --coral: #f07e5f;
     --coral-soft: #3f2219;
+    --coral-ink: #ff9d82;
     --outline: #0b0806;
     --shadow: #000000;
     --ok: #7cc792;
@@ -51,6 +53,7 @@
   --color-brand-strong: var(--brand-strong);
   --color-coral: var(--coral);
   --color-coral-soft: var(--coral-soft);
+  --color-coral-ink: var(--coral-ink);
   --color-outline: var(--outline);
   --color-ok: var(--ok);
   --font-sans: var(--font-cuerpo);
@@ -72,8 +75,27 @@ body {
   background: var(--bg);
   color: var(--ink);
   min-height: 100dvh;
-  font-feature-settings: "tnum" 0;
   overscroll-behavior-y: none;
+  caret-color: var(--brand-strong);
+  accent-color: var(--brand-strong);
+  scrollbar-color: color-mix(in oklab, var(--ink) 30%, transparent) transparent;
+}
+
+/* Superficies del navegador también llevan la paleta */
+::selection {
+  background: var(--brand);
+  color: #1e1a17;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p,
+dd,
+li {
+  text-wrap: pretty;
 }
 
 input,
@@ -147,8 +169,8 @@ a {
 .btn-icon {
   display: inline-grid;
   place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem; /* 44 px: área táctil cómoda */
+  height: 2.75rem;
   border-radius: 999px;
   border: 2px solid var(--outline);
   background: var(--surface);
@@ -186,9 +208,14 @@ a {
   border-color: var(--coral);
 }
 
+/* Anillo de foco con el color del contorno de Tato: visible sobre crema, blanco y naranja */
 :focus-visible {
-  outline: 3px solid var(--brand);
-  outline-offset: 2px;
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.campo:focus-visible {
+  outline: none;
 }
 
 /* ---------- Entradas suaves ---------- */

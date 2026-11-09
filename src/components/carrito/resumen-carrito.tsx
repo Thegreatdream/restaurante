@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCarrito } from "@/lib/carrito";
+import { useCarrito, useHidratado } from "@/lib/carrito";
+import { Tato } from "@/components/tato";
 import { cop } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
 import { SelectorCantidad } from "./selector-cantidad";
@@ -10,14 +11,28 @@ import { Flecha } from "@/components/iconos";
 /** Contenido del carrito: lo usan el panel lateral (escritorio) y la hoja inferior (celular). */
 export function ResumenCarrito({ ajustes, conBoton = true }: { ajustes: Ajustes; conBoton?: boolean }) {
   const { items, subtotal, cantidad } = useCarrito();
+  const hidratado = useHidratado();
   const total = subtotal + ajustes.delivery_fee;
   const faltaMinimo = ajustes.min_order > 0 && subtotal < ajustes.min_order;
 
+  if (!hidratado) {
+    // Mientras se lee el carrito guardado: reservar espacio, sin mostrar "vacío" por error.
+    return (
+      <div aria-hidden className="space-y-3 py-4">
+        <div className="h-4 w-3/4 rounded-full bg-line" />
+        <div className="h-4 w-1/2 rounded-full bg-line" />
+      </div>
+    );
+  }
+
   if (cantidad === 0) {
     return (
-      <div className="px-1 py-6 text-center">
-        <p className="font-display text-lg font-bold">Tu pedido está vacío</p>
-        <p className="mt-1 text-sm text-ink-soft">Toca + en cualquier plato para agregarlo.</p>
+      <div className="flex items-center gap-4 py-4">
+        <Tato pose="libreta" quieto sizes="56px" className="w-12 shrink-0" />
+        <div>
+          <p className="font-display text-lg leading-tight font-bold">Tato espera tu pedido</p>
+          <p className="mt-1 text-sm text-ink-soft">Toca + en cualquier plato para agregarlo.</p>
+        </div>
       </div>
     );
   }
@@ -52,7 +67,7 @@ export function ResumenCarrito({ ajustes, conBoton = true }: { ajustes: Ajustes;
       </dl>
 
       {faltaMinimo && (
-        <p className="mt-3 rounded-xl bg-coral-soft px-3 py-2 text-sm font-semibold text-coral">
+        <p className="mt-3 rounded-xl bg-coral-soft px-3 py-2 text-sm font-semibold text-coral-ink">
           El pedido mínimo es {cop(ajustes.min_order)}. Te faltan {cop(ajustes.min_order - subtotal)}.
         </p>
       )}

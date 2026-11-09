@@ -5,6 +5,7 @@ import { supabaseNavegador } from "@/lib/supabase/navegador";
 import { celular, cop, hora } from "@/lib/formato";
 import type { PedidoCocina } from "@/lib/tipos";
 import { despacharPedido } from "./acciones";
+import { Chevron } from "@/components/iconos";
 import { cargarPedidosCocina, type PedidosCocina } from "./datos";
 
 /** Pitido corto cuando entra un pedido nuevo (sin archivos de audio). */
@@ -112,9 +113,7 @@ export function PanelCocina({ inicial, retrasoMinutos }: { inicial: PedidosCocin
           <span>
             Despachados hoy <span className="tabular text-ink-soft">({datos.despachados.length})</span>
           </span>
-          <span className="text-sm text-ink-soft transition-transform duration-200 group-open:rotate-180" aria-hidden>
-            ▾
-          </span>
+          <Chevron className="text-ink-soft transition-transform duration-200 ease-[var(--ease-out)] group-open:rotate-180" />
         </summary>
         <ul className="mt-3 divide-y-2 divide-line rounded-2xl border-2 border-line bg-surface">
           {datos.despachados.map((p) => (
@@ -224,7 +223,7 @@ function TarjetaPedido({
       </dl>
 
       <div className="px-4 pb-4">
-        {error && <p className="mb-2 text-sm font-semibold text-coral">{error}</p>}
+        {error && <p className="mb-2 text-sm font-semibold text-coral-ink">{error}</p>}
         <button type="button" onClick={despachar} disabled={enviando} className="btn w-full">
           {enviando ? "Despachando…" : "Marcar como despachado"}
         </button>

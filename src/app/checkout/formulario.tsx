@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { carrito, useCarrito } from "@/lib/carrito";
+import { carrito, useCarrito, useHidratado } from "@/lib/carrito";
 import { cop } from "@/lib/formato";
 import type { Ajustes, FormaPago } from "@/lib/tipos";
 import { crearPedido, type DatosPedido } from "./acciones";
@@ -16,6 +16,7 @@ const VACIO: Campos = { nombre: "", celular: "", correo: "", direccion: "", indi
 export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
   const router = useRouter();
   const { items, cantidad, subtotal } = useCarrito();
+  const hidratado = useHidratado();
   const [campos, setCampos] = useState<Campos>(VACIO);
   const [errores, setErrores] = useState<Partial<Record<string, string>>>({});
   const [mensaje, setMensaje] = useState<string | null>(null);
@@ -64,7 +65,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
     });
   }
 
-  if (cantidad === 0 && !enviado && !enviando) {
+  if (hidratado && cantidad === 0 && !enviado && !enviando) {
     return (
       <div className="mt-8 rounded-2xl border-2 border-line bg-surface p-6 text-center">
         <p className="font-display text-xl font-bold">Tu carrito está vacío</p>
@@ -183,7 +184,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
               </label>
             ))}
           </div>
-          {errores.pago && <p className="mt-1.5 text-sm font-semibold text-coral">{errores.pago}</p>}
+          {errores.pago && <p className="mt-1.5 text-sm font-semibold text-coral-ink">{errores.pago}</p>}
         </fieldset>
 
         {campos.pago === "efectivo" && (
@@ -192,7 +193,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
               id="f-pagaCon"
               className="campo tabular aparecer"
               inputMode="numeric"
-              placeholder={cop(Math.ceil(total / 10000) * 10000 + (total % 10000 === 0 ? 10000 : 0))}
+              placeholder={`Ej: ${cop(Math.ceil((total + 1) / 10000) * 10000)}`}
               value={campos.pagaCon ? cop(Number(String(campos.pagaCon).replace(/\D/g, ""))) : ""}
               onChange={(e) => set("pagaCon", e.target.value.replace(/\D/g, "").slice(0, 7))}
             />
@@ -212,7 +213,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
         </div>
 
         {mensaje && (
-          <p role="alert" className="mt-4 rounded-2xl bg-coral-soft px-4 py-3 text-sm font-semibold text-coral">
+          <p role="alert" className="mt-4 rounded-2xl bg-coral-soft px-4 py-3 text-sm font-semibold text-coral-ink">
             {mensaje}
           </p>
         )}
@@ -251,7 +252,7 @@ function Campo({
       </label>
       {children}
       {error ? (
-        <p className="mt-1.5 text-sm font-semibold text-coral">{error}</p>
+        <p className="mt-1.5 text-sm font-semibold text-coral-ink">{error}</p>
       ) : (
         ayuda && <p className="mt-1.5 text-sm text-ink-soft">{ayuda}</p>
       )}

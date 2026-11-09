@@ -16,19 +16,22 @@ export function ListaMenu({ categorias }: { categorias: Categoria[] }) {
           <h2 id={`t-${c.slug}`} className="font-display text-2xl font-extrabold tracking-tight">
             {c.name}
           </h2>
-          <ul className="mt-3 divide-y-2 divide-line overflow-hidden rounded-2xl border-2 border-line bg-surface">
+          {/* Celular: una lista continua. Computador ancho: dos columnas de tarjetas. */}
+          <ul className="mt-3 divide-y-2 divide-line overflow-hidden rounded-2xl border-2 border-line bg-surface xl:grid xl:grid-cols-2 xl:gap-3 xl:divide-y-0 xl:overflow-visible xl:rounded-none xl:border-0 xl:bg-transparent">
             {c.products.map((p) => {
               const cantidad = cantidadDe(p.id);
               return (
                 <li
                   key={p.id}
-                  className={`flex gap-4 p-4 transition-colors duration-200 ${cantidad > 0 ? "bg-surface-2/60" : ""}`}
+                  className={`flex gap-4 p-4 transition-colors duration-200 xl:rounded-2xl xl:border-2 ${
+                    cantidad > 0 ? "bg-surface-2/60 xl:border-outline" : "xl:border-line xl:bg-surface"
+                  }`}
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <h3 className="text-[17px] leading-tight font-bold break-words">{p.name}</h3>
                       {p.badge && (
-                        <span className="rounded-full bg-coral-soft px-2 py-0.5 text-[11px] font-bold tracking-wide text-coral uppercase">
+                        <span className="rounded-full bg-coral-soft px-2 py-0.5 text-[11px] font-bold tracking-wide text-coral-ink uppercase">
                           {p.badge}
                         </span>
                       )}

@@ -59,7 +59,7 @@ export default function Ingresar() {
           required
         />
         {error && (
-          <p role="alert" className="mt-3 text-sm font-semibold text-coral">
+          <p role="alert" className="mt-3 text-sm font-semibold text-coral-ink">
             {error}
           </p>
         )}

@@ -44,7 +44,7 @@ export function NavCategorias({ categorias }: { categorias: Categoria[] }) {
               data-slug={c.slug}
               aria-current={esActiva ? "true" : undefined}
               onClick={() => setActiva(c.slug)}
-              className={`shrink-0 rounded-full border-2 px-4 py-2 text-sm font-bold whitespace-nowrap transition-colors duration-150 ${
+              className={`flex min-h-11 shrink-0 items-center rounded-full border-2 px-4 text-sm font-bold whitespace-nowrap transition-colors duration-150 ${
                 esActiva ? "border-outline bg-ink text-bg" : "border-line bg-surface text-ink"
               }`}
             >

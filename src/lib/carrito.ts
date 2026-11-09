@@ -81,6 +81,12 @@ export const carrito = {
   },
 };
 
+const nada = () => () => {};
+/** false en el servidor y en el primer pintado; true cuando ya se leyó el carrito guardado. */
+export function useHidratado() {
+  return useSyncExternalStore(nada, () => true, () => false);
+}
+
 export function useCarrito() {
   const s = useSyncExternalStore(
     suscribir,
