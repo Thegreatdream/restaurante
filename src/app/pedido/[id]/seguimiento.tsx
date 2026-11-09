@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Tato, type PoseTato } from "@/components/tato";
-import { Check } from "@/components/iconos";
+import { CaminoPedido } from "./camino-pedido";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 import { cop, hora } from "@/lib/formato";
 import type { EstadoPedido, PedidoPublico } from "@/lib/tipos";
@@ -116,34 +116,7 @@ export function SeguimientoPedido({ inicial }: { inicial: PedidoPublico }) {
           </div>
         </div>
 
-        {estado !== "cancelado" && (
-          <ol className="grid grid-cols-3 border-t-2 border-outline bg-surface" aria-label="Avance del pedido">
-            {PASOS.map((p, i) => {
-              const hecho = i < indice;
-              const actual = i === indice;
-              return (
-                <li
-                  key={p.estado}
-                  aria-current={actual ? "step" : undefined}
-                  className={`flex flex-col items-center gap-1.5 px-2 py-3 text-xs font-bold ${i > 0 ? "border-l-2 border-line" : ""}`}
-                >
-                  <span
-                    className={`grid size-8 place-items-center rounded-full border-2 transition-colors duration-300 ${
-                      hecho
-                        ? "border-outline bg-hoja text-white"
-                        : actual
-                          ? "border-outline bg-brand text-[#1e1a17]"
-                          : "border-line bg-surface text-ink-soft"
-                    }`}
-                  >
-                    {hecho ? <Check className="size-4" /> : <span className="tabular">{i + 1}</span>}
-                  </span>
-                  <span className={actual || hecho ? "text-ink" : "text-ink-soft"}>{p.corto}</span>
-                </li>
-              );
-            })}
-          </ol>
-        )}
+        {estado !== "cancelado" && <CaminoPedido indice={indice} />}
       </section>
 
       <section className="mt-6 rounded-[1.75rem] border-2 border-line bg-surface p-5">

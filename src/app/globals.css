@@ -529,3 +529,35 @@ a {
     animation: tato-solo-opacidad 160ms ease both;
   }
 }
+
+/* Camino del pedido: la pista se llena y la motico avanza (movimiento en pantalla: ease-in-out) */
+.camino-relleno {
+  transform-origin: 0% 50%;
+  transition: transform 1100ms var(--ease-in-out);
+}
+.camino-moto {
+  transition: transform 1100ms var(--ease-in-out);
+}
+/* Ya en camino: la motico va dando saltitos por la calle */
+@keyframes moto-andando {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(-3deg);
+  }
+}
+.moto-andando {
+  display: block;
+  animation: moto-andando 420ms ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .camino-relleno,
+  .camino-moto {
+    transition: none;
+  }
+  .moto-andando {
+    animation: none;
+  }
+}
