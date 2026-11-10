@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { Ajustes } from "@/lib/tipos";
+import type { Ajustes, Tramo } from "@/lib/tipos";
 import { cop } from "@/lib/formato";
 import { guardarAjustes, type DatosAjustes } from "./acciones";
 
@@ -12,14 +12,20 @@ const MODULOS: { clave: keyof Ajustes; nombre: string; detalle: string; listo: b
   { clave: "mod_delivery", nombre: "Domicilio", detalle: "El cliente pide y se lo llevan a su casa.", listo: true },
   { clave: "mod_pickup", nombre: "Para recoger", detalle: "El cliente pide y pasa a recogerlo.", listo: true },
   { clave: "mod_table", nombre: "Pedido en mesa (QR)", detalle: "Cada mesa tiene un QR para pedir.", listo: true },
-  { clave: "mod_reservations", nombre: "Reservas", detalle: "Reservar mesa por fecha y hora.", listo: false },
+  { clave: "mod_reservations", nombre: "Reservas", detalle: "Reservar mesa por fecha y hora.", listo: true },
   { clave: "mod_reviews", nombre: "Opiniones", detalle: "Calificaciones privadas y anónimas.", listo: false },
   { clave: "mod_menu_qr", nombre: "Menú QR", detalle: "Menú de solo lectura para imprimir.", listo: false },
 ];
 
 type Estado = DatosAjustes;
 
-function inicial(a: Ajustes): Estado {
+const aDias = (tramos: Tramo[], porDefecto: [string, string]) =>
+  [0, 1, 2, 3, 4, 5, 6].map((d) => {
+    const t = tramos.find((h) => h.weekday === d);
+    return { weekday: d, abierto: Boolean(t), opens: t?.opens.slice(0, 5) ?? porDefecto[0], closes: t?.closes.slice(0, 5) ?? porDefecto[1] };
+  });
+
+function inicial(a: Ajustes, horarioReservas: Tramo[]): Estado {
   const v = (x: string | null) => x ?? "";
   return {
     name: a.name,
@@ -36,6 +42,14 @@ function inicial(a: Ajustes): Estado {
     mod_delivery: a.mod_delivery,
     mod_pickup: a.mod_pickup,
     mod_table: a.mod_table,
+    mod_reservations: a.mod_reservations,
+    reservation_slot_minutes: a.reservation_slot_minutes as 30,
+    reservation_capacity: a.reservation_capacity,
+    reservation_max_party: a.reservation_max_party,
+    reservation_days_ahead: a.reservation_days_ahead,
+    reservation_lead_minutes: a.reservation_lead_minutes,
+    reservation_auto_confirm: a.reservation_auto_confirm,
+    horarioReservas: aDias(horarioReservas, ["12:00", "17:00"]),
     pickup_lead_minutes: a.pickup_lead_minutes,
     address: v(a.address),
     phone: v(a.phone),
@@ -54,8 +68,8 @@ function inicial(a: Ajustes): Estado {
   };
 }
 
-export function FormularioAjustes({ ajustes }: { ajustes: Ajustes }) {
-  const [d, setD] = useState<Estado>(() => inicial(ajustes));
+export function FormularioAjustes({ ajustes, horarioReservas = [] }: { ajustes: Ajustes; horarioReservas?: Tramo[] }) {
+  const [d, setD] = useState<Estado>(() => inicial(ajustes, horarioReservas));
   const [errores, setErrores] = useState<Record<string, string>>({});
   const [aviso, setAviso] = useState<{ tipo: "ok" | "error"; texto: string } | null>(null);
   const [guardando, iniciar] = useTransition();
@@ -216,7 +230,7 @@ export function FormularioAjustes({ ajustes }: { ajustes: Ajustes }) {
                 key={m.clave}
                 id={m.clave}
                 activo={Boolean(d[m.clave as keyof Estado])}
-                alCambiar={(v) => set(m.clave as "mod_delivery" | "mod_pickup" | "mod_table", v)}
+                alCambiar={(v) => set(m.clave as "mod_delivery" | "mod_pickup" | "mod_table" | "mod_reservations", v)}
                 titulo={m.nombre}
                 detalle={m.detalle}
               />
@@ -253,6 +267,47 @@ export function FormularioAjustes({ ajustes }: { ajustes: Ajustes }) {
         )}
         {errores.mod_delivery && <p className="text-sm font-semibold text-coral-ink">Deja activo al menos un tipo de pedido.</p>}
       </Seccion>
+
+      {d.mod_reservations && (
+        <Seccion titulo="Reservas" descripcion="Cuándo se puede reservar y cuántas personas caben por franja.">
+          <Interruptor
+            id="auto_confirm"
+            activo={d.reservation_auto_confirm}
+            alCambiar={(v) => set("reservation_auto_confirm", v)}
+            titulo="Confirmar automáticamente"
+            detalle="Si hay cupo, la reserva queda confirmada de una vez. Apágalo para revisarlas tú primero."
+          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Seleccion
+              id="slot"
+              etiqueta="Duración de cada franja"
+              valor={d.reservation_slot_minutes}
+              opciones={[15, 30, 45, 60, 90, 120].map((m) => [m, m < 60 ? `${m} minutos` : m === 60 ? "1 hora" : `${m / 60} horas`] as [number, string])}
+              alCambiar={(v) => set("reservation_slot_minutes", v as 30)}
+            />
+            <Numero id="cupo" etiqueta="Cupo de personas por franja" valor={d.reservation_capacity} min={1} max={500} alCambiar={(v) => set("reservation_capacity", v)} />
+            <Numero id="max" etiqueta="Máximo de personas por reserva" valor={d.reservation_max_party} min={1} max={50} alCambiar={(v) => set("reservation_max_party", v)} />
+            <Seleccion
+              id="dias"
+              etiqueta="Se puede reservar con"
+              valor={d.reservation_days_ahead}
+              opciones={[7, 14, 30, 60, 90].map((n) => [n, `hasta ${n} días de anticipación`] as [number, string])}
+              alCambiar={(v) => set("reservation_days_ahead", v)}
+            />
+            <Seleccion
+              id="lead"
+              etiqueta="Mínimo antes de la hora"
+              valor={d.reservation_lead_minutes}
+              opciones={[[0, "Sin mínimo"], [30, "30 minutos"], [60, "1 hora"], [120, "2 horas"], [240, "4 horas"], [1440, "1 día"]]}
+              alCambiar={(v) => set("reservation_lead_minutes", v)}
+            />
+          </div>
+          <div>
+            <p className="mb-1.5 text-[15px] font-bold">Horario de reservas</p>
+            <EditorHorario valor={d.horarioReservas} alCambiar={(v) => set("horarioReservas", v)} error={Boolean(errores.horarioReservas)} />
+          </div>
+        </Seccion>
+      )}
 
       <Seccion titulo="Identidad" descripcion="Cómo se ve tu restaurante.">
         {campoTexto("name", "Nombre del restaurante", { maxLength: 60, autoComplete: "organization" })}
@@ -381,5 +436,70 @@ function Interruptor({
         />
       </span>
     </label>
+  );
+}
+
+type DiaHorario = { weekday: number; abierto: boolean; opens: string; closes: string };
+
+/** Horario por día (casilla + desde/hasta), lunes primero. */
+function EditorHorario({ valor, alCambiar, error }: { valor: DiaHorario[]; alCambiar: (v: DiaHorario[]) => void; error?: boolean }) {
+  const cambiar = (weekday: number, c: Partial<DiaHorario>) => alCambiar(valor.map((h) => (h.weekday === weekday ? { ...h, ...c } : h)));
+  return (
+    <div className={`divide-y-2 divide-line rounded-2xl border-2 ${error ? "border-coral" : "border-line"}`}>
+      {ORDEN.map((dia) => {
+        const h = valor.find((x) => x.weekday === dia)!;
+        return (
+          <div key={dia} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
+            <label className="flex min-w-32 cursor-pointer items-center gap-3 font-bold">
+              <input type="checkbox" checked={h.abierto} onChange={(e) => cambiar(dia, { abierto: e.target.checked })} className="size-5" />
+              {DIAS[dia]}
+            </label>
+            {h.abierto ? (
+              <div className="flex items-center gap-2 text-sm">
+                <input type="time" aria-label={`${DIAS[dia]}: desde`} className="campo min-h-11 w-[8.5rem] py-1" value={h.opens} onChange={(e) => cambiar(dia, { opens: e.target.value })} />
+                <span className="text-ink-soft">a</span>
+                <input type="time" aria-label={`${DIAS[dia]}: hasta`} className="campo min-h-11 w-[8.5rem] py-1" value={h.closes} onChange={(e) => cambiar(dia, { closes: e.target.value })} />
+              </div>
+            ) : (
+              <span className="text-sm text-ink-soft">Sin reservas</span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function Seleccion({ id, etiqueta, valor, opciones, alCambiar }: { id: string; etiqueta: string; valor: number; opciones: [number, string][]; alCambiar: (v: number) => void }) {
+  return (
+    <div>
+      <label htmlFor={`a-${id}`} className="mb-1.5 block text-[15px] font-bold">
+        {etiqueta}
+      </label>
+      <select id={`a-${id}`} className="campo" value={valor} onChange={(e) => alCambiar(Number(e.target.value))}>
+        {opciones.map(([v, t]) => (
+          <option key={v} value={v}>
+            {t}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function Numero({ id, etiqueta, valor, min, max, alCambiar }: { id: string; etiqueta: string; valor: number; min: number; max: number; alCambiar: (v: number) => void }) {
+  return (
+    <div>
+      <label htmlFor={`a-${id}`} className="mb-1.5 block text-[15px] font-bold">
+        {etiqueta}
+      </label>
+      <input
+        id={`a-${id}`}
+        className="campo tabular"
+        inputMode="numeric"
+        value={valor}
+        onChange={(e) => alCambiar(Math.max(min, Math.min(max, Number(e.target.value.replace(/\D/g, "")) || min)))}
+      />
+    </div>
   );
 }

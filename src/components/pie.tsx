@@ -65,9 +65,16 @@ export function Pie({ ajustes }: { ajustes: Ajustes }) {
         <p>
           © {new Date().getFullYear()} {ajustes.name}
         </p>
-        <Link href="/privacidad" className="underline underline-offset-4 hover:text-band-ink">
-          Política de privacidad
-        </Link>
+        <span className="flex gap-5">
+          {ajustes.mod_reservations && (
+            <Link href="/reservar" className="underline underline-offset-4 hover:text-band-ink">
+              Reservar mesa
+            </Link>
+          )}
+          <Link href="/privacidad" className="underline underline-offset-4 hover:text-band-ink">
+            Política de privacidad
+          </Link>
+        </span>
       </div>
     </footer>
   );

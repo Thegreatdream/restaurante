@@ -12,12 +12,13 @@ export function EncabezadoPanel({
 }: {
   ajustes: Ajustes;
   rol: RolMiembro;
-  actual: "pedidos" | "meseros" | "mesas" | "domiciliarios" | "ajustes";
+  actual: "pedidos" | "meseros" | "mesas" | "domiciliarios" | "reservas" | "ajustes";
 }) {
   const secciones = [
     { id: "pedidos", texto: "Pedidos", href: "/cocina", ver: rol === "admin" || rol === "cocina" },
     { id: "meseros", texto: "Meseros", href: "/cocina/meseros", ver: ajustes.mod_table && (rol === "admin" || rol === "mesero") },
     { id: "mesas", texto: "Mesas", href: "/cocina/mesas", ver: ajustes.mod_table && rol === "admin" },
+    { id: "reservas", texto: "Reservas", href: "/cocina/reservas", ver: ajustes.mod_reservations && (rol === "admin" || rol === "mesero") },
     { id: "domiciliarios", texto: "Domiciliarios", href: "/cocina/domiciliarios", ver: ajustes.mod_delivery && rol === "admin" },
     { id: "ajustes", texto: "Ajustes", href: "/cocina/ajustes", ver: rol === "admin" },
   ].filter((s) => s.ver);

@@ -56,6 +56,12 @@ export type Ajustes = {
   mod_reviews: boolean;
   mod_menu_qr: boolean;
   pickup_lead_minutes: number;
+  reservation_slot_minutes: number;
+  reservation_capacity: number;
+  reservation_max_party: number;
+  reservation_days_ahead: number;
+  reservation_lead_minutes: number;
+  reservation_auto_confirm: boolean;
   delivery_fee: number;
   min_order: number;
   prep_delay_minutes: number;
@@ -197,4 +203,34 @@ export type Entrega = {
   restaurant_name: string;
   restaurant_phone: string | null;
   items: { name: string; quantity: number }[];
+};
+
+export type EstadoReserva = "pendiente" | "confirmada" | "cancelada" | "llego" | "no_llego";
+
+/** Franja de reserva con su cupo libre (reservation_slots). */
+export type FranjaReserva = { start: string; available: number };
+
+/** Reserva vista por el cliente desde su link (get_reservation). */
+export type ReservaPublica = {
+  id: string;
+  status: EstadoReserva;
+  slot_start: string;
+  party_size: number;
+  name: string;
+  note: string | null;
+  restaurant_id: string;
+  can_cancel: boolean;
+};
+
+/** Reserva completa, para el panel. */
+export type Reserva = {
+  id: string;
+  slot_start: string;
+  party_size: number;
+  name: string;
+  phone: string;
+  email: string;
+  note: string | null;
+  status: EstadoReserva;
+  created_at: string;
 };

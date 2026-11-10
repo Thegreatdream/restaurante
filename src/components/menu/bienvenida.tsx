@@ -26,6 +26,11 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
             <a href="#menu" className="btn">
               Ver el menú <Flecha />
             </a>
+            {ajustes.mod_reservations && (
+              <a href="/reservar" className="btn btn-ghost">
+                Reservar mesa
+              </a>
+            )}
             <p className="hidden text-sm font-semibold text-band-soft sm:block">
               {[
                 ajustes.mod_delivery && `Domicilio ${ajustes.delivery_fee > 0 ? cop(ajustes.delivery_fee) : "gratis"}`,

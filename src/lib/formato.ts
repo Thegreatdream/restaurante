@@ -96,3 +96,13 @@ export function saludo(fecha = new Date()): string {
 export function celular(n: string): string {
   return n.replace(/^(\d{3})(\d{3})(\d{4})$/, "$1 $2 $3");
 }
+
+/** "sábado 15 de noviembre" en la zona del restaurante. */
+export function fechaLarga(iso: string, tz = "America/Bogota"): string {
+  return new Intl.DateTimeFormat("es-CO", { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(new Date(iso));
+}
+
+/** Fecha (AAAA-MM-DD) de hoy en la zona del restaurante, más `dias`. */
+export function fechaLocal(tz = "America/Bogota", dias = 0): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date(Date.now() + dias * 86_400_000));
+}

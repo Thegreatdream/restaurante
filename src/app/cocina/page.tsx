@@ -18,6 +18,7 @@ export default async function Cocina() {
   if (!rol) return <SinAcceso mensaje={`Esta cuenta no pertenece al equipo de ${ajustes.name}.`} />;
   if (rol === "mesero") {
     if (ajustes.mod_table) redirect("/cocina/meseros");
+    if (ajustes.mod_reservations) redirect("/cocina/reservas");
     return <SinAcceso mensaje="El pedido en mesa está apagado. Pídele al administrador que lo active." />;
   }
 

@@ -44,6 +44,13 @@ const esquema = z.object({
   mod_delivery: z.boolean(),
   mod_pickup: z.boolean(),
   mod_table: z.boolean(),
+  mod_reservations: z.boolean(),
+  reservation_slot_minutes: z.union([z.literal(15), z.literal(30), z.literal(45), z.literal(60), z.literal(90), z.literal(120)]),
+  reservation_capacity: z.number().int().min(1).max(500),
+  reservation_max_party: z.number().int().min(1).max(50),
+  reservation_days_ahead: z.number().int().min(1).max(180),
+  reservation_lead_minutes: z.number().int().min(0).max(2880),
+  reservation_auto_confirm: z.boolean(),
   pickup_lead_minutes: z.number().int().min(5).max(180),
   address: texto(160),
   phone: z
@@ -78,6 +85,9 @@ const esquema = z.object({
   horario: z
     .array(z.object({ weekday: z.number().int().min(0).max(6), abierto: z.boolean(), opens: hora, closes: hora }))
     .length(7),
+  horarioReservas: z
+    .array(z.object({ weekday: z.number().int().min(0).max(6), abierto: z.boolean(), opens: hora, closes: hora }))
+    .length(7),
 });
 
 export type DatosAjustes = z.input<typeof esquema>;
@@ -92,10 +102,10 @@ export async function guardarAjustes(datos: DatosAjustes): Promise<ResultadoAjus
     for (const i of r.error.issues) campos[String(i.path[0])] ??= i.message;
     return { ok: false, mensaje: "Revisa los datos marcados.", campos };
   }
-  const { horario, ...resto } = r.data;
+  const { horario, horarioReservas, ...resto } = r.data;
   if (!resto.mod_delivery && !resto.mod_pickup)
     return { ok: false, mensaje: "Deja activo al menos un tipo de pedido: domicilio o para recoger.", campos: { mod_delivery: "x" } };
-  const malHorario = horario.find((h) => h.abierto && h.closes <= h.opens);
+  const malHorario = [...horario, ...horarioReservas].find((h) => h.abierto && h.closes <= h.opens);
   if (malHorario) return { ok: false, mensaje: "En el horario, la hora de cierre debe ser después de la de apertura.", campos: { horario: "x" } };
 
   const restaurante = await obtenerAjustes();
@@ -111,6 +121,13 @@ export async function guardarAjustes(datos: DatosAjustes): Promise<ResultadoAjus
     .map((h) => ({ restaurant_id: restaurante.id, weekday: h.weekday, opens: h.opens, closes: h.closes }));
   const { error: e2 } = tramos.length ? await supabase.from("opening_hours").insert(tramos) : { error: null };
   if (e1 || e2) return { ok: false, mensaje: "Se guardó todo menos el horario. Intenta guardar de nuevo." };
+
+  const { error: e3 } = await supabase.from("reservation_hours").delete().eq("restaurant_id", restaurante.id);
+  const tramosR = horarioReservas
+    .filter((h) => h.abierto)
+    .map((h) => ({ restaurant_id: restaurante.id, weekday: h.weekday, opens: h.opens, closes: h.closes }));
+  const { error: e4 } = tramosR.length ? await supabase.from("reservation_hours").insert(tramosR) : { error: null };
+  if (e3 || e4) return { ok: false, mensaje: "Se guardó todo menos el horario de reservas. Intenta de nuevo." };
 
   revalidatePath("/", "layout");
   return { ok: true };
