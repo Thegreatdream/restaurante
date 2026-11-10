@@ -651,3 +651,35 @@ a {
     animation: tato-solo-opacidad 240ms ease both;
   }
 }
+
+/* Impresión de los QR de las mesas: solo las tarjetas de mesas activas, sin el resto del panel */
+.solo-imprimir {
+  display: none;
+}
+@media print {
+  header,
+  .no-imprimir,
+  .qr-tarjeta.inactiva {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  .solo-imprimir {
+    display: block;
+  }
+  .hoja-qr {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12mm !important;
+    margin: 0 !important;
+  }
+  .qr-tarjeta {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 2px solid #1e1a17 !important;
+    color: #1e1a17 !important;
+    background: #fff !important;
+    opacity: 1 !important;
+  }
+}

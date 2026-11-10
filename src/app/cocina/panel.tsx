@@ -163,7 +163,7 @@ export function PanelCocina({
   );
 }
 
-type Siguiente = "en_camino" | "listo_recoger" | "entregado";
+type Siguiente = "en_camino" | "listo_recoger" | "va_mesa" | "entregado";
 const ETIQUETA_TIPO: Record<TipoPedido, string> = { domicilio: "Domicilio", recoger: "Para recoger", mesa: "Mesa" };
 
 /** Avanza un pedido y guarda el error si falla. */
@@ -203,6 +203,8 @@ function TarjetaPedido({
   const minutos = minutosDesde(p.created_at, ahora);
   const esNuevo = p.status === "recibido" && minutos < retrasoMinutos;
   const recoger = p.order_type === "recoger";
+  const mesa = p.order_type === "mesa";
+  const siguiente: Siguiente = mesa ? "va_mesa" : recoger ? "listo_recoger" : "en_camino";
 
   return (
     <li className={`aparecer flex flex-col rounded-[1.5rem] bg-surface sticker ${esNuevo ? "ring-4 ring-brand/50" : ""}`}>
@@ -225,11 +227,11 @@ function TarjetaPedido({
 
       {/* Tipo de pedido bien visible: la cocina debe saber si sale en moto o lo recogen */}
       <p
-        className={`flex items-center justify-between gap-2 px-4 py-2 text-sm font-extrabold uppercase ${
-          recoger ? "bg-hoja-soft text-hoja-ink" : "bg-surface-2 text-ink"
+        className={`flex items-center justify-between gap-2 px-4 py-2 font-extrabold uppercase ${
+          mesa ? "bg-ink text-2xl text-bg" : recoger ? "bg-hoja-soft text-sm text-hoja-ink" : "bg-surface-2 text-sm text-ink"
         }`}
       >
-        <span>{ETIQUETA_TIPO[p.order_type]}</span>
+        <span>{mesa ? `Mesa ${p.table_label ?? ""}` : ETIQUETA_TIPO[p.order_type]}</span>
         {recoger && p.pickup_at && <span className="tabular normal-case">Pasa a las {hora(p.pickup_at)}</span>}
       </p>
 
@@ -246,10 +248,15 @@ function TarjetaPedido({
         <div>
           <dt className="sr-only">Cliente</dt>
           <dd className="font-bold break-words">
-            {p.customer_name} ·{" "}
-            <a href={`tel:+57${p.customer_phone}`} className="tabular underline underline-offset-2">
-              {celular(p.customer_phone)}
-            </a>
+            {p.customer_name}
+            {p.customer_phone && (
+              <>
+                {" · "}
+                <a href={`tel:+57${p.customer_phone}`} className="tabular underline underline-offset-2">
+                  {celular(p.customer_phone)}
+                </a>
+              </>
+            )}
           </dd>
         </div>
         {!recoger && p.address && (
@@ -262,7 +269,7 @@ function TarjetaPedido({
         <div className="flex items-baseline justify-between gap-3">
           <dt className="sr-only">Pago y total</dt>
           <dd>
-            {p.payment_method === "efectivo" ? "Efectivo" : "Transferencia"}
+            {mesa ? "Se cobra en la cuenta" : p.payment_method === "efectivo" ? "Efectivo" : "Transferencia"}
             {p.cash_change_for ? <span className="tabular text-ink-soft"> · paga con {cop(p.cash_change_for)}</span> : null}
           </dd>
           <dd className="tabular font-display text-xl font-extrabold">{cop(p.total)}</dd>
@@ -271,8 +278,8 @@ function TarjetaPedido({
 
       <div className="px-4 pb-4">
         {error && <p className="mb-2 text-sm font-semibold text-coral-ink">{error}</p>}
-        <button type="button" onClick={() => avanzar(recoger ? "listo_recoger" : "en_camino")} disabled={enviando} className="btn w-full">
-          {enviando ? "Guardando…" : recoger ? "Marcar como listo" : "Marcar como despachado"}
+        <button type="button" onClick={() => avanzar(siguiente)} disabled={enviando} className="btn w-full">
+          {enviando ? "Guardando…" : mesa ? "Listo, llevar a la mesa" : recoger ? "Marcar como listo" : "Marcar como despachado"}
         </button>
       </div>
     </li>
@@ -291,7 +298,8 @@ function FilaPorEntregar({
 }) {
   const { enviando, error, avanzar } = useAvanzar(p.id, alAvanzar, alFallar);
   const recoger = p.order_type === "recoger";
-  const desde = recoger ? p.ready_at : p.dispatched_at;
+  const mesa = p.order_type === "mesa";
+  const desde = recoger || mesa ? p.ready_at : p.dispatched_at;
   return (
     <li className="flex flex-col gap-3 rounded-2xl border-2 border-line bg-surface p-4">
       <div className="flex items-start justify-between gap-3">
@@ -300,7 +308,7 @@ function FilaPorEntregar({
             <span className="tabular">#{p.daily_number}</span> · {p.customer_name}
           </p>
           <p className="text-sm text-ink-soft">
-            {recoger ? "Listo para recoger" : "En camino"}
+            {mesa ? `Llevar a la mesa ${p.table_label ?? ""}` : recoger ? "Listo para recoger" : "En camino"}
             {desde ? ` desde las ${hora(desde)}` : ""}
           </p>
         </div>
@@ -308,7 +316,7 @@ function FilaPorEntregar({
       </div>
       {error && <p className="text-sm font-semibold text-coral-ink">{error}</p>}
       <button type="button" onClick={() => avanzar("entregado")} disabled={enviando} className="btn btn-ghost min-h-11 w-full text-sm">
-        {enviando ? "Guardando…" : recoger ? "Ya lo recogió" : "Marcar como entregado"}
+        {enviando ? "Guardando…" : mesa ? "Servido en la mesa" : recoger ? "Ya lo recogió" : "Marcar como entregado"}
       </button>
     </li>
   );

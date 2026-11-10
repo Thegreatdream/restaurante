@@ -43,6 +43,7 @@ const esquema = z.object({
   prep_delay_minutes: z.number().int().min(0).max(60),
   mod_delivery: z.boolean(),
   mod_pickup: z.boolean(),
+  mod_table: z.boolean(),
   pickup_lead_minutes: z.number().int().min(5).max(180),
   address: texto(160),
   phone: z

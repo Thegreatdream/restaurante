@@ -79,6 +79,7 @@ export type Ajustes = {
 };
 
 export type EstadoPedido =
+  | "por_confirmar"
   | "recibido"
   | "preparando"
   | "listo_recoger"
@@ -107,6 +108,7 @@ export type PedidoPublico = {
   ready_at: string | null;
   delivered_at: string | null;
   pickup_at: string | null;
+  table_label?: string | null;
   prep_delay_minutes: number;
   items: { name: string; quantity: number; line_total: number }[];
 };
@@ -116,13 +118,15 @@ export type PedidoCocina = {
   id: string;
   daily_number: number;
   customer_name: string;
-  customer_phone: string;
-  customer_email: string;
+  customer_phone: string | null;
+  customer_email: string | null;
   order_type: TipoPedido;
+  table_label: string | null;
+  table_session_id: string | null;
   address: string | null;
   address_notes: string | null;
   pickup_at: string | null;
-  payment_method: FormaPago;
+  payment_method: FormaPago | null;
   cash_change_for: number | null;
   status: EstadoPedido;
   total: number;
@@ -131,4 +135,31 @@ export type PedidoCocina = {
   ready_at: string | null;
   delivered_at: string | null;
   order_items: { id: string; product_name: string; quantity: number }[];
+};
+
+/** Cuenta de mesa tal como la ve el cliente (table_session_view). */
+export type CuentaMesa = {
+  status: "abierta" | "cerrada";
+  confirmed: boolean;
+  table_label: string;
+  total: number;
+  calls: ("mesero" | "cuenta")[];
+  orders: {
+    id: string;
+    number: number;
+    status: EstadoPedido;
+    name: string;
+    total: number;
+    items: { name: string; quantity: number }[];
+  }[];
+};
+
+/** Lo que devuelve open_table_session al escanear el QR. */
+export type SesionMesa = {
+  session_id: string;
+  access_code: string;
+  table_id: string;
+  table_label: string;
+  restaurant_id: string;
+  confirmed: boolean;
 };

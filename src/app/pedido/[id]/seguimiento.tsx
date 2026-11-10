@@ -34,6 +34,12 @@ type Copia = { pose: PoseTato; titulo: string; texto: string };
 function copiaDe(estado: EstadoPedido, p: PedidoPublico, r: Restaurante, conTato: boolean): Copia {
   const quien = conTato ? "Tato" : "Ya";
   switch (estado) {
+    case "por_confirmar":
+      return {
+        pose: "libreta",
+        titulo: "Esperando al mesero",
+        texto: "Un mesero confirmará tu mesa en un momento y tu pedido pasará a la cocina.",
+      };
     case "recibido":
       return {
         pose: "libreta",
@@ -215,10 +221,17 @@ export function SeguimientoPedido({
                 {pedido.pickup_at ? ` · hacia las ${horaDe(pedido.pickup_at, restaurante.timezone)}` : ""}
               </dd>
             </div>
-          ) : null}
+          ) : (
+            <div>
+              <dt className="font-bold">Mesa</dt>
+              <dd className="text-ink-soft">{pedido.table_label ?? ""}</dd>
+            </div>
+          )}
           <div>
-            <dt className="font-bold">{tipo === "recoger" ? "Pago al recoger" : "Pago al recibir"}</dt>
-            <dd className="text-ink-soft">{pedido.payment_method === "efectivo" ? "Efectivo" : "Transferencia"}</dd>
+            <dt className="font-bold">{tipo === "mesa" ? "Pago" : tipo === "recoger" ? "Pago al recoger" : "Pago al recibir"}</dt>
+            <dd className="text-ink-soft">
+              {tipo === "mesa" ? "En la cuenta de la mesa" : pedido.payment_method === "efectivo" ? "Efectivo" : "Transferencia"}
+            </dd>
           </div>
         </dl>
         <p className="mt-4 text-center text-xs text-ink-soft">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { supabaseServidor } from "@/lib/supabase/server";
 import { obtenerAjustes } from "@/lib/menu";
 import { miRol } from "@/lib/panel";
@@ -14,8 +15,8 @@ export default async function Cocina() {
 
   if (!rol) return <SinAcceso mensaje={`Esta cuenta no pertenece al equipo de ${ajustes.name}.`} />;
   if (rol === "mesero") {
-    // La vista de meseros llega con el pedido en mesa (Fase 3)
-    return <SinAcceso mensaje="La vista para meseros estará disponible pronto." />;
+    if (ajustes.mod_table) redirect("/cocina/meseros");
+    return <SinAcceso mensaje="El pedido en mesa está apagado. Pídele al administrador que lo active." />;
   }
 
   const supabase = await supabaseServidor();

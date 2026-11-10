@@ -6,12 +6,13 @@ import { obtenerAjustes } from "@/lib/menu";
 import { enviarCorreoEstado } from "@/lib/correo";
 import type { EstadoPedido, TipoPedido } from "@/lib/tipos";
 
-type Siguiente = "en_camino" | "listo_recoger" | "entregado";
+type Siguiente = "en_camino" | "listo_recoger" | "va_mesa" | "entregado";
 
 /** Desde qué estados y para qué tipo de pedido se permite cada paso. */
 const REGLAS: Record<Siguiente, { desde: EstadoPedido[]; tipos: TipoPedido[] }> = {
   en_camino: { desde: ["recibido", "preparando"], tipos: ["domicilio"] },
   listo_recoger: { desde: ["recibido", "preparando"], tipos: ["recoger"] },
+  va_mesa: { desde: ["recibido", "preparando"], tipos: ["mesa"] },
   entregado: { desde: ["en_camino", "listo_recoger", "va_mesa"], tipos: ["domicilio", "recoger", "mesa"] },
 };
 

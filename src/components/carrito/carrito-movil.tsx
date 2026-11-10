@@ -9,7 +9,20 @@ import { ResumenCarrito } from "./resumen-carrito";
 import { Bolsa } from "@/components/iconos";
 
 /** Celular: barra fija abajo + hoja inferior que se arrastra (Vaul). */
-export function CarritoMovil({ ajustes }: { ajustes: Ajustes }) {
+export function CarritoMovil({
+  ajustes,
+  contenido,
+  costoEnvio,
+  cerrarSenal = 0,
+}: {
+  ajustes: Ajustes;
+  /** Contenido de la hoja. Por defecto, el resumen con el botón para continuar. */
+  contenido?: React.ReactNode;
+  /** Costo que se suma al total de la barra. Por defecto, el domicilio si el restaurante lo ofrece. */
+  costoEnvio?: number;
+  /** Cambia este número para cerrar la hoja desde afuera (p. ej. al enviar el pedido). */
+  cerrarSenal?: number;
+}) {
   const { cantidad, subtotal } = useCarrito();
   const [abierto, setAbierto] = useState(false);
   const visible = cantidad > 0;
@@ -17,6 +30,11 @@ export function CarritoMovil({ ajustes }: { ajustes: Ajustes }) {
   // El contador "late" cada vez que se agrega algo; la hoja se cierra si el carrito queda vacío.
   const [latido, setLatido] = useState(0);
   const [anterior, setAnterior] = useState(cantidad);
+  const [senal, setSenal] = useState(cerrarSenal);
+  if (senal !== cerrarSenal) {
+    setSenal(cerrarSenal);
+    setAbierto(false);
+  }
   if (anterior !== cantidad) {
     setAnterior(cantidad);
     if (cantidad > anterior) setLatido((n) => n + 1);
@@ -47,7 +65,7 @@ export function CarritoMovil({ ajustes }: { ajustes: Ajustes }) {
                   , {cantidad} {cantidad === 1 ? "plato" : "platos"}
                 </span>
               </span>
-              <span className="tabular">{cop(subtotal + (ajustes.mod_delivery ? ajustes.delivery_fee : 0))}</span>
+              <span className="tabular">{cop(subtotal + (costoEnvio ?? (ajustes.mod_delivery ? ajustes.delivery_fee : 0)))}</span>
             </button>
           </Drawer.Trigger>
         </div>
@@ -62,7 +80,7 @@ export function CarritoMovil({ ajustes }: { ajustes: Ajustes }) {
           <div aria-hidden className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-line" />
           <Drawer.Title className="px-5 pt-3 font-display text-2xl font-extrabold">Tu pedido</Drawer.Title>
           <div className="overflow-y-auto overscroll-contain px-5 pb-2">
-            <ResumenCarrito ajustes={ajustes} />
+            {contenido ?? <ResumenCarrito ajustes={ajustes} />}
           </div>
         </Drawer.Content>
       </Drawer.Portal>

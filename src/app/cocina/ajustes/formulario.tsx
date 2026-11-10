@@ -11,7 +11,7 @@ const ORDEN = [1, 2, 3, 4, 5, 6, 0]; // lunes primero
 const MODULOS: { clave: keyof Ajustes; nombre: string; detalle: string; listo: boolean }[] = [
   { clave: "mod_delivery", nombre: "Domicilio", detalle: "El cliente pide y se lo llevan a su casa.", listo: true },
   { clave: "mod_pickup", nombre: "Para recoger", detalle: "El cliente pide y pasa a recogerlo.", listo: true },
-  { clave: "mod_table", nombre: "Pedido en mesa (QR)", detalle: "Cada mesa tiene un QR para pedir.", listo: false },
+  { clave: "mod_table", nombre: "Pedido en mesa (QR)", detalle: "Cada mesa tiene un QR para pedir.", listo: true },
   { clave: "mod_reservations", nombre: "Reservas", detalle: "Reservar mesa por fecha y hora.", listo: false },
   { clave: "mod_reviews", nombre: "Opiniones", detalle: "Calificaciones privadas y anónimas.", listo: false },
   { clave: "mod_menu_qr", nombre: "Menú QR", detalle: "Menú de solo lectura para imprimir.", listo: false },
@@ -35,6 +35,7 @@ function inicial(a: Ajustes): Estado {
     prep_delay_minutes: a.prep_delay_minutes,
     mod_delivery: a.mod_delivery,
     mod_pickup: a.mod_pickup,
+    mod_table: a.mod_table,
     pickup_lead_minutes: a.pickup_lead_minutes,
     address: v(a.address),
     phone: v(a.phone),
@@ -215,7 +216,7 @@ export function FormularioAjustes({ ajustes }: { ajustes: Ajustes }) {
                 key={m.clave}
                 id={m.clave}
                 activo={Boolean(d[m.clave as keyof Estado])}
-                alCambiar={(v) => set(m.clave as "mod_delivery" | "mod_pickup", v)}
+                alCambiar={(v) => set(m.clave as "mod_delivery" | "mod_pickup" | "mod_table", v)}
                 titulo={m.nombre}
                 detalle={m.detalle}
               />
