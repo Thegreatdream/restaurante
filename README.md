@@ -53,8 +53,9 @@ Las ilustraciones van en `public/tato/`. El componente `<Tato pose="..."/>` (en 
 
 ## Ajustes del negocio
 
-- Costo de domicilio, pedido mínimo, minutos para pasar a "preparando" y abierto/cerrado: tabla `settings` en Supabase (**Table Editor → settings**).
-- Nombre y textos: `src/lib/negocio.ts`.
+Todo se cambia en **Panel → Ajustes** (`/cocina/ajustes`, solo administrador): pedidos, horario,
+módulos, nombre, logo, colores, contacto y datos legales. Por debajo se guarda en las tablas
+`restaurants` y `opening_hours` de Supabase.
 
 ## Varios restaurantes (Fase 1)
 
