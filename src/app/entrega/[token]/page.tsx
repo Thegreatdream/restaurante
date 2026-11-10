@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { supabaseServidor } from "@/lib/supabase/server";
 import type { Entrega } from "@/lib/tipos";
 import { DetalleEntrega } from "./detalle";
+import { TarjetaAviso } from "@/components/tarjeta-aviso";
 
 export const metadata: Metadata = { title: "Entrega", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -15,11 +16,12 @@ export default async function PaginaEntrega({ params }: { params: Promise<{ toke
 
   if (!entrega) {
     return (
-      <main className="grid min-h-dvh place-items-center px-4 text-center">
-        <div className="max-w-sm rounded-[1.75rem] bg-surface p-6 sticker">
-          <h1 className="font-display text-2xl font-extrabold">Entrega no encontrada</h1>
-          <p className="mt-2 text-ink-soft">Este enlace no corresponde a ningún pedido. Revisa el mensaje del restaurante.</p>
-        </div>
+      <main>
+        <TarjetaAviso
+          pantallaCompleta
+          titulo="Entrega no encontrada"
+          texto="Este enlace no corresponde a ningún pedido. Revisa el mensaje del restaurante."
+        />
       </main>
     );
   }

@@ -5,6 +5,7 @@ import { supabaseServidor } from "@/lib/supabase/server";
 import { obtenerAjustes } from "@/lib/menu";
 import type { ReservaPublica } from "@/lib/tipos";
 import { DetalleReserva } from "./detalle";
+import { TarjetaAviso } from "@/components/tarjeta-aviso";
 
 export const metadata: Metadata = { title: "Tu reserva", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -21,10 +22,7 @@ export default async function PaginaReserva({ params }: { params: Promise<{ toke
       <AvisoDemo ajustes={ajustes} />
       <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-6 pb-16 md:pt-10">
         {!reserva || reserva.restaurant_id !== ajustes.id ? (
-          <div className="rounded-[1.75rem] bg-surface p-6 text-center sticker">
-            <h1 className="font-display text-2xl font-extrabold">Reserva no encontrada</h1>
-            <p className="mt-2 text-ink-soft">Revisa el enlace del correo de confirmación.</p>
-          </div>
+          <TarjetaAviso titulo="Reserva no encontrada" texto="Revisa el enlace del correo de confirmación." mascota={ajustes.mascot} />
         ) : (
           <DetalleReserva
             token={token}

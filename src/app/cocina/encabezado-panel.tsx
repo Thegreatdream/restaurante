@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Ajustes, RolMiembro } from "@/lib/tipos";
 import { cerrarSesion } from "./acciones";
+import { TarjetaAviso } from "@/components/tarjeta-aviso";
 
 const ROL: Record<RolMiembro, string> = { admin: "Administrador", cocina: "Cocina", mesero: "Mesero" };
 
@@ -29,7 +30,7 @@ export function EncabezadoPanel({
         <p className="font-display text-xl font-extrabold">
           {ajustes.name} <span className="text-sm font-bold text-ink-soft">· {ROL[rol]}</span>
         </p>
-        <nav className="flex items-center gap-1 text-sm font-bold" aria-label="Secciones del panel">
+        <nav className="-mx-1 flex flex-wrap items-center gap-1 text-sm font-bold" aria-label="Secciones del panel">
           {secciones.map((s) => (
             <Link
               key={s.id}
@@ -54,14 +55,12 @@ export function EncabezadoPanel({
 /** Pantalla para cuentas sin permiso en este restaurante. */
 export function SinAcceso({ mensaje }: { mensaje: string }) {
   return (
-    <main className="grid min-h-dvh place-items-center px-4">
-      <div className="max-w-sm rounded-[1.75rem] bg-surface p-6 text-center sticker">
-        <h1 className="font-display text-2xl font-extrabold">Sin acceso</h1>
-        <p className="mt-2 text-ink-soft">{mensaje}</p>
+    <main>
+      <TarjetaAviso pantallaCompleta titulo="Sin acceso" texto={mensaje}>
         <form action={cerrarSesion}>
           <button className="btn btn-ghost mt-5">Cerrar sesión</button>
         </form>
-      </div>
+      </TarjetaAviso>
     </main>
   );
 }

@@ -59,7 +59,7 @@ export function DetalleEntrega({ token, entrega: e }: { token: string; entrega: 
         <p className="mt-3 text-xs font-bold tracking-wide text-ink-soft uppercase">Dirección</p>
         <p className="mt-0.5 text-lg font-bold break-words">{e.address}</p>
         {e.address_notes && <p className="mt-1 break-words text-ink-soft">“{e.address_notes}”</p>}
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {e.customer_phone && (
             <a href={`tel:+57${e.customer_phone}`} className="btn btn-ghost min-h-12 text-[15px]">
               Llamar · <span className="tabular">{celular(e.customer_phone)}</span>

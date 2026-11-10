@@ -5,6 +5,7 @@ import { supabaseServidor } from "@/lib/supabase/server";
 import { obtenerMenu } from "@/lib/menu";
 import type { SesionMesa } from "@/lib/tipos";
 import { MesaCliente } from "./cliente";
+import { TarjetaAviso } from "@/components/tarjeta-aviso";
 
 export const metadata: Metadata = { title: "Pedir en la mesa", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -34,11 +35,8 @@ export default async function Mesa({ params }: { params: Promise<{ token: string
       <Encabezado />
       <AvisoDemo ajustes={ajustes} />
       {problema || !sesion ? (
-        <main className="mx-auto grid w-full max-w-md flex-1 place-items-center px-4 py-16 text-center">
-          <div className="rounded-[1.75rem] bg-surface p-6 sticker">
-            <h1 className="font-display text-2xl font-extrabold">No pudimos abrir la mesa</h1>
-            <p className="mt-2 text-ink-soft">{problema}</p>
-          </div>
+        <main className="flex flex-1 flex-col">
+          <TarjetaAviso titulo="No pudimos abrir la mesa" texto={problema ?? ""} mascota={ajustes.mascot} />
         </main>
       ) : (
         <MesaCliente sesion={sesion} ajustes={ajustes} categorias={categorias} />
