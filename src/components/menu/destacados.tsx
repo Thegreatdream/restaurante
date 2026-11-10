@@ -18,7 +18,7 @@ function elegir(categorias: Categoria[]): (Producto & { slug: string })[] {
 }
 
 /** Carril de recomendados: tarjetas grandes que se deslizan con el dedo. */
-export function Destacados({ categorias }: { categorias: Categoria[] }) {
+export function Destacados({ categorias, titulo = "Recomendados de la casa" }: { categorias: Categoria[]; titulo?: string }) {
   const { items } = useCarrito();
   const platos = elegir(categorias);
   if (platos.length < 3) return null;
@@ -26,7 +26,7 @@ export function Destacados({ categorias }: { categorias: Categoria[] }) {
   return (
     <section aria-labelledby="t-destacados" className="mt-8 md:mt-10">
       <h2 id="t-destacados" className="font-display text-2xl font-extrabold tracking-tight md:text-3xl">
-        Recomendados de Tato
+        {titulo}
       </h2>
       <ul className="carril -mx-4 mt-4 flex gap-4 overflow-x-auto px-4 pt-1 pb-3 md:mx-0 md:px-0">
         {platos.map((p) => {

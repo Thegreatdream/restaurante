@@ -46,7 +46,7 @@ function estadoVisible(p: PedidoPublico, ahora: number): EstadoPedido {
   return ahora >= limite ? "preparando" : "recibido";
 }
 
-export function SeguimientoPedido({ inicial }: { inicial: PedidoPublico }) {
+export function SeguimientoPedido({ inicial, mascota = "tato" }: { inicial: PedidoPublico; mascota?: string }) {
   const [pedido, setPedido] = useState(inicial);
   const [ahora, setAhora] = useState(() => Date.now());
 
@@ -105,7 +105,7 @@ export function SeguimientoPedido({ inicial }: { inicial: PedidoPublico }) {
         </div>
 
         <div className="flex flex-col items-center px-5 pt-6 pb-6 text-center">
-          <Tato pose={copia.pose} priority sizes="(min-width: 768px) 220px, 170px" className="w-[170px] md:w-[220px]" />
+          <Tato pose={copia.pose} mascota={mascota} priority sizes="(min-width: 768px) 220px, 170px" className="w-[170px] md:w-[220px]" />
           <div aria-live="polite" className="mt-5">
             <h1 key={estado} className="aparecer font-display text-[1.9rem] leading-tight font-extrabold tracking-tight md:text-4xl">
               {copia.titulo}

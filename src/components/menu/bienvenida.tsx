@@ -17,7 +17,7 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
           </h1>
           <span aria-hidden className="mt-5 block h-1 w-14 rounded-full bg-brand md:mt-7" />
           <p className="mt-5 max-w-[22ch] pr-24 text-lg leading-snug font-semibold sm:pr-0 md:mt-7 md:max-w-[28ch] md:text-2xl">
-            {saludo()}, soy Tato. ¿Qué se te antoja hoy?
+            {saludo()}, {ajustes.mascot === "tato" ? "soy Tato. " : ""}¿Qué se te antoja hoy?
           </p>
           <p className="mt-2 max-w-[34ch] pr-24 text-[15px] leading-snug text-band-soft sm:pr-0 md:max-w-[40ch] md:text-lg">
             Comida casera hecha al momento y llevada calientita hasta tu puerta.
@@ -41,6 +41,7 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
         >
           <Tato
             pose="bienvenida"
+            mascota={ajustes.mascot}
             priority
             sizes="(min-width: 768px) 230px, 100px"
             className="absolute bottom-[46px] left-[18px] w-[100px] md:bottom-[-24px] md:left-1/2 md:w-1/2 md:-translate-x-1/2"

@@ -30,7 +30,7 @@ export default async function Inicio() {
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:gap-10">
         <div className="min-w-0">
-          <Destacados categorias={categorias} />
+          <Destacados categorias={categorias} titulo={ajustes.mascot === "tato" ? "Recomendados de Tato" : undefined} />
           <div id="menu" className="scroll-mt-4">
             <NavCategorias categorias={categorias} />
             <ListaMenu categorias={categorias} />
@@ -47,7 +47,7 @@ export default async function Inicio() {
 
       <Pie ajustes={ajustes} />
       <CarritoMovil ajustes={ajustes} />
-      <GloboTato />
+      {ajustes.mascot === "tato" && <GloboTato />}
     </>
   );
 }

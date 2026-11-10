@@ -1,6 +1,6 @@
 import "server-only";
 import { Resend } from "resend";
-import { NEGOCIO } from "@/lib/negocio";
+import type { Ajustes } from "@/lib/tipos";
 import { cop } from "@/lib/formato";
 import { urlSitio } from "@/lib/sitio";
 
@@ -19,14 +19,20 @@ const escapar = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 /** Envía "Tu pedido va en camino". Devuelve true si se envió. */
-export async function enviarCorreoDespacho(p: PedidoCorreo): Promise<boolean> {
+export async function enviarCorreoDespacho(
+  p: PedidoCorreo,
+  r: Pick<Ajustes, "name" | "tagline" | "domain" | "mascot">,
+): Promise<boolean> {
   const clave = process.env.RESEND_API_KEY;
   if (!clave) {
     console.warn("RESEND_API_KEY no está configurada: no se envió el correo.");
     return false;
   }
-  const sitio = urlSitio();
-  const remitente = process.env.CORREO_REMITENTE ?? `${NEGOCIO.nombre} <onboarding@resend.dev>`;
+  // Cada restaurante usa su dominio si lo tiene; si no, la dirección general de la plataforma.
+  const sitio = r.domain ? `https://${r.domain}` : urlSitio();
+  // El correo de envío es el de la plataforma; el nombre que ve el cliente es el del restaurante.
+  const direccion = (process.env.CORREO_REMITENTE ?? "onboarding@resend.dev").match(/<([^>]+)>/)?.[1] ?? process.env.CORREO_REMITENTE ?? "onboarding@resend.dev";
+  const remitente = `${r.name.replace(/[<>"]/g, "")} <${direccion}>`;
   const nombre = escapar(p.customer_name.split(" ")[0]);
   const enlace = sitio ? `${sitio}/pedido/${p.id}` : null;
 
@@ -40,7 +46,7 @@ export async function enviarCorreoDespacho(p: PedidoCorreo): Promise<boolean> {
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border:2px solid #1e1a17;border-radius:24px">
         <tr><td style="padding:28px 24px 8px;text-align:center">
-          ${sitio ? `<img src="${sitio}/tato/libreta.png" width="120" alt="Tato" style="display:block;margin:0 auto 12px;height:auto">` : ""}
+          ${sitio ? `<img src="${sitio}/${r.mascot}/libreta.png" width="120" alt="Tato" style="display:block;margin:0 auto 12px;height:auto">` : ""}
           <h1 style="margin:0;font-size:26px;line-height:1.15">¡${nombre}, tu pedido va en camino!</h1>
           <p style="margin:10px 0 0;color:#6b5c50;font-size:15px">Pedido #${p.daily_number} · Llega a ${escapar(p.address)}</p>
         </td></tr>
@@ -57,7 +63,7 @@ export async function enviarCorreoDespacho(p: PedidoCorreo): Promise<boolean> {
             : ""
         }
       </table>
-      <p style="color:#6b5c50;font-size:12px;margin:16px 0 0">${escapar(NEGOCIO.nombre)} · ${escapar(NEGOCIO.lema)}</p>
+      <p style="color:#6b5c50;font-size:12px;margin:16px 0 0">${escapar(r.name)}${r.tagline ? ` · ${escapar(r.tagline)}` : ""}</p>
     </td></tr>
   </table>
 </body></html>`;

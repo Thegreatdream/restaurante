@@ -12,16 +12,19 @@ export function inicioDeHoyColombia(): string {
 
 export type PedidosCocina = { activos: PedidoCocina[]; despachados: PedidoCocina[] };
 
-export async function cargarPedidosCocina(supabase: SupabaseClient): Promise<PedidosCocina> {
+/** Pedidos del restaurante indicado (la seguridad de la base de datos además impide ver los de otros). */
+export async function cargarPedidosCocina(supabase: SupabaseClient, restauranteId: string): Promise<PedidosCocina> {
   const [activos, despachados] = await Promise.all([
     supabase
       .from("orders")
       .select(CAMPOS)
+      .eq("restaurant_id", restauranteId)
       .in("status", ["recibido", "preparando"])
       .order("created_at", { ascending: true }),
     supabase
       .from("orders")
       .select(CAMPOS)
+      .eq("restaurant_id", restauranteId)
       .eq("status", "en_camino")
       .gte("dispatched_at", inicioDeHoyColombia())
       .order("dispatched_at", { ascending: false }),

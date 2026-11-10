@@ -31,10 +31,12 @@ function minutosDesde(iso: string, ahora: number) {
 }
 
 export function PanelCocina({
+  restauranteId,
   inicial,
   retrasoMinutos,
   modoDemo = false,
 }: {
+  restauranteId: string;
   inicial: PedidosCocina;
   retrasoMinutos: number;
   modoDemo?: boolean;
@@ -45,18 +47,18 @@ export function PanelCocina({
   const conocidos = useRef(new Set(inicial.activos.map((p) => p.id)));
 
   const recargar = useCallback(async () => {
-    const nuevos = await cargarPedidosCocina(supabaseNavegador());
+    const nuevos = await cargarPedidosCocina(supabaseNavegador(), restauranteId);
     const llegaron = nuevos.activos.some((p) => !conocidos.current.has(p.id));
     nuevos.activos.forEach((p) => conocidos.current.add(p.id));
     if (llegaron) pitido();
     setDatos(nuevos);
-  }, []);
+  }, [restauranteId]);
 
   useEffect(() => {
     const supabase = supabaseNavegador();
     const canal = supabase
-      .channel("cocina")
-      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => recargar())
+      .channel(`cocina:${restauranteId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders", filter: `restaurant_id=eq.${restauranteId}` }, () => recargar())
       .subscribe((estado) => setConectado(estado === "SUBSCRIBED"));
     const reloj = setInterval(() => setAhora(Date.now()), 30_000);
     const respaldo = setInterval(recargar, 60_000);
@@ -68,7 +70,7 @@ export function PanelCocina({
       clearInterval(respaldo);
       document.removeEventListener("visibilitychange", alVolver);
     };
-  }, [recargar]);
+  }, [recargar, restauranteId]);
 
   useEffect(() => {
     document.title = datos.activos.length ? `(${datos.activos.length}) Cocina` : "Cocina";

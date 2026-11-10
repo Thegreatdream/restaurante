@@ -29,9 +29,9 @@ export function ResumenCarrito({ ajustes, conBoton = true }: { ajustes: Ajustes;
   if (cantidad === 0) {
     return (
       <div className="flex items-center gap-4 py-4">
-        <Tato pose="libreta" quieto sizes="56px" className="w-12 shrink-0" />
+        <Tato pose="libreta" mascota={ajustes.mascot} quieto sizes="56px" className="w-12 shrink-0" />
         <div>
-          <p className="font-display text-lg leading-tight font-bold">Tato espera tu pedido</p>
+          <p className="font-display text-lg leading-tight font-bold">{ajustes.mascot === "tato" ? "Tato espera tu pedido" : "Tu pedido está vacío"}</p>
           <p className="mt-1 text-sm text-ink-soft">Toca + en cualquier plato para agregarlo.</p>
         </div>
       </div>

@@ -1,16 +1,29 @@
 import Image from "next/image";
 
-export type PoseTato = "bienvenida" | "libreta" | "cocinando" | "moto";
+export type PoseTato =
+  | "bienvenida" // saludando
+  | "libreta"
+  | "cocinando"
+  | "moto"
+  | "mesa" // va para tu mesa
+  | "recoger" // listo para recoger
+  | "celebrando" // entregado
+  | "agradeciendo";
 
 /**
- * Imagen de cada pose. Cuando lleguen las ilustraciones nuevas,
- * guárdalas en /public/tato/ y cambia solo la ruta de esa pose.
+ * Archivo de cada pose dentro de /public/<mascota>/. Mientras llegan las ilustraciones,
+ * todas usan libreta.png con una animación distinta. Cuando llegue una pose nueva,
+ * guárdala en la carpeta de la mascota y cambia solo su nombre de archivo aquí.
  */
-const POSES: Record<PoseTato, { src: string; alt: string }> = {
-  bienvenida: { src: "/tato/libreta.png", alt: "Tato el castor te da la bienvenida" },
-  libreta: { src: "/tato/libreta.png", alt: "Tato anotando tu pedido en su libreta" },
-  cocinando: { src: "/tato/libreta.png", alt: "Tato cocinando tu pedido" },
-  moto: { src: "/tato/libreta.png", alt: "Tato llevando tu pedido en moto" },
+const POSES: Record<PoseTato, { archivo: string; accion: string }> = {
+  bienvenida: { archivo: "libreta.png", accion: "te da la bienvenida" },
+  libreta: { archivo: "libreta.png", accion: "anota tu pedido en su libreta" },
+  cocinando: { archivo: "libreta.png", accion: "cocina tu pedido" },
+  moto: { archivo: "libreta.png", accion: "lleva tu pedido en moto" },
+  mesa: { archivo: "libreta.png", accion: "lleva tu pedido a la mesa" },
+  recoger: { archivo: "libreta.png", accion: "tiene tu pedido listo para recoger" },
+  celebrando: { archivo: "libreta.png", accion: "celebra que tu pedido llegó" },
+  agradeciendo: { archivo: "libreta.png", accion: "te da las gracias" },
 };
 
 // Tamaño real del archivo (todas las poses deben exportarse con la misma proporción).
@@ -19,19 +32,23 @@ const ALTO = 1057;
 
 export function Tato({
   pose,
+  mascota = "tato",
   className = "",
   priority = false,
   sizes = "(min-width: 768px) 280px, 200px",
   quieto = false,
 }: {
   pose: PoseTato;
+  /** Carpeta de la mascota del restaurante en /public (por ahora solo "tato"). */
+  mascota?: string;
   className?: string;
   priority?: boolean;
   sizes?: string;
   /** Sin animación ni sombra: para apariciones pequeñas y secundarias. */
   quieto?: boolean;
 }) {
-  const { src, alt } = POSES[pose];
+  const { archivo, accion } = POSES[pose];
+  const nombre = mascota === "tato" ? "Tato el castor" : "La mascota del restaurante";
   // El contenedor no fija su posición: quien lo usa decide (relative por defecto, o absolute).
   const posicion = /\b(absolute|fixed|sticky)\b/.test(className) ? "" : "relative";
   return (
@@ -40,8 +57,8 @@ export function Tato({
       {/* key = pose: al cambiar de estado se vuelve a montar y corre su animación de entrada */}
       <Image
         key={pose}
-        src={src}
-        alt={alt}
+        src={`/${mascota}/${archivo}`}
+        alt={`${nombre} ${accion}`}
         width={ANCHO}
         height={ALTO}
         sizes={sizes}

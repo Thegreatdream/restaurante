@@ -1,9 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
-import { NEGOCIO } from "@/lib/negocio";
 import { cop, resumenHorario } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
 import { BotonesContacto, redesDe, telefonoVisible } from "@/components/contacto";
+import { Logo } from "@/components/encabezado";
 
 /** Pie de página en la franja oscura de marca. Solo muestra los datos que estén configurados. */
 export function Pie({ ajustes }: { ajustes: Ajustes }) {
@@ -44,12 +43,10 @@ export function Pie({ ajustes }: { ajustes: Ajustes }) {
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 pt-10 pb-28 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:pb-12">
         <div>
           <div className="flex items-center gap-4">
-            <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-outline bg-surface-2">
-              <Image src="/tato/cara.png" alt="" width={192} height={192} className="mt-1.5 size-full object-cover" />
-            </span>
+            <Logo r={ajustes} className="size-16" />
             <div>
-              <p className="font-display text-3xl leading-none font-extrabold tracking-tight">{NEGOCIO.nombre}</p>
-              <p className="mt-1.5 text-band-soft">{NEGOCIO.lema}</p>
+              <p className="font-display text-3xl leading-none font-extrabold tracking-tight">{ajustes.name}</p>
+              {ajustes.tagline && <p className="mt-1.5 text-band-soft">{ajustes.tagline}</p>}
             </div>
           </div>
           <BotonesContacto ajustes={ajustes} className="mt-6 [&_.btn]:bg-surface-2 [&_.btn]:text-[#1e1a17]" />
@@ -65,7 +62,7 @@ export function Pie({ ajustes }: { ajustes: Ajustes }) {
       </div>
       <div className="mx-auto flex w-full max-w-6xl flex-wrap justify-between gap-x-6 gap-y-2 border-t border-white/10 px-4 py-4 text-xs text-band-soft">
         <p>
-          © {new Date().getFullYear()} {NEGOCIO.nombre}
+          © {new Date().getFullYear()} {ajustes.name}
         </p>
         <Link href="/privacidad" className="underline underline-offset-4 hover:text-band-ink">
           Política de privacidad

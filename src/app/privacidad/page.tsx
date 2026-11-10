@@ -4,7 +4,6 @@ import { Encabezado } from "@/components/encabezado";
 import { AvisoDemo } from "@/components/aviso-demo";
 import { Atras } from "@/components/iconos";
 import { obtenerAjustes } from "@/lib/menu";
-import { NEGOCIO } from "@/lib/negocio";
 
 export const metadata: Metadata = { title: "Política de privacidad" };
 
@@ -15,7 +14,7 @@ export const metadata: Metadata = { title: "Política de privacidad" };
  */
 export default async function Privacidad() {
   const a = await obtenerAjustes();
-  const responsable = a.legal_name || NEGOCIO.nombre;
+  const responsable = a.legal_name || a.name;
   const canal = a.privacy_email
     ? { texto: `al correo ${a.privacy_email}`, href: `mailto:${a.privacy_email}` }
     : a.whatsapp

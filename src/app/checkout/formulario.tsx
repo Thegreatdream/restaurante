@@ -9,7 +9,6 @@ import type { Ajustes, FormaPago } from "@/lib/tipos";
 import { crearPedido, type DatosPedido } from "./acciones";
 import { ResumenCarrito } from "@/components/carrito/resumen-carrito";
 import { textoApertura } from "@/lib/apertura";
-import { NEGOCIO } from "@/lib/negocio";
 
 type Campos = Omit<DatosPedido, "items" | "pago" | "autorizo"> & { pago: FormaPago | ""; autorizo: boolean };
 const CLAVE_DATOS = "tato:datos-entrega:v1";
@@ -252,7 +251,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
             className="mt-0.5 size-5 shrink-0"
           />
           <span>
-            Autorizo a {ajustes.legal_name || NEGOCIO.nombre} a usar mis datos para preparar y entregar este pedido,
+            Autorizo a {ajustes.legal_name || ajustes.name} a usar mis datos para preparar y entregar este pedido,
             según la{" "}
             <a href="/privacidad" target="_blank" className="font-semibold underline underline-offset-2">
               política de privacidad

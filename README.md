@@ -55,3 +55,20 @@ Las ilustraciones van en `public/tato/`. El componente `<Tato pose="..."/>` (en 
 
 - Costo de domicilio, pedido mínimo, minutos para pasar a "preparando" y abierto/cerrado: tabla `settings` en Supabase (**Table Editor → settings**).
 - Nombre y textos: `src/lib/negocio.ts`.
+
+## Varios restaurantes (Fase 1)
+
+La plataforma sirve a muchos restaurantes con el mismo código. Cada uno tiene su fila en la tabla `restaurants`
+(nombre, colores, mascota, horario, contacto, módulos) y solo ve sus datos (seguridad por restaurante en la base de datos).
+
+**Cómo se elige el restaurante:** por la dirección visitada. Si `restaurants.domain` coincide con el dominio
+(p. ej. `dondetato.com`), se muestra ese; si no, el de `RESTAURANTE_POR_DEFECTO` (por defecto `donde-tato`).
+
+**Agregar un restaurante nuevo:**
+1. En Supabase, inserta una fila en `restaurants` (slug, nombre y dominio).
+2. Crea su horario en `opening_hours` y su menú en `categories` / `products` con su `restaurant_id`.
+3. Crea la cuenta del administrador (Authentication → Add user) y agrégala en `members` con rol `admin`.
+4. En Vercel, agrega su dominio al proyecto (Settings → Domains).
+Desde ahí, el administrador cambia todo en **Panel → Ajustes**.
+
+**Roles del panel (`members.role`):** `admin` (todo, incluidos los ajustes), `cocina` (pedidos y despacho), `mesero` (llega con el pedido en mesa).

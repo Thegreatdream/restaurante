@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Figtree } from "next/font/google";
-import { NEGOCIO } from "@/lib/negocio";
+import { obtenerAjustes } from "@/lib/menu";
 import { urlSitio } from "@/lib/sitio";
 import "./globals.css";
 
@@ -15,16 +15,21 @@ const cuerpo = Figtree({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(urlSitio()),
-  title: { default: `${NEGOCIO.nombre} · Pide a domicilio`, template: `%s · ${NEGOCIO.nombre}` },
-  description: `${NEGOCIO.lema}. Pide en línea y sigue tu pedido en tiempo real.`,
-  openGraph: {
-    title: `${NEGOCIO.nombre} · Pide a domicilio`,
-    description: NEGOCIO.lema,
-    images: ["/tato/libreta.png"],
-  },
-};
+/** Título, descripción e imagen para buscadores y WhatsApp, con los datos del restaurante visitado. */
+export async function generateMetadata(): Promise<Metadata> {
+  const r = await obtenerAjustes();
+  const lema = r.tagline ?? "Pide a domicilio";
+  return {
+    metadataBase: new URL(r.domain ? `https://${r.domain}` : urlSitio()),
+    title: { default: `${r.name} · Pide a domicilio`, template: `%s · ${r.name}` },
+    description: `${lema}. Pide en línea y sigue tu pedido en tiempo real.`,
+    openGraph: {
+      title: `${r.name} · Pide a domicilio`,
+      description: lema,
+      images: [r.logo_url ?? `/${r.mascot}/libreta.png`],
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -36,9 +41,30 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+// Colores por defecto (los de Tato). Si un restaurante configura otros, se sobrescriben aquí.
+const POR_DEFECTO = { brand: "#ee9a4d", accent: "#2e6a4e", band: "#2b1d15" };
+const HEX = /^#[0-9a-fA-F]{6}$/;
+
+function coloresDelRestaurante(r: { color_brand: string; color_accent: string; color_band: string }) {
+  const reglas: string[] = [];
+  if (HEX.test(r.color_brand) && r.color_brand.toLowerCase() !== POR_DEFECTO.brand)
+    reglas.push(
+      `--brand:${r.color_brand}`,
+      `--brand-strong:color-mix(in oklab, ${r.color_brand} 82%, black)`,
+    );
+  if (HEX.test(r.color_accent) && r.color_accent.toLowerCase() !== POR_DEFECTO.accent)
+    reglas.push(`--hoja:${r.color_accent}`, `--ok:${r.color_accent}`);
+  if (HEX.test(r.color_band) && r.color_band.toLowerCase() !== POR_DEFECTO.band) reglas.push(`--band:${r.color_band}`);
+  // Se repite para modo oscuro, que también define estas variables
+  return reglas.length ? `:root,:root:not(#_){${reglas.join(";")}}` : null;
+}
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const r = await obtenerAjustes();
+  const colores = coloresDelRestaurante(r);
   return (
     <html lang="es-CO" className={`${titulo.variable} ${cuerpo.variable} antialiased`}>
+      <head>{colores && <style>{colores}</style>}</head>
       <body className="flex min-h-dvh flex-col font-sans">{children}</body>
     </html>
   );

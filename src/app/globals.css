@@ -576,3 +576,78 @@ a {
     animation: tato-solo-opacidad 200ms ease both;
   }
 }
+
+/* Poses nuevas (mientras llegan sus ilustraciones, cada una se distingue por su movimiento) */
+/* Va para tu mesa: llega desde la derecha */
+@keyframes tato-desde-derecha {
+  from {
+    opacity: 0;
+    transform: translateX(40px) rotate(3deg);
+  }
+}
+.tato-mesa {
+  animation:
+    tato-desde-derecha 520ms var(--ease-out) both,
+    tato-respira 2.4s ease-in-out 520ms infinite;
+}
+/* Listo para recoger: se asoma y espera atento, con un leve balanceo */
+@keyframes tato-espera {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+.tato-recoger {
+  animation:
+    tato-entra 420ms var(--ease-out) both,
+    tato-espera 2.2s ease-in-out 420ms infinite;
+}
+/* Celebrando: unos saltos de alegría y luego respira */
+@keyframes tato-salta {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-14px) rotate(-3deg);
+  }
+  60% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-6px) rotate(2deg);
+  }
+}
+.tato-celebrando {
+  animation:
+    tato-entra 420ms var(--ease-out) both,
+    tato-salta 900ms var(--ease-out) 420ms 2,
+    tato-respira 3.2s ease-in-out 2.3s infinite;
+}
+/* Agradeciendo: una pequeña reverencia */
+@keyframes tato-reverencia {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  40%,
+  60% {
+    transform: rotate(-6deg) translateY(4px);
+  }
+}
+.tato-agradeciendo {
+  animation:
+    tato-entra 420ms var(--ease-out) both,
+    tato-reverencia 1.4s var(--ease-in-out) 520ms both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tato-mesa,
+  .tato-recoger,
+  .tato-celebrando,
+  .tato-agradeciendo {
+    animation: tato-solo-opacidad 240ms ease both;
+  }
+}

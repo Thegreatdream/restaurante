@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { supabaseServidor } from "@/lib/supabase/server";
-import { supabaseConfigurado } from "@/lib/menu";
+import { obtenerAjustes, supabaseConfigurado } from "@/lib/menu";
 
 const esquema = z
   .object({
@@ -35,6 +35,7 @@ export type ResultadoPedido =
 const ERRORES_BD: Record<string, string> = {
   CERRADO: "En este momento estamos cerrados. Revisa el horario e intenta más tarde.",
   SIN_AUTORIZACION: "Para enviar el pedido necesitamos tu autorización de datos.",
+  MODULO_INACTIVO: "Este restaurante no está recibiendo pedidos a domicilio por ahora.",
   CARRITO_VACIO: "Tu carrito está vacío.",
   PRODUCTO_NO_DISPONIBLE: "Uno de los platos ya no está disponible. Vuelve al menú y revisa tu pedido.",
   PEDIDO_MINIMO: "Tu pedido no alcanza el mínimo.",
@@ -68,8 +69,11 @@ export async function crearPedido(datos: DatosPedido): Promise<ResultadoPedido> 
     }, {}),
   );
 
+  // El restaurante se decide en el servidor (por la dirección visitada), nunca lo manda el navegador.
+  const restaurante = await obtenerAjustes();
   const supabase = await supabaseServidor();
   const { data: id, error } = await supabase.rpc("create_order", {
+    p_restaurant: restaurante.id,
     p_name: d.nombre,
     p_phone: d.celular,
     p_email: d.correo,

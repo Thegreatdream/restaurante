@@ -29,7 +29,32 @@ export type EstadoApertura = {
   paused: boolean;
 };
 
+export type RolMiembro = "admin" | "cocina" | "mesero";
+
+/** Una fila de la tabla `restaurants`: toda la configuración de un restaurante. */
+export type FilaRestaurante = Omit<Ajustes, "horario" | "estado">;
+
+/**
+ * El restaurante que se está visitando, con su horario y si está abierto ahora.
+ * (Se sigue llamando "Ajustes" en el código para no cambiar cada componente.)
+ */
 export type Ajustes = {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string | null;
+  domain: string | null;
+  logo_url: string | null;
+  mascot: string;
+  color_brand: string;
+  color_accent: string;
+  color_band: string;
+  mod_delivery: boolean;
+  mod_pickup: boolean;
+  mod_table: boolean;
+  mod_reservations: boolean;
+  mod_reviews: boolean;
+  mod_menu_qr: boolean;
   delivery_fee: number;
   min_order: number;
   prep_delay_minutes: number;

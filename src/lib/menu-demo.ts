@@ -43,6 +43,22 @@ export const MENU_DEMO: Categoria[] = [...new Set(filas.map((f) => f[0]))].map((
 }));
 
 export const AJUSTES_DEMO: Ajustes = {
+  id: "demo",
+  slug: "donde-tato",
+  name: "Donde Tato",
+  tagline: "Comida casera a domicilio",
+  domain: null,
+  logo_url: null,
+  mascot: "tato",
+  color_brand: "#ee9a4d",
+  color_accent: "#2e6a4e",
+  color_band: "#2b1d15",
+  mod_delivery: true,
+  mod_pickup: false,
+  mod_table: false,
+  mod_reservations: false,
+  mod_reviews: false,
+  mod_menu_qr: false,
   delivery_fee: 4000,
   min_order: 0,
   prep_delay_minutes: 2,

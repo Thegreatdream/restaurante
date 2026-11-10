@@ -28,7 +28,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
       <Encabezado />
       <AvisoDemo ajustes={ajustes} />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-4 pb-12 md:pt-10">
-        <SeguimientoPedido inicial={data as PedidoPublico} />
+        <SeguimientoPedido inicial={data as PedidoPublico} mascota={ajustes.mascot} />
         {hayContacto && (
           <section className="mt-6 rounded-[1.75rem] border-2 border-line bg-surface p-5">
             <h2 className="font-display text-xl font-extrabold">¿Dudas con tu pedido?</h2>
