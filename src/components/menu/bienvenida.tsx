@@ -4,7 +4,7 @@ import { textoApertura } from "@/lib/apertura";
 import { cop, saludo } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
 
-/** Portada: franja oscura de marca, título grande y Tato sobre su fondo verde hoja. */
+/** Portada: franja oscura de marca, título grande y Tato sobre su fondo lima. */
 export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
   const { aviso } = textoApertura(ajustes);
 
@@ -43,11 +43,11 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
         </div>
 
         {/*
-          Un solo Tato. El mismo contenedor es un círculo verde asomado en la esquina en el celular
-          y un panel verde con ramitas en el computador (naranja sobre verde: colores complementarios).
+          Un solo Tato. El mismo contenedor es un círculo lima asomado en la esquina en el celular
+          y un panel lima con ramitas en el computador (naranja sobre lima, dentro de la franja verde).
         */}
         <div
-          className="patron-panel absolute -right-10 -bottom-12 size-[180px] rounded-full border-2 border-outline bg-hoja md:relative md:right-auto md:bottom-auto md:ml-auto md:aspect-[5/4] md:size-auto md:w-full md:max-w-[460px] md:rounded-[2rem] md:shadow-[6px_6px_0_#000]"
+          className="patron-panel absolute -right-10 -bottom-12 size-[180px] rounded-full border-2 border-outline bg-lima md:relative md:right-auto md:bottom-auto md:ml-auto md:aspect-[5/4] md:size-auto md:w-full md:max-w-[460px] md:rounded-[2rem] md:shadow-[6px_6px_0_#000]"
         >
           <Tato
             pose="bienvenida"

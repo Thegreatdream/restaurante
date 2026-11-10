@@ -36,25 +36,31 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fff8ec" },
-    { media: "(prefers-color-scheme: dark)", color: "#17110d" },
+    { media: "(prefers-color-scheme: light)", color: "#0f5132" },
+    { media: "(prefers-color-scheme: dark)", color: "#08261a" },
   ],
 };
 
-// Colores por defecto (los de Tato). Si un restaurante configura otros, se sobrescriben aquí.
-const POR_DEFECTO = { brand: "#ee9a4d", accent: "#2e6a4e", band: "#2b1d15" };
+// Colores por defecto (paleta "Verde selva"). Si un restaurante configura otros, se sobrescriben aquí.
+// También cuentan como "por defecto" los de la paleta anterior, para que los restaurantes que nunca
+// los cambiaron reciban la nueva sin tener que tocar la base de datos.
+const POR_DEFECTO = {
+  brand: ["#f28c28", "#ee9a4d"],
+  accent: ["#1d7046", "#2e6a4e"],
+  band: ["#0f5132", "#2b1d15"],
+};
 const HEX = /^#[0-9a-fA-F]{6}$/;
+const propio = (valor: string, defecto: string[]) => HEX.test(valor) && !defecto.includes(valor.toLowerCase());
 
 function coloresDelRestaurante(r: { color_brand: string; color_accent: string; color_band: string }) {
   const reglas: string[] = [];
-  if (HEX.test(r.color_brand) && r.color_brand.toLowerCase() !== POR_DEFECTO.brand)
+  if (propio(r.color_brand, POR_DEFECTO.brand))
     reglas.push(
       `--brand:${r.color_brand}`,
       `--brand-strong:color-mix(in oklab, ${r.color_brand} 82%, black)`,
     );
-  if (HEX.test(r.color_accent) && r.color_accent.toLowerCase() !== POR_DEFECTO.accent)
-    reglas.push(`--hoja:${r.color_accent}`, `--ok:${r.color_accent}`);
-  if (HEX.test(r.color_band) && r.color_band.toLowerCase() !== POR_DEFECTO.band) reglas.push(`--band:${r.color_band}`);
+  if (propio(r.color_accent, POR_DEFECTO.accent)) reglas.push(`--hoja:${r.color_accent}`, `--ok:${r.color_accent}`);
+  if (propio(r.color_band, POR_DEFECTO.band)) reglas.push(`--band:${r.color_band}`);
   // Se repite para modo oscuro, que también define estas variables
   return reglas.length ? `:root,:root:not(#_){${reglas.join(";")}}` : null;
 }

@@ -54,7 +54,7 @@ export function CarritoMovil({
                   <Bolsa />
                   <span
                     key={latido}
-                    className="latido tabular absolute -top-1 -right-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#1e1a17] px-1 text-[11px] leading-none text-[#fff8ec]"
+                    className="latido tabular absolute -top-1 -right-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#16201a] px-1 text-[11px] leading-none text-[#f6fbf4]"
                     aria-hidden
                   >
                     {cantidad}

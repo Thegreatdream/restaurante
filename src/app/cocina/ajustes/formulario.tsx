@@ -25,15 +25,18 @@ const aDias = (tramos: Tramo[], porDefecto: [string, string]) =>
     return { weekday: d, abierto: Boolean(t), opens: t?.opens.slice(0, 5) ?? porDefecto[0], closes: t?.closes.slice(0, 5) ?? porDefecto[1] };
   });
 
+// Restaurantes que nunca cambiaron los colores aún guardan los de la paleta anterior: se muestran los nuevos.
+const nuevo = (valor: string, viejo: string, actual: string) => (valor.toLowerCase() === viejo ? actual : valor);
+
 function inicial(a: Ajustes, horarioReservas: Tramo[]): Estado {
   const v = (x: string | null) => x ?? "";
   return {
     name: a.name,
     tagline: v(a.tagline),
     logo_url: v(a.logo_url),
-    color_brand: a.color_brand,
-    color_accent: a.color_accent,
-    color_band: a.color_band,
+    color_brand: nuevo(a.color_brand, "#ee9a4d", "#f28c28"),
+    color_accent: nuevo(a.color_accent, "#2e6a4e", "#1d7046"),
+    color_band: nuevo(a.color_band, "#2b1d15", "#0f5132"),
     is_open: a.is_open,
     demo_mode: a.demo_mode,
     delivery_fee: a.delivery_fee,

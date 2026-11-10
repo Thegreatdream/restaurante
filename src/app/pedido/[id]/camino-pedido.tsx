@@ -4,8 +4,8 @@ import { Check } from "@/components/iconos";
 function Moto({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth={2.25} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
-      <circle cx="8" cy="22" r="4" fill="#fff8ec" />
-      <circle cx="24.5" cy="22" r="4" fill="#fff8ec" />
+      <circle cx="8" cy="22" r="4" fill="#f6fbf4" />
+      <circle cx="24.5" cy="22" r="4" fill="#f6fbf4" />
       <path d="M8 22h9l4-8h-5" />
       <path d="M21 14l3.5 8" />
       <path d="M22 9h3l-2 5" />
@@ -18,7 +18,7 @@ function Moto({ className }: { className?: string }) {
 function BolsaPedido({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth={2.25} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
-      <path d="M7 11h18l-1.5 15h-15Z" fill="#fff8ec" />
+      <path d="M7 11h18l-1.5 15h-15Z" fill="#f6fbf4" />
       <path d="M12 11V9a4 4 0 0 1 8 0v2" />
       <path d="M12.5 18.5c1.5 2 5.5 2 7 0" />
     </svg>

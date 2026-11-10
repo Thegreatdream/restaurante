@@ -5,7 +5,7 @@ import { IconoCategoria } from "@/components/iconos-categoria";
  * Color del dibujo según la categoría. Solo tres fondos que se alternan
  * (naranja de Tato, verde hoja suave y crema) para que el menú se vea ordenado.
  */
-const NARANJA = "bg-brand text-[#1e1a17] [--icono-relleno:#fff8ec]";
+const NARANJA = "bg-brand text-[#1e1a17] [--icono-relleno:#f6fbf4]";
 const VERDE = "bg-hoja-soft text-ink [--icono-relleno:var(--brand)]";
 const CREMA = "bg-surface-2 text-ink [--icono-relleno:var(--hoja-soft)]";
 const FONDO: Record<string, string> = {

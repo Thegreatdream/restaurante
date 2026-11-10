@@ -59,8 +59,8 @@ export async function enviarCorreoEstado(
     .join("");
 
   const html = `<!doctype html>
-<html lang="es"><body style="margin:0;background:#fff8ec;font-family:Arial,Helvetica,sans-serif;color:#1e1a17">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff8ec;padding:24px 12px">
+<html lang="es"><body style="margin:0;background:#f6fbf4;font-family:Arial,Helvetica,sans-serif;color:#1e1a17">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6fbf4;padding:24px 12px">
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border:2px solid #1e1a17;border-radius:24px">
         <tr><td style="padding:28px 24px 8px;text-align:center">
@@ -74,7 +74,7 @@ export async function enviarCorreoEstado(
           <p style="margin:4px 0 0;color:#6b5c50;font-size:14px">${pago}</p>
         </td></tr>
         <tr><td style="padding:8px 24px 28px;text-align:center">
-          <a href="${enlace}" style="display:inline-block;background:#ee9a4d;color:#1e1a17;border:2px solid #1e1a17;border-radius:999px;padding:14px 24px;font-weight:bold;text-decoration:none">Ver mi pedido</a>
+          <a href="${enlace}" style="display:inline-block;background:#f28c28;color:#1e1a17;border:2px solid #1e1a17;border-radius:999px;padding:14px 24px;font-weight:bold;text-decoration:none">Ver mi pedido</a>
         </td></tr>
       </table>
       <p style="color:#6b5c50;font-size:12px;margin:16px 0 0">${escapar(r.name)}${r.tagline ? ` · ${escapar(r.tagline)}` : ""}</p>
@@ -119,8 +119,8 @@ export async function enviarCorreoReserva(
   const detalle = confirmada ? "Te esperamos." : "El restaurante la confirmará pronto.";
 
   const html = `<!doctype html>
-<html lang="es"><body style="margin:0;background:#fff8ec;font-family:Arial,Helvetica,sans-serif;color:#1e1a17">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff8ec;padding:24px 12px">
+<html lang="es"><body style="margin:0;background:#f6fbf4;font-family:Arial,Helvetica,sans-serif;color:#1e1a17">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6fbf4;padding:24px 12px">
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border:2px solid #1e1a17;border-radius:24px">
         <tr><td style="padding:28px 24px 8px;text-align:center">
