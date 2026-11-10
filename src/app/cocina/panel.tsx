@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, useTransition } from "react";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 import { celular, cop, hora } from "@/lib/formato";
-import type { PedidoCocina, TipoPedido } from "@/lib/tipos";
-import { avanzarPedido, borrarPedidosPrueba } from "./acciones";
+import type { Domiciliario, PedidoCocina, TipoPedido } from "@/lib/tipos";
+import { enlaceWhatsapp } from "@/lib/whatsapp";
+import { avanzarPedido, borrarPedidosPrueba, despacharCon } from "./acciones";
 import { Chevron } from "@/components/iconos";
 import { cargarPedidosCocina, type PedidosCocina } from "./datos";
 
@@ -30,16 +31,29 @@ function minutosDesde(iso: string, ahora: number) {
   return Math.max(0, Math.floor((ahora - new Date(iso).getTime()) / 60_000));
 }
 
+/** Domiciliarios y dirección pública, para despachar y armar los mensajes de WhatsApp. */
+const Despacho = createContext<{ domiciliarios: Domiciliario[]; base: string; restaurante: string }>({
+  domiciliarios: [],
+  base: "",
+  restaurante: "",
+});
+
 export function PanelCocina({
   restauranteId,
   inicial,
   retrasoMinutos,
   modoDemo = false,
+  domiciliarios = [],
+  base = "",
+  restaurante = "",
 }: {
   restauranteId: string;
   inicial: PedidosCocina;
   retrasoMinutos: number;
   modoDemo?: boolean;
+  domiciliarios?: Domiciliario[];
+  base?: string;
+  restaurante?: string;
 }) {
   const [datos, setDatos] = useState(inicial);
   const [ahora, setAhora] = useState(() => Date.now());
@@ -91,6 +105,7 @@ export function PanelCocina({
     });
 
   return (
+    <Despacho.Provider value={{ domiciliarios, base, restaurante }}>
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 pb-16">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h1 className="font-display text-3xl font-extrabold tracking-tight">
@@ -160,6 +175,7 @@ export function PanelCocina({
         </ul>
       </details>
     </main>
+    </Despacho.Provider>
   );
 }
 
@@ -205,6 +221,7 @@ function TarjetaPedido({
   const recoger = p.order_type === "recoger";
   const mesa = p.order_type === "mesa";
   const siguiente: Siguiente = mesa ? "va_mesa" : recoger ? "listo_recoger" : "en_camino";
+  const { domiciliarios } = useContext(Despacho);
 
   return (
     <li className={`aparecer flex flex-col rounded-[1.5rem] bg-surface sticker ${esNuevo ? "ring-4 ring-brand/50" : ""}`}>
@@ -278,9 +295,13 @@ function TarjetaPedido({
 
       <div className="px-4 pb-4">
         {error && <p className="mb-2 text-sm font-semibold text-coral-ink">{error}</p>}
-        <button type="button" onClick={() => avanzar(siguiente)} disabled={enviando} className="btn w-full">
-          {enviando ? "Guardando…" : mesa ? "Listo, llevar a la mesa" : recoger ? "Marcar como listo" : "Marcar como despachado"}
-        </button>
+        {!mesa && !recoger && domiciliarios.length > 0 ? (
+          <ElegirDomiciliario pedido={p} alAvanzar={alAvanzar} alFallar={alFallar} />
+        ) : (
+          <button type="button" onClick={() => avanzar(siguiente)} disabled={enviando} className="btn w-full">
+            {enviando ? "Guardando…" : mesa ? "Listo, llevar a la mesa" : recoger ? "Marcar como listo" : "Marcar como despachado"}
+          </button>
+        )}
       </div>
     </li>
   );
@@ -314,6 +335,7 @@ function FilaPorEntregar({
         </div>
         <span className="tabular shrink-0 font-display text-lg font-extrabold">{cop(p.total)}</span>
       </div>
+      {!recoger && !mesa && <LinkDomiciliario pedido={p} />}
       {error && <p className="text-sm font-semibold text-coral-ink">{error}</p>}
       <button type="button" onClick={() => avanzar("entregado")} disabled={enviando} className="btn btn-ghost min-h-11 w-full text-sm">
         {enviando ? "Guardando…" : mesa ? "Servido en la mesa" : recoger ? "Ya lo recogió" : "Marcar como entregado"}
@@ -362,6 +384,89 @@ function BorrarPruebas({ alTerminar }: { alTerminar: () => void }) {
           Borrar pedidos de prueba
         </button>
       )}
+    </div>
+  );
+}
+
+/** Asignar el domicilio a un domiciliario u ofrecerlo a todos. */
+function ElegirDomiciliario({
+  pedido: p,
+  alAvanzar,
+  alFallar,
+}: {
+  pedido: PedidoCocina;
+  alAvanzar: (id: string, s: Siguiente) => void;
+  alFallar: () => void;
+}) {
+  const { domiciliarios, restaurante } = useContext(Despacho);
+  const [quien, setQuien] = useState("");
+  const [enviando, iniciar] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const ofrecido = Boolean(p.offered_at);
+
+  const despachar = () =>
+    iniciar(async () => {
+      setError(null);
+      const r = await despacharCon(p.id, quien as string);
+      if (!r.ok) {
+        setError(r.mensaje ?? "Error");
+        alFallar();
+        return;
+      }
+      if (quien === "todos") alFallar(); // recarga: el pedido sigue aquí, marcado como ofrecido
+      else alAvanzar(p.id, "en_camino");
+      setQuien("");
+    });
+
+  const avisoGrupo = enlaceWhatsapp(
+    `Hay un domicilio disponible en ${restaurante}: pedido #${p.daily_number}${p.address ? ` para ${p.address}` : ""}. Entra a tu enlace de domiciliario y toca "Lo llevo yo".`,
+  );
+
+  return (
+    <div className="space-y-2">
+      {ofrecido && (
+        <div className="rounded-xl bg-hoja-soft px-3 py-2 text-sm font-semibold text-hoja-ink">
+          Ofrecido a todos · esperando a que alguien lo tome.{" "}
+          <a href={avisoGrupo} target="_blank" rel="noopener" className="underline underline-offset-2">
+            Avisar por WhatsApp
+          </a>
+        </div>
+      )}
+      {error && <p className="text-sm font-semibold text-coral-ink">{error}</p>}
+      <div className="flex gap-2">
+        <label htmlFor={`d-${p.id}`} className="sr-only">
+          Domiciliario
+        </label>
+        <select id={`d-${p.id}`} className="campo min-h-12 min-w-0 flex-1 py-2" value={quien} onChange={(e) => setQuien(e.target.value)}>
+          <option value="">{ofrecido ? "Asignar a alguien…" : "¿Quién lo lleva?"}</option>
+          {domiciliarios.map((d) => (
+            <option key={d.id} value={d.id}>
+              {d.name}
+            </option>
+          ))}
+          {!ofrecido && <option value="todos">Ofrecer a todos</option>}
+        </select>
+        <button type="button" className="btn min-h-12 shrink-0 px-4" disabled={!quien || enviando} onClick={despachar}>
+          {enviando ? "…" : quien === "todos" ? "Ofrecer" : "Despachar"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** En camino con domiciliario: quién lo lleva y botón para mandarle el link por WhatsApp. */
+function LinkDomiciliario({ pedido: p }: { pedido: PedidoCocina }) {
+  const { domiciliarios, base, restaurante } = useContext(Despacho);
+  const d = domiciliarios.find((x) => x.id === p.courier_id);
+  if (!d || !p.delivery_token) return null;
+  const url = `${base}/entrega/${p.delivery_token}`;
+  const texto = `Hola ${d.name.split(" ")[0]}, tienes un domicilio de ${restaurante}: pedido #${p.daily_number} para ${p.customer_name}${p.address ? `, ${p.address}` : ""}. Todo el detalle aquí: ${url}`;
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-surface-2 px-3 py-2 text-sm">
+      <span className="font-semibold">Lo lleva {d.name}</span>
+      <a href={enlaceWhatsapp(texto, d.phone)} target="_blank" rel="noopener" className="font-bold underline underline-offset-2">
+        Enviar por WhatsApp
+      </a>
     </div>
   );
 }

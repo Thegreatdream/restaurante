@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { PedidoCocina } from "@/lib/tipos";
 
 const CAMPOS =
-  "id, daily_number, customer_name, customer_phone, customer_email, order_type, table_label, table_session_id, address, address_notes, pickup_at, payment_method, cash_change_for, status, total, created_at, dispatched_at, ready_at, delivered_at, order_items(id, product_name, quantity)";
+  "id, daily_number, customer_name, customer_phone, customer_email, order_type, table_label, table_session_id, address, address_notes, pickup_at, payment_method, cash_change_for, status, total, created_at, dispatched_at, ready_at, delivered_at, courier_id, offered_at, delivery_token, order_items(id, product_name, quantity)";
 
 /** Medianoche de hoy en Colombia (UTC−5, sin horario de verano). */
 export function inicioDeHoyColombia(): string {

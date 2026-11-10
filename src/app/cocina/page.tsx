@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { supabaseServidor } from "@/lib/supabase/server";
 import { obtenerAjustes } from "@/lib/menu";
 import { miRol } from "@/lib/panel";
+import { urlPublica } from "@/lib/sitio";
+import type { Domiciliario } from "@/lib/tipos";
 import { PanelCocina } from "./panel";
 import { cargarPedidosCocina } from "./datos";
 import { EncabezadoPanel, SinAcceso } from "./encabezado-panel";
@@ -20,7 +22,11 @@ export default async function Cocina() {
   }
 
   const supabase = await supabaseServidor();
-  const pedidos = await cargarPedidosCocina(supabase, ajustes.id);
+  const [pedidos, { data: domiciliarios }, base] = await Promise.all([
+    cargarPedidosCocina(supabase, ajustes.id),
+    supabase.from("couriers").select("id, name, phone, token, active").eq("restaurant_id", ajustes.id).eq("active", true).order("name"),
+    urlPublica(ajustes),
+  ]);
 
   return (
     <>
@@ -30,6 +36,9 @@ export default async function Cocina() {
         inicial={pedidos}
         retrasoMinutos={ajustes.prep_delay_minutes}
         modoDemo={ajustes.demo_mode}
+        domiciliarios={(domiciliarios as Domiciliario[]) ?? []}
+        base={base}
+        restaurante={ajustes.name}
       />
     </>
   );

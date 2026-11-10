@@ -134,6 +134,9 @@ export type PedidoCocina = {
   dispatched_at: string | null;
   ready_at: string | null;
   delivered_at: string | null;
+  courier_id: string | null;
+  offered_at: string | null;
+  delivery_token: string | null;
   order_items: { id: string; product_name: string; quantity: number }[];
 };
 
@@ -162,4 +165,36 @@ export type SesionMesa = {
   table_label: string;
   restaurant_id: string;
   confirmed: boolean;
+};
+
+/** Domiciliario del restaurante. */
+export type Domiciliario = { id: string; name: string; phone: string; token: string; active: boolean };
+
+/** Lo que ve el domiciliario en su link personal (courier_view). */
+export type VistaDomiciliario = {
+  id: string;
+  name: string;
+  restaurant_id: string;
+  offered: { id: string; number: number; address: string; total: number; items: number; offered_at: string }[];
+  mine: { id: string; number: number; address: string; total: number; delivery_token: string; assigned_at: string }[];
+};
+
+/** Datos del link privado de una entrega (get_delivery). */
+export type Entrega = {
+  id: string;
+  number: number;
+  status: EstadoPedido;
+  customer_name: string;
+  customer_phone: string | null;
+  address: string | null;
+  address_notes: string | null;
+  payment_method: FormaPago | null;
+  payment_status: "pendiente" | "pagado";
+  cash_change_for: number | null;
+  total: number;
+  delivery_fee: number;
+  courier_name: string | null;
+  restaurant_name: string;
+  restaurant_phone: string | null;
+  items: { name: string; quantity: number }[];
 };

@@ -10,3 +10,15 @@ export function urlSitio(): string {
   const url = propia || (vercel ? `https://${vercel}` : local) || "http://localhost:3000";
   return url.replace(/\/$/, "");
 }
+
+/**
+ * Dirección pública de un restaurante para armar links (QR, entregas, domiciliarios):
+ * su dominio propio si lo tiene; si no, la dirección con la que se abrió la página.
+ */
+export async function urlPublica(r: { domain: string | null }): Promise<string> {
+  if (r.domain) return `https://${r.domain}`;
+  const { headers } = await import("next/headers");
+  const host = (await headers()).get("host") ?? "";
+  if (!host) return urlSitio();
+  return `${host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https"}://${host}`;
+}

@@ -52,6 +52,51 @@ export async function avanzarPedido(
   return { ok: true, correo };
 }
 
+/**
+ * Despacho de un domicilio con domiciliario: se le asigna a uno (sale en camino de una vez)
+ * o se ofrece a todos (sigue en cocina hasta que alguien toque "Lo llevo yo").
+ */
+export async function despacharCon(
+  id: string,
+  domiciliario: string | "todos",
+): Promise<{ ok: boolean; mensaje?: string }> {
+  const [supabase, restaurante] = await Promise.all([supabaseServidor(), obtenerAjustes()]);
+  const token = crypto.randomUUID().replace(/-/g, "");
+  const base = supabase.from("orders");
+
+  if (domiciliario === "todos") {
+    const { data, error } = await base
+      .update({ offered_at: new Date().toISOString(), delivery_token: token })
+      .eq("id", id)
+      .eq("restaurant_id", restaurante.id)
+      .eq("order_type", "domicilio")
+      .is("courier_id", null)
+      .in("status", ["recibido", "preparando"])
+      .select("id")
+      .maybeSingle();
+    if (error) return { ok: false, mensaje: "No se pudo ofrecer el pedido." };
+    if (!data) return { ok: false, mensaje: "Este pedido ya cambió. Se actualizó la lista." };
+    return { ok: true };
+  }
+
+  const { data, error } = await base
+    .update({ courier_id: domiciliario, assigned_at: new Date().toISOString(), status: "en_camino", delivery_token: token, offered_at: null })
+    .eq("id", id)
+    .eq("restaurant_id", restaurante.id)
+    .eq("order_type", "domicilio")
+    .is("courier_id", null)
+    .in("status", ["recibido", "preparando"])
+    .select(
+      "id, daily_number, customer_name, customer_email, order_type, address, pickup_at, total, payment_method, order_items(product_name, quantity)",
+    )
+    .maybeSingle();
+  if (error) return { ok: false, mensaje: "No se pudo asignar el domiciliario." };
+  if (!data) return { ok: false, mensaje: "Este pedido ya lo tomó alguien o cambió de estado." };
+  const correo = await enviarCorreoEstado("en_camino", data, restaurante);
+  if (correo) await supabase.from("orders").update({ email_sent_at: new Date().toISOString() }).eq("id", id);
+  return { ok: true };
+}
+
 /** Borra los pedidos de prueba de este restaurante (modo demostración). Solo cocina o administrador. */
 export async function borrarPedidosPrueba(): Promise<{ ok: boolean; borrados?: number; mensaje?: string }> {
   const [supabase, restaurante] = await Promise.all([supabaseServidor(), obtenerAjustes()]);
