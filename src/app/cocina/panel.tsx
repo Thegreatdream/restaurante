@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 import { celular, cop, hora } from "@/lib/formato";
 import type { PedidoCocina } from "@/lib/tipos";
-import { despacharPedido } from "./acciones";
+import { borrarPedidosPrueba, despacharPedido } from "./acciones";
 import { Chevron } from "@/components/iconos";
 import { cargarPedidosCocina, type PedidosCocina } from "./datos";
 
@@ -30,7 +30,15 @@ function minutosDesde(iso: string, ahora: number) {
   return Math.max(0, Math.floor((ahora - new Date(iso).getTime()) / 60_000));
 }
 
-export function PanelCocina({ inicial, retrasoMinutos }: { inicial: PedidosCocina; retrasoMinutos: number }) {
+export function PanelCocina({
+  inicial,
+  retrasoMinutos,
+  modoDemo = false,
+}: {
+  inicial: PedidosCocina;
+  retrasoMinutos: number;
+  modoDemo?: boolean;
+}) {
   const [datos, setDatos] = useState(inicial);
   const [ahora, setAhora] = useState(() => Date.now());
   const [conectado, setConectado] = useState(true);
@@ -77,6 +85,8 @@ export function PanelCocina({ inicial, retrasoMinutos }: { inicial: PedidosCocin
           {conectado ? "En vivo" : "Reconectando…"}
         </p>
       </div>
+
+      {modoDemo && <BorrarPruebas alTerminar={recargar} />}
 
       {datos.activos.length === 0 ? (
         <p className="mt-6 rounded-2xl border-2 border-dashed border-line px-4 py-12 text-center text-ink-soft">
@@ -229,5 +239,49 @@ function TarjetaPedido({
         </button>
       </div>
     </li>
+  );
+}
+
+/** Modo demostración: borra los pedidos de prueba en dos pasos (pedir y confirmar). */
+function BorrarPruebas({ alTerminar }: { alTerminar: () => void }) {
+  const [paso, setPaso] = useState<"inicio" | "confirmar" | "listo">("inicio");
+  const [mensaje, setMensaje] = useState<string | null>(null);
+  const [borrando, iniciar] = useTransition();
+
+  function borrar() {
+    iniciar(async () => {
+      const r = await borrarPedidosPrueba();
+      if (!r.ok) {
+        setMensaje(r.mensaje ?? "Error");
+        setPaso("inicio");
+        return;
+      }
+      setMensaje(r.borrados === 1 ? "Se borró 1 pedido de prueba." : `Se borraron ${r.borrados} pedidos de prueba.`);
+      setPaso("listo");
+      alTerminar();
+    });
+  }
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-dashed border-brand bg-surface px-4 py-3">
+      <p className="text-sm">
+        <span className="font-bold">Modo demostración.</span>{" "}
+        <span className="text-ink-soft">{mensaje ?? "Los pedidos que entren son de prueba."}</span>
+      </p>
+      {paso === "confirmar" ? (
+        <div className="flex gap-2">
+          <button type="button" onClick={() => setPaso("inicio")} className="btn btn-ghost min-h-11 px-4 text-sm" disabled={borrando}>
+            Cancelar
+          </button>
+          <button type="button" onClick={borrar} className="btn min-h-11 bg-coral px-4 text-sm" disabled={borrando}>
+            {borrando ? "Borrando…" : "Sí, borrar todos"}
+          </button>
+        </div>
+      ) : (
+        <button type="button" onClick={() => setPaso("confirmar")} className="btn btn-ghost min-h-11 px-4 text-sm">
+          Borrar pedidos de prueba
+        </button>
+      )}
+    </div>
   );
 }

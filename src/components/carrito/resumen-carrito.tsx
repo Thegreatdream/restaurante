@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCarrito, useHidratado } from "@/lib/carrito";
+import { textoApertura } from "@/lib/apertura";
 import { Tato } from "@/components/tato";
 import { cop } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
@@ -72,15 +73,20 @@ export function ResumenCarrito({ ajustes, conBoton = true }: { ajustes: Ajustes;
         </p>
       )}
 
-      {conBoton && (
-        <Link
-          href="/checkout"
-          aria-disabled={faltaMinimo || !ajustes.is_open}
-          className={`btn mt-4 w-full ${faltaMinimo || !ajustes.is_open ? "pointer-events-none opacity-55" : ""}`}
-        >
-          Continuar con la entrega <Flecha />
-        </Link>
-      )}
+      {conBoton &&
+        (ajustes.estado.open ? (
+          <Link
+            href="/checkout"
+            aria-disabled={faltaMinimo}
+            className={`btn mt-4 w-full ${faltaMinimo ? "pointer-events-none opacity-55" : ""}`}
+          >
+            Continuar con la entrega <Flecha />
+          </Link>
+        ) : (
+          <p className="mt-4 rounded-2xl bg-surface-2 px-4 py-3 text-center text-sm font-semibold">
+            {textoApertura(ajustes).aviso}
+          </p>
+        ))}
     </div>
   );
 }

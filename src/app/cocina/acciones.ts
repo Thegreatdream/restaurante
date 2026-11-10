@@ -24,6 +24,14 @@ export async function despacharPedido(id: string): Promise<{ ok: boolean; correo
   return { ok: true, correo };
 }
 
+/** Borra todos los pedidos marcados como de prueba (modo demostración). Solo personal. */
+export async function borrarPedidosPrueba(): Promise<{ ok: boolean; borrados?: number; mensaje?: string }> {
+  const supabase = await supabaseServidor();
+  const { data, error } = await supabase.rpc("delete_demo_orders");
+  if (error) return { ok: false, mensaje: "No se pudieron borrar. Intenta de nuevo." };
+  return { ok: true, borrados: data as number };
+}
+
 export async function cerrarSesion() {
   const supabase = await supabaseServidor();
   await supabase.auth.signOut();

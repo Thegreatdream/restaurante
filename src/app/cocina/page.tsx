@@ -41,7 +41,7 @@ export default async function Cocina() {
           </form>
         </div>
       </header>
-      <PanelCocina inicial={pedidos} retrasoMinutos={ajustes.prep_delay_minutes} />
+      <PanelCocina inicial={pedidos} retrasoMinutos={ajustes.prep_delay_minutes} modoDemo={ajustes.demo_mode} />
     </>
   );
 }

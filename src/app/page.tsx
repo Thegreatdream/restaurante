@@ -8,6 +8,7 @@ import { ResumenCarrito } from "@/components/carrito/resumen-carrito";
 import { CarritoMovil } from "@/components/carrito/carrito-movil";
 import { GloboTato } from "@/components/carrito/globo-tato";
 import { Pie } from "@/components/pie";
+import { AvisoDemo } from "@/components/aviso-demo";
 import { obtenerMenu } from "@/lib/menu";
 
 export const revalidate = 60; // el menú se refresca como máximo cada minuto
@@ -24,6 +25,7 @@ export default async function Inicio() {
           Menú de muestra: falta conectar Supabase.
         </p>
       )}
+      <AvisoDemo ajustes={ajustes} />
       <Bienvenida ajustes={ajustes} />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:gap-10">

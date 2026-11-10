@@ -1,10 +1,13 @@
 import { Tato } from "@/components/tato";
 import { Flecha } from "@/components/iconos";
+import { textoApertura } from "@/lib/apertura";
 import { cop, saludo } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
 
-/** Portada: franja oscura de marca, título grande y Tato saliendo de su panel naranja. */
+/** Portada: franja oscura de marca, título grande y Tato sobre su fondo verde hoja. */
 export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
+  const { aviso } = textoApertura(ajustes);
+
   return (
     <section className="relative overflow-hidden border-b-2 border-outline bg-band text-band-ink">
       <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pt-8 pb-9 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:pt-16 md:pb-16">
@@ -29,34 +32,25 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
           </div>
         </div>
 
-        {/* Computador: Tato (naranja) sale por encima de su panel verde hoja con ramitas: colores complementarios */}
-        <div className="relative hidden md:block">
-          <div className="patron-panel relative ml-auto aspect-[5/4] w-full max-w-[460px] rounded-[2rem] border-2 border-outline bg-hoja shadow-[6px_6px_0_#000]">
-            <Tato
-              pose="bienvenida"
-              priority
-              sizes="240px"
-              className="absolute -bottom-6 left-1/2 w-[50%] -translate-x-1/2"
-            />
-          </div>
+        {/*
+          Un solo Tato. El mismo contenedor es un círculo verde asomado en la esquina en el celular
+          y un panel verde con ramitas en el computador (naranja sobre verde: colores complementarios).
+        */}
+        <div
+          className="patron-panel absolute -right-10 -bottom-12 size-[180px] rounded-full border-2 border-outline bg-hoja md:relative md:right-auto md:bottom-auto md:ml-auto md:aspect-[5/4] md:size-auto md:w-full md:max-w-[460px] md:rounded-[2rem] md:shadow-[6px_6px_0_#000]"
+        >
+          <Tato
+            pose="bienvenida"
+            priority
+            sizes="(min-width: 768px) 230px, 100px"
+            className="absolute bottom-[46px] left-[18px] w-[100px] md:bottom-[-24px] md:left-1/2 md:w-1/2 md:-translate-x-1/2"
+          />
         </div>
       </div>
 
-      {/* Celular: Tato asomado en la esquina, sobre un círculo verde hoja */}
-      <div
-        aria-hidden
-        className="patron-panel absolute -right-10 -bottom-12 size-[180px] rounded-full border-2 border-outline bg-hoja sm:size-[220px] md:hidden"
-      />
-      <Tato
-        pose="bienvenida"
-        priority
-        sizes="104px"
-        className="absolute right-2 -bottom-3 w-[100px] sm:w-[120px] md:hidden"
-      />
-
-      {!ajustes.is_open && (
+      {aviso && (
         <p className="relative z-10 border-t-2 border-outline bg-coral px-4 py-3 text-center text-sm font-semibold text-[#1e1a17]">
-          Ahora estamos cerrados. Puedes ver el menú, pero no recibimos pedidos en este momento.
+          {aviso}
         </p>
       )}
     </section>

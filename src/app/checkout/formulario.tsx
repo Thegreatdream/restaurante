@@ -8,10 +8,21 @@ import { cop } from "@/lib/formato";
 import type { Ajustes, FormaPago } from "@/lib/tipos";
 import { crearPedido, type DatosPedido } from "./acciones";
 import { ResumenCarrito } from "@/components/carrito/resumen-carrito";
+import { textoApertura } from "@/lib/apertura";
+import { NEGOCIO } from "@/lib/negocio";
 
-type Campos = Omit<DatosPedido, "items" | "pago"> & { pago: FormaPago | "" };
+type Campos = Omit<DatosPedido, "items" | "pago" | "autorizo"> & { pago: FormaPago | ""; autorizo: boolean };
 const CLAVE_DATOS = "tato:datos-entrega:v1";
-const VACIO: Campos = { nombre: "", celular: "", correo: "", direccion: "", indicaciones: "", pago: "", pagaCon: "" };
+const VACIO: Campos = {
+  nombre: "",
+  celular: "",
+  correo: "",
+  direccion: "",
+  indicaciones: "",
+  pago: "",
+  pagaCon: "",
+  autorizo: false,
+};
 
 export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
   const router = useRouter();
@@ -28,8 +39,9 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
     try {
       const guardado = localStorage.getItem(CLAVE_DATOS);
       // localStorage solo existe en el navegador: se lee una vez al abrir la página.
+      // La autorización de datos se pide de nuevo en cada pedido: nunca se da por hecha.
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (guardado) setCampos((c) => ({ ...c, ...JSON.parse(guardado), pagaCon: "" }));
+      if (guardado) setCampos((c) => ({ ...c, ...JSON.parse(guardado), pagaCon: "", autorizo: false }));
     } catch {}
   }, []);
 
@@ -46,6 +58,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
     iniciar(async () => {
       const r = await crearPedido({
         ...campos,
+        autorizo: campos.autorizo as true,
         pago: campos.pago as FormaPago,
         items: items.map((i) => ({ product_id: i.id, quantity: i.qty })),
       });
@@ -57,7 +70,10 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
         return;
       }
       try {
-        localStorage.setItem(CLAVE_DATOS, JSON.stringify({ ...campos, pagaCon: "" }));
+        const { autorizo: _a, pagaCon: _p, ...recordar } = campos;
+        void _a;
+        void _p;
+        localStorage.setItem(CLAVE_DATOS, JSON.stringify(recordar));
       } catch {}
       setEnviado(true);
       router.replace(`/pedido/${r.id}`);
@@ -218,11 +234,51 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
           </p>
         )}
 
+        {/* Autorización de tratamiento de datos (Ley 1581 de 2012): obligatoria y nunca marcada por defecto */}
+        <label
+          htmlFor="f-autorizo"
+          className={`mt-4 flex cursor-pointer gap-3 rounded-2xl border-2 bg-surface p-4 text-sm leading-snug ${
+            errores.autorizo ? "border-coral" : "border-line"
+          }`}
+        >
+          <input
+            id="f-autorizo"
+            type="checkbox"
+            checked={campos.autorizo}
+            onChange={(e) => set("autorizo", e.target.checked)}
+            disabled={ocupado}
+            aria-invalid={Boolean(errores.autorizo)}
+            aria-describedby={errores.autorizo ? "e-autorizo" : undefined}
+            className="mt-0.5 size-5 shrink-0"
+          />
+          <span>
+            Autorizo a {ajustes.legal_name || NEGOCIO.nombre} a usar mis datos para preparar y entregar este pedido,
+            según la{" "}
+            <a href="/privacidad" target="_blank" className="font-semibold underline underline-offset-2">
+              política de privacidad
+            </a>
+            .
+          </span>
+        </label>
+        {errores.autorizo && (
+          <p id="e-autorizo" className="mt-1.5 text-sm font-semibold text-coral-ink">
+            {errores.autorizo}
+          </p>
+        )}
+
         <div className="pb-safe mt-4">
-          <button type="submit" className="btn w-full text-lg" disabled={ocupado || !ajustes.is_open}>
-            {ocupado ? "Enviando tu pedido…" : `Confirmar pedido · ${cop(total)}`}
-          </button>
-          <p className="mt-2 text-center text-xs text-ink-soft">Al confirmar, la cocina recibe tu pedido de inmediato.</p>
+          {ajustes.estado.open ? (
+            <button type="submit" className="btn w-full text-lg" disabled={ocupado}>
+              {ocupado ? "Enviando tu pedido…" : `Confirmar pedido · ${cop(total)}`}
+            </button>
+          ) : (
+            <p className="rounded-2xl bg-coral-soft px-4 py-3 text-center text-sm font-semibold text-coral-ink">
+              {textoApertura(ajustes).aviso}
+            </p>
+          )}
+          {ajustes.estado.open && (
+            <p className="mt-2 text-center text-xs text-ink-soft">Al confirmar, la cocina recibe tu pedido de inmediato.</p>
+          )}
         </div>
       </div>
     </form>

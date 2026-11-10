@@ -23,6 +23,7 @@ const esquema = z
       .array(z.object({ product_id: z.string().uuid(), quantity: z.number().int().min(1).max(20) }))
       .min(1, "Tu carrito está vacío.")
       .max(40),
+    autorizo: z.literal(true, { message: "Para enviar el pedido necesitamos tu autorización de datos." }),
   })
   .strict();
 
@@ -32,7 +33,8 @@ export type ResultadoPedido =
   | { ok: false; mensaje: string; campos?: Partial<Record<keyof DatosPedido, string>> };
 
 const ERRORES_BD: Record<string, string> = {
-  CERRADO: "En este momento estamos cerrados. Intenta más tarde.",
+  CERRADO: "En este momento estamos cerrados. Revisa el horario e intenta más tarde.",
+  SIN_AUTORIZACION: "Para enviar el pedido necesitamos tu autorización de datos.",
   CARRITO_VACIO: "Tu carrito está vacío.",
   PRODUCTO_NO_DISPONIBLE: "Uno de los platos ya no está disponible. Vuelve al menú y revisa tu pedido.",
   PEDIDO_MINIMO: "Tu pedido no alcanza el mínimo.",
@@ -76,6 +78,7 @@ export async function crearPedido(datos: DatosPedido): Promise<ResultadoPedido> 
     p_payment_method: d.pago,
     p_cash_change_for: d.pago === "efectivo" ? d.pagaCon : null,
     p_items: items,
+    p_consent: d.autorizo,
   });
 
   if (error || !id) {

@@ -25,30 +25,33 @@ export function CarritoMovil({ ajustes }: { ajustes: Ajustes }) {
 
   return (
     <Drawer.Root open={abierto} onOpenChange={setAbierto}>
-      <div
-        className={`pb-safe fixed inset-x-0 bottom-0 z-30 px-4 pt-3 transition-[transform,opacity] duration-300 ease-[var(--ease-out)] md:hidden ${
-          visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-full opacity-0"
-        }`}
-        aria-hidden={!visible}
-      >
-        <Drawer.Trigger asChild>
-          <button type="button" className="btn w-full justify-between pr-2 pl-4" tabIndex={visible ? 0 : -1}>
-            <span className="flex items-center gap-2">
-              <Bolsa />
-              Ver mi pedido
-            </span>
-            <span className="flex items-center gap-2">
-              <span className="tabular">{cop(subtotal + ajustes.delivery_fee)}</span>
-              <span
-                key={latido}
-                className="latido tabular grid h-9 min-w-9 place-items-center rounded-full bg-[#1e1a17] px-2 text-sm text-[#fff8ec]"
-              >
-                {cantidad}
+      {/* La barra solo existe cuando hay platos: nunca muestra un total con el carrito vacío. */}
+      {visible && (
+        <div className="barra-entra pb-safe fixed inset-x-0 bottom-0 z-30 px-4 pt-3 md:hidden">
+          <Drawer.Trigger asChild>
+            <button type="button" className="btn w-full justify-between pr-5 pl-3">
+              <span className="flex items-center gap-2.5">
+                {/* Contador sobre la bolsa, separado del precio para que no se lean juntos */}
+                <span className="relative grid size-9 place-items-center">
+                  <Bolsa />
+                  <span
+                    key={latido}
+                    className="latido tabular absolute -top-1 -right-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#1e1a17] px-1 text-[11px] leading-none text-[#fff8ec]"
+                    aria-hidden
+                  >
+                    {cantidad}
+                  </span>
+                </span>
+                Ver mi pedido
+                <span className="sr-only">
+                  , {cantidad} {cantidad === 1 ? "plato" : "platos"}
+                </span>
               </span>
-            </span>
-          </button>
-        </Drawer.Trigger>
-      </div>
+              <span className="tabular">{cop(subtotal + ajustes.delivery_fee)}</span>
+            </button>
+          </Drawer.Trigger>
+        </div>
+      )}
 
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-40 bg-black/45" />

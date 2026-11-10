@@ -561,3 +561,18 @@ a {
     animation: none;
   }
 }
+
+/* Barra del carrito en el celular: sube desde abajo al agregar el primer plato */
+@keyframes barra-entra {
+  from {
+    transform: translateY(100%);
+  }
+}
+.barra-entra {
+  animation: barra-entra 320ms var(--ease-drawer) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .barra-entra {
+    animation: tato-solo-opacidad 200ms ease both;
+  }
+}
