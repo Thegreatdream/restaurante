@@ -10,10 +10,20 @@ import { SelectorCantidad } from "./selector-cantidad";
 import { Flecha } from "@/components/iconos";
 
 /** Contenido del carrito: lo usan el panel lateral (escritorio) y la hoja inferior (celular). */
-export function ResumenCarrito({ ajustes, conBoton = true }: { ajustes: Ajustes; conBoton?: boolean }) {
+export function ResumenCarrito({
+  ajustes,
+  conBoton = true,
+  costoEnvio,
+}: {
+  ajustes: Ajustes;
+  conBoton?: boolean;
+  /** Costo del domicilio a mostrar. null = sin domicilio (para recoger). Por defecto, el del restaurante si ofrece domicilio. */
+  costoEnvio?: number | null;
+}) {
   const { items, subtotal, cantidad } = useCarrito();
   const hidratado = useHidratado();
-  const total = subtotal + ajustes.delivery_fee;
+  const envio = costoEnvio === undefined ? (ajustes.mod_delivery ? ajustes.delivery_fee : null) : costoEnvio;
+  const total = subtotal + (envio ?? 0);
   const faltaMinimo = ajustes.min_order > 0 && subtotal < ajustes.min_order;
 
   if (!hidratado) {
@@ -57,10 +67,12 @@ export function ResumenCarrito({ ajustes, conBoton = true }: { ajustes: Ajustes;
           <dt>Subtotal</dt>
           <dd>{cop(subtotal)}</dd>
         </div>
-        <div className="flex justify-between text-ink-soft">
-          <dt>Domicilio</dt>
-          <dd>{ajustes.delivery_fee > 0 ? cop(ajustes.delivery_fee) : "Gratis"}</dd>
-        </div>
+        {envio !== null && (
+          <div className="flex justify-between text-ink-soft">
+            <dt>Domicilio</dt>
+            <dd>{envio > 0 ? cop(envio) : "Gratis"}</dd>
+          </div>
+        )}
         <div className="flex justify-between pt-1 text-lg font-extrabold">
           <dt>Total</dt>
           <dd>{cop(total)}</dd>
@@ -80,7 +92,7 @@ export function ResumenCarrito({ ajustes, conBoton = true }: { ajustes: Ajustes;
             aria-disabled={faltaMinimo}
             className={`btn mt-4 w-full ${faltaMinimo ? "pointer-events-none opacity-55" : ""}`}
           >
-            Continuar con la entrega <Flecha />
+            {ajustes.mod_delivery ? "Continuar con la entrega" : "Continuar"} <Flecha />
           </Link>
         ) : (
           <p className="mt-4 rounded-2xl bg-surface-2 px-4 py-3 text-center text-sm font-semibold">

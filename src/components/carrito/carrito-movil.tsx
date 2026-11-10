@@ -47,7 +47,7 @@ export function CarritoMovil({ ajustes }: { ajustes: Ajustes }) {
                   , {cantidad} {cantidad === 1 ? "plato" : "platos"}
                 </span>
               </span>
-              <span className="tabular">{cop(subtotal + ajustes.delivery_fee)}</span>
+              <span className="tabular">{cop(subtotal + (ajustes.mod_delivery ? ajustes.delivery_fee : 0))}</span>
             </button>
           </Drawer.Trigger>
         </div>

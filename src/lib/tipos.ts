@@ -55,6 +55,7 @@ export type Ajustes = {
   mod_reservations: boolean;
   mod_reviews: boolean;
   mod_menu_qr: boolean;
+  pickup_lead_minutes: number;
   delivery_fee: number;
   min_order: number;
   prep_delay_minutes: number;
@@ -77,7 +78,15 @@ export type Ajustes = {
   estado: EstadoApertura;
 };
 
-export type EstadoPedido = "recibido" | "preparando" | "en_camino" | "cancelado";
+export type EstadoPedido =
+  | "recibido"
+  | "preparando"
+  | "listo_recoger"
+  | "en_camino"
+  | "va_mesa"
+  | "entregado"
+  | "cancelado";
+export type TipoPedido = "domicilio" | "recoger" | "mesa";
 export type FormaPago = "efectivo" | "transferencia";
 
 /** Lo que devuelve get_order(id): la vista pública del pedido. */
@@ -85,8 +94,9 @@ export type PedidoPublico = {
   id: string;
   number: number;
   status: EstadoPedido;
+  type: TipoPedido;
   first_name: string;
-  address: string;
+  address: string | null;
   payment_method: FormaPago;
   subtotal: number;
   delivery_fee: number;
@@ -94,6 +104,9 @@ export type PedidoPublico = {
   created_at: string;
   preparing_at: string | null;
   dispatched_at: string | null;
+  ready_at: string | null;
+  delivered_at: string | null;
+  pickup_at: string | null;
   prep_delay_minutes: number;
   items: { name: string; quantity: number; line_total: number }[];
 };
@@ -105,13 +118,17 @@ export type PedidoCocina = {
   customer_name: string;
   customer_phone: string;
   customer_email: string;
-  address: string;
+  order_type: TipoPedido;
+  address: string | null;
   address_notes: string | null;
+  pickup_at: string | null;
   payment_method: FormaPago;
   cash_change_for: number | null;
   status: EstadoPedido;
   total: number;
   created_at: string;
   dispatched_at: string | null;
+  ready_at: string | null;
+  delivered_at: string | null;
   order_items: { id: string; product_name: string; quantity: number }[];
 };

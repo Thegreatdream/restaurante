@@ -42,6 +42,8 @@ const esquema = z.object({
   min_order: z.number().int().min(0).max(1_000_000),
   prep_delay_minutes: z.number().int().min(0).max(60),
   mod_delivery: z.boolean(),
+  mod_pickup: z.boolean(),
+  pickup_lead_minutes: z.number().int().min(5).max(180),
   address: texto(160),
   phone: z
     .string()
@@ -90,6 +92,8 @@ export async function guardarAjustes(datos: DatosAjustes): Promise<ResultadoAjus
     return { ok: false, mensaje: "Revisa los datos marcados.", campos };
   }
   const { horario, ...resto } = r.data;
+  if (!resto.mod_delivery && !resto.mod_pickup)
+    return { ok: false, mensaje: "Deja activo al menos un tipo de pedido: domicilio o para recoger.", campos: { mod_delivery: "x" } };
   const malHorario = horario.find((h) => h.abierto && h.closes <= h.opens);
   if (malHorario) return { ok: false, mensaje: "En el horario, la hora de cierre debe ser después de la de apertura.", campos: { horario: "x" } };
 

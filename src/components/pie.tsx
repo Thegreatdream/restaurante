@@ -18,8 +18,9 @@ export function Pie({ ajustes }: { ajustes: Ajustes }) {
         </span>
       )),
     ]);
-  datos.push(["Domicilio", ajustes.delivery_fee > 0 ? cop(ajustes.delivery_fee) : "Gratis"]);
-  datos.push(["Pago", "Efectivo o transferencia, al recibir"]);
+  if (ajustes.mod_delivery) datos.push(["Domicilio", ajustes.delivery_fee > 0 ? cop(ajustes.delivery_fee) : "Gratis"]);
+  if (ajustes.mod_pickup) datos.push(["Para recoger", "Sin costo, en el restaurante"]);
+  datos.push(["Pago", ajustes.mod_delivery ? "Efectivo o transferencia, al recibir" : "Efectivo o transferencia, al recoger"]);
   if (ajustes.address) datos.push(["Dirección", ajustes.address]);
   if (ajustes.phone)
     datos.push([

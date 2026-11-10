@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { PedidoCocina } from "@/lib/tipos";
 
 const CAMPOS =
-  "id, daily_number, customer_name, customer_phone, customer_email, address, address_notes, payment_method, cash_change_for, status, total, created_at, dispatched_at, order_items(id, product_name, quantity)";
+  "id, daily_number, customer_name, customer_phone, customer_email, order_type, address, address_notes, pickup_at, payment_method, cash_change_for, status, total, created_at, dispatched_at, ready_at, delivered_at, order_items(id, product_name, quantity)";
 
 /** Medianoche de hoy en Colombia (UTC−5, sin horario de verano). */
 export function inicioDeHoyColombia(): string {
@@ -10,11 +10,17 @@ export function inicioDeHoyColombia(): string {
   return new Date(`${fecha}T00:00:00-05:00`).toISOString();
 }
 
-export type PedidosCocina = { activos: PedidoCocina[]; despachados: PedidoCocina[] };
+/**
+ * activos: en cocina (recibido, preparando).
+ * enCurso: ya salieron de la cocina pero falta entregarlos (en camino, listo para recoger, va a la mesa).
+ * entregados: entregados hoy.
+ */
+export type PedidosCocina = { activos: PedidoCocina[]; enCurso: PedidoCocina[]; entregados: PedidoCocina[] };
 
 /** Pedidos del restaurante indicado (la seguridad de la base de datos además impide ver los de otros). */
 export async function cargarPedidosCocina(supabase: SupabaseClient, restauranteId: string): Promise<PedidosCocina> {
-  const [activos, despachados] = await Promise.all([
+  const hoy = inicioDeHoyColombia();
+  const [activos, enCurso, entregados] = await Promise.all([
     supabase
       .from("orders")
       .select(CAMPOS)
@@ -25,12 +31,19 @@ export async function cargarPedidosCocina(supabase: SupabaseClient, restauranteI
       .from("orders")
       .select(CAMPOS)
       .eq("restaurant_id", restauranteId)
-      .eq("status", "en_camino")
-      .gte("dispatched_at", inicioDeHoyColombia())
-      .order("dispatched_at", { ascending: false }),
+      .in("status", ["en_camino", "listo_recoger", "va_mesa"])
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("orders")
+      .select(CAMPOS)
+      .eq("restaurant_id", restauranteId)
+      .eq("status", "entregado")
+      .gte("delivered_at", hoy)
+      .order("delivered_at", { ascending: false }),
   ]);
   return {
     activos: (activos.data ?? []) as PedidoCocina[],
-    despachados: (despachados.data ?? []) as PedidoCocina[],
+    enCurso: (enCurso.data ?? []) as PedidoCocina[],
+    entregados: (entregados.data ?? []) as PedidoCocina[],
   };
 }

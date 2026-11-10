@@ -6,13 +6,15 @@ import { obtenerAjustes, supabaseConfigurado } from "@/lib/menu";
 
 const esquema = z
   .object({
+    tipo: z.enum(["domicilio", "recoger"], { message: "Elige cómo quieres tu pedido." }),
     nombre: z.string().trim().min(2, "Escribe tu nombre.").max(80, "El nombre es muy largo."),
     celular: z
       .string()
       .transform((v) => v.replace(/\D/g, ""))
       .pipe(z.string().regex(/^3\d{9}$/, "Escribe un celular de 10 dígitos que empiece por 3.")),
     correo: z.string().trim().toLowerCase().email("Revisa el correo, parece incompleto.").max(120),
-    direccion: z.string().trim().min(5, "Escribe la dirección completa.").max(200),
+    direccion: z.string().trim().max(200).optional().default(""),
+    horaRecogida: z.string().optional().default(""),
     indicaciones: z.string().trim().max(300, "Máximo 300 caracteres.").optional().default(""),
     pago: z.enum(["efectivo", "transferencia"], { message: "Elige cómo vas a pagar." }),
     pagaCon: z
@@ -25,7 +27,14 @@ const esquema = z
       .max(40),
     autorizo: z.literal(true, { message: "Para enviar el pedido necesitamos tu autorización de datos." }),
   })
-  .strict();
+  .strict()
+  // Domicilio necesita dirección; para recoger, una hora.
+  .superRefine((d, ctx) => {
+    if (d.tipo === "domicilio" && d.direccion.length < 5)
+      ctx.addIssue({ code: "custom", path: ["direccion"], message: "Escribe la dirección completa." });
+    if (d.tipo === "recoger" && !d.horaRecogida)
+      ctx.addIssue({ code: "custom", path: ["horaRecogida"], message: "Elige a qué hora pasas a recoger." });
+  });
 
 export type DatosPedido = z.input<typeof esquema>;
 export type ResultadoPedido =
@@ -35,7 +44,10 @@ export type ResultadoPedido =
 const ERRORES_BD: Record<string, string> = {
   CERRADO: "En este momento estamos cerrados. Revisa el horario e intenta más tarde.",
   SIN_AUTORIZACION: "Para enviar el pedido necesitamos tu autorización de datos.",
-  MODULO_INACTIVO: "Este restaurante no está recibiendo pedidos a domicilio por ahora.",
+  MODULO_INACTIVO: "Este restaurante no está recibiendo este tipo de pedido por ahora.",
+  SIN_DIRECCION: "Escribe la dirección completa.",
+  SIN_HORA: "Elige a qué hora pasas a recoger.",
+  HORA_INVALIDA: "Esa hora ya no está disponible. Elige otra hora para recoger.",
   CARRITO_VACIO: "Tu carrito está vacío.",
   PRODUCTO_NO_DISPONIBLE: "Uno de los platos ya no está disponible. Vuelve al menú y revisa tu pedido.",
   PEDIDO_MINIMO: "Tu pedido no alcanza el mínimo.",
@@ -74,6 +86,7 @@ export async function crearPedido(datos: DatosPedido): Promise<ResultadoPedido> 
   const supabase = await supabaseServidor();
   const { data: id, error } = await supabase.rpc("create_order", {
     p_restaurant: restaurante.id,
+    p_type: d.tipo,
     p_name: d.nombre,
     p_phone: d.celular,
     p_email: d.correo,
@@ -83,6 +96,7 @@ export async function crearPedido(datos: DatosPedido): Promise<ResultadoPedido> 
     p_cash_change_for: d.pago === "efectivo" ? d.pagaCon : null,
     p_items: items,
     p_consent: d.autorizo,
+    p_pickup_at: d.tipo === "recoger" ? d.horaRecogida : null,
   });
 
   if (error || !id) {

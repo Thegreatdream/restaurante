@@ -59,6 +59,7 @@ export const AJUSTES_DEMO: Ajustes = {
   mod_reservations: false,
   mod_reviews: false,
   mod_menu_qr: false,
+  pickup_lead_minutes: 20,
   delivery_fee: 4000,
   min_order: 0,
   prep_delay_minutes: 2,

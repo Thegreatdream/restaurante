@@ -1,7 +1,7 @@
 import "server-only";
 import { Resend } from "resend";
-import type { Ajustes } from "@/lib/tipos";
-import { cop } from "@/lib/formato";
+import type { Ajustes, TipoPedido } from "@/lib/tipos";
+import { cop, horaDe } from "@/lib/formato";
 import { urlSitio } from "@/lib/sitio";
 
 type PedidoCorreo = {
@@ -9,19 +9,27 @@ type PedidoCorreo = {
   daily_number: number;
   customer_name: string;
   customer_email: string;
-  address: string;
+  order_type: TipoPedido;
+  address: string | null;
+  pickup_at: string | null;
   total: number;
   payment_method: "efectivo" | "transferencia";
   order_items: { product_name: string; quantity: number }[];
 };
 
+type RestauranteCorreo = Pick<Ajustes, "name" | "tagline" | "domain" | "mascot" | "address" | "timezone">;
+
 const escapar = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
-/** Envía "Tu pedido va en camino". Devuelve true si se envió. */
-export async function enviarCorreoDespacho(
+/**
+ * Avisa al cliente por correo que su pedido va en camino o que está listo para recoger.
+ * Devuelve true si se envió.
+ */
+export async function enviarCorreoEstado(
+  estado: "en_camino" | "listo_recoger",
   p: PedidoCorreo,
-  r: Pick<Ajustes, "name" | "tagline" | "domain" | "mascot">,
+  r: RestauranteCorreo,
 ): Promise<boolean> {
   const clave = process.env.RESEND_API_KEY;
   if (!clave) {
@@ -31,10 +39,20 @@ export async function enviarCorreoDespacho(
   // Cada restaurante usa su dominio si lo tiene; si no, la dirección general de la plataforma.
   const sitio = r.domain ? `https://${r.domain}` : urlSitio();
   // El correo de envío es el de la plataforma; el nombre que ve el cliente es el del restaurante.
-  const direccion = (process.env.CORREO_REMITENTE ?? "onboarding@resend.dev").match(/<([^>]+)>/)?.[1] ?? process.env.CORREO_REMITENTE ?? "onboarding@resend.dev";
+  const configurado = process.env.CORREO_REMITENTE ?? "onboarding@resend.dev";
+  const direccion = configurado.match(/<([^>]+)>/)?.[1] ?? configurado;
   const remitente = `${r.name.replace(/[<>"]/g, "")} <${direccion}>`;
-  const nombre = escapar(p.customer_name.split(" ")[0]);
-  const enlace = sitio ? `${sitio}/pedido/${p.id}` : null;
+  const nombre = p.customer_name.split(" ")[0];
+  const enlace = `${sitio}/pedido/${p.id}`;
+
+  const recoger = estado === "listo_recoger";
+  const titulo = recoger ? `¡${nombre}, tu pedido está listo!` : `¡${nombre}, tu pedido va en camino!`;
+  const asunto = recoger ? `Tu pedido #${p.daily_number} está listo para recoger` : `Tu pedido #${p.daily_number} va en camino`;
+  const lugar = recoger
+    ? `Recógelo en ${r.address ?? r.name}${p.pickup_at ? ` · hacia las ${horaDe(p.pickup_at, r.timezone)}` : ""}`
+    : `Llega a ${p.address ?? ""}`;
+  const pago = `Pagas al ${recoger ? "recoger" : "recibir"} en ${p.payment_method === "efectivo" ? "efectivo" : "transferencia"}.`;
+  const imagen = recoger ? "libreta.png" : "libreta.png"; // cambia cuando lleguen las poses "recoger" y "moto"
 
   const items = p.order_items
     .map((i) => `<tr><td style="padding:4px 0">${i.quantity}× ${escapar(i.product_name)}</td></tr>`)
@@ -46,22 +64,18 @@ export async function enviarCorreoDespacho(
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border:2px solid #1e1a17;border-radius:24px">
         <tr><td style="padding:28px 24px 8px;text-align:center">
-          ${sitio ? `<img src="${sitio}/${r.mascot}/libreta.png" width="120" alt="Tato" style="display:block;margin:0 auto 12px;height:auto">` : ""}
-          <h1 style="margin:0;font-size:26px;line-height:1.15">¡${nombre}, tu pedido va en camino!</h1>
-          <p style="margin:10px 0 0;color:#6b5c50;font-size:15px">Pedido #${p.daily_number} · Llega a ${escapar(p.address)}</p>
+          <img src="${sitio}/${r.mascot}/${imagen}" width="120" alt="" style="display:block;margin:0 auto 12px;height:auto">
+          <h1 style="margin:0;font-size:26px;line-height:1.15">${escapar(titulo)}</h1>
+          <p style="margin:10px 0 0;color:#6b5c50;font-size:15px">Pedido #${p.daily_number} · ${escapar(lugar)}</p>
         </td></tr>
         <tr><td style="padding:16px 24px">
           <table role="presentation" width="100%" style="font-size:15px;border-top:2px solid #ecdcc0;border-bottom:2px solid #ecdcc0;padding:8px 0">${items}</table>
           <p style="margin:12px 0 0;font-size:18px;font-weight:bold">Total: ${cop(p.total)}</p>
-          <p style="margin:4px 0 0;color:#6b5c50;font-size:14px">Pagas al recibir en ${p.payment_method === "efectivo" ? "efectivo" : "transferencia"}.</p>
+          <p style="margin:4px 0 0;color:#6b5c50;font-size:14px">${pago}</p>
         </td></tr>
-        ${
-          enlace
-            ? `<tr><td style="padding:8px 24px 28px;text-align:center">
+        <tr><td style="padding:8px 24px 28px;text-align:center">
           <a href="${enlace}" style="display:inline-block;background:#ee9a4d;color:#1e1a17;border:2px solid #1e1a17;border-radius:999px;padding:14px 24px;font-weight:bold;text-decoration:none">Ver mi pedido</a>
-        </td></tr>`
-            : ""
-        }
+        </td></tr>
       </table>
       <p style="color:#6b5c50;font-size:12px;margin:16px 0 0">${escapar(r.name)}${r.tagline ? ` · ${escapar(r.tagline)}` : ""}</p>
     </td></tr>
@@ -72,9 +86,9 @@ export async function enviarCorreoDespacho(
   const { error } = await resend.emails.send({
     from: remitente,
     to: p.customer_email,
-    subject: `Tu pedido #${p.daily_number} va en camino`,
+    subject: asunto,
     html,
-    text: `¡${p.customer_name.split(" ")[0]}, tu pedido #${p.daily_number} va en camino! Total: ${cop(p.total)}. Pagas al recibir.${enlace ? ` Míralo aquí: ${enlace}` : ""}`,
+    text: `${titulo} Pedido #${p.daily_number}. ${lugar}. Total: ${cop(p.total)}. ${pago} Míralo aquí: ${enlace}`,
   });
   if (error) {
     console.error("Resend:", error);

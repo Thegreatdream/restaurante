@@ -4,37 +4,73 @@ import { useCallback, useEffect, useState } from "react";
 import { Tato, type PoseTato } from "@/components/tato";
 import { CaminoPedido } from "./camino-pedido";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
-import { cop, hora } from "@/lib/formato";
-import type { EstadoPedido, PedidoPublico } from "@/lib/tipos";
+import { cop, hora, horaDe } from "@/lib/formato";
+import type { EstadoPedido, PedidoPublico, TipoPedido } from "@/lib/tipos";
 
-const PASOS: { estado: Exclude<EstadoPedido, "cancelado">; corto: string }[] = [
-  { estado: "recibido", corto: "Recibido" },
-  { estado: "preparando", corto: "Preparando" },
-  { estado: "en_camino", corto: "En camino" },
-];
-
-const COPIA: Record<EstadoPedido, { pose: PoseTato; titulo: string; texto: string }> = {
-  recibido: {
-    pose: "libreta",
-    titulo: "Anotando tu pedido",
-    texto: "Tato ya lo tiene en su libreta. En un momento pasa a la cocina.",
-  },
-  preparando: {
-    pose: "cocinando",
-    titulo: "Tu pedido se está preparando",
-    texto: "Lo llevaremos lo más pronto posible. Te avisaremos cuando salga.",
-  },
-  en_camino: {
-    pose: "moto",
-    titulo: "Tu pedido va en camino",
-    texto: "Te enviamos un correo. Ten listo el pago para recibirlo.",
-  },
-  cancelado: {
-    pose: "libreta",
-    titulo: "Tu pedido fue cancelado",
-    texto: "Si crees que es un error, escríbenos por WhatsApp.",
-  },
+/** Los pasos que ve el cliente según cómo pidió. */
+const PASOS: Record<TipoPedido, { estado: EstadoPedido; corto: string }[]> = {
+  domicilio: [
+    { estado: "recibido", corto: "Recibido" },
+    { estado: "preparando", corto: "Preparando" },
+    { estado: "en_camino", corto: "En camino" },
+    { estado: "entregado", corto: "Entregado" },
+  ],
+  recoger: [
+    { estado: "recibido", corto: "Recibido" },
+    { estado: "preparando", corto: "Preparando" },
+    { estado: "listo_recoger", corto: "Listo" },
+    { estado: "entregado", corto: "Recogido" },
+  ],
+  mesa: [
+    { estado: "recibido", corto: "Recibido" },
+    { estado: "preparando", corto: "Preparando" },
+    { estado: "va_mesa", corto: "Va a tu mesa" },
+    { estado: "entregado", corto: "En tu mesa" },
+  ],
 };
+
+type Copia = { pose: PoseTato; titulo: string; texto: string };
+
+function copiaDe(estado: EstadoPedido, p: PedidoPublico, r: Restaurante, conTato: boolean): Copia {
+  const quien = conTato ? "Tato" : "Ya";
+  switch (estado) {
+    case "recibido":
+      return {
+        pose: "libreta",
+        titulo: "Anotando tu pedido",
+        texto: conTato ? "Tato ya lo tiene en su libreta. En un momento pasa a la cocina." : "Ya lo recibimos. En un momento pasa a la cocina.",
+      };
+    case "preparando":
+      return {
+        pose: "cocinando",
+        titulo: "Tu pedido se está preparando",
+        texto:
+          p.type === "recoger"
+            ? `Te avisamos por correo cuando esté listo${p.pickup_at ? `. Lo tendremos para las ${horaDe(p.pickup_at, r.timezone)}` : ""}.`
+            : p.type === "mesa"
+              ? "En un momento lo llevamos a tu mesa."
+              : "Lo llevaremos lo más pronto posible. Te avisaremos cuando salga.",
+      };
+    case "en_camino":
+      return { pose: "moto", titulo: "Tu pedido va en camino", texto: "Te enviamos un correo. Ten listo el pago para recibirlo." };
+    case "listo_recoger":
+      return {
+        pose: "recoger",
+        titulo: "¡Tu pedido está listo!",
+        texto: r.direccion ? `Pasa por él a ${r.direccion}. Te esperamos.` : `Pasa por él a ${r.nombre}. Te esperamos.`,
+      };
+    case "va_mesa":
+      return { pose: "mesa", titulo: "Va para tu mesa", texto: "En un momento lo tienes servido." };
+    case "entregado":
+      return {
+        pose: "celebrando",
+        titulo: "¡Que lo disfrutes!",
+        texto: `Gracias por pedir en ${r.nombre}.${conTato ? ` ${quien} te espera la próxima vez.` : ""}`,
+      };
+    case "cancelado":
+      return { pose: "libreta", titulo: "Tu pedido fue cancelado", texto: "Si crees que es un error, escríbenos." };
+  }
+}
 
 /**
  * El estado que ve el cliente. "recibido" pasa solo a "preparando" después de unos minutos:
@@ -46,9 +82,20 @@ function estadoVisible(p: PedidoPublico, ahora: number): EstadoPedido {
   return ahora >= limite ? "preparando" : "recibido";
 }
 
-export function SeguimientoPedido({ inicial, mascota = "tato" }: { inicial: PedidoPublico; mascota?: string }) {
+type Restaurante = { nombre: string; direccion: string | null; mapa: string | null; timezone: string };
+
+export function SeguimientoPedido({
+  inicial,
+  mascota = "tato",
+  restaurante,
+}: {
+  inicial: PedidoPublico;
+  mascota?: string;
+  restaurante: Restaurante;
+}) {
   const [pedido, setPedido] = useState(inicial);
   const [ahora, setAhora] = useState(() => Date.now());
+  const terminado = pedido.status === "entregado" || pedido.status === "cancelado";
 
   const recargar = useCallback(async () => {
     const { data } = await supabaseNavegador().rpc("get_order", { p_id: inicial.id });
@@ -71,7 +118,7 @@ export function SeguimientoPedido({ inicial, mascota = "tato" }: { inicial: Pedi
 
   // Respaldo: si el celular estuvo en segundo plano o perdió señal, revisa al volver y cada 30 s.
   useEffect(() => {
-    if (pedido.status === "en_camino" || pedido.status === "cancelado") return;
+    if (terminado) return;
     const alVolver = () => document.visibilityState === "visible" && recargar();
     document.addEventListener("visibilitychange", alVolver);
     const intervalo = setInterval(recargar, 30_000);
@@ -79,7 +126,7 @@ export function SeguimientoPedido({ inicial, mascota = "tato" }: { inicial: Pedi
       document.removeEventListener("visibilitychange", alVolver);
       clearInterval(intervalo);
     };
-  }, [pedido.status, recargar]);
+  }, [terminado, recargar]);
 
   // Reloj para el paso automático recibido → preparando
   useEffect(() => {
@@ -90,18 +137,22 @@ export function SeguimientoPedido({ inicial, mascota = "tato" }: { inicial: Pedi
     return () => clearTimeout(t);
   }, [pedido.status, pedido.created_at, pedido.prep_delay_minutes]);
 
+  const tipo = pedido.type ?? "domicilio";
   const estado = estadoVisible(pedido, ahora);
-  const copia = COPIA[estado];
-  const indice = PASOS.findIndex((p) => p.estado === estado);
+  const copia = copiaDe(estado, pedido, restaurante, mascota === "tato");
+  const pasos = PASOS[tipo];
+  const indice = Math.max(0, pasos.findIndex((p) => p.estado === estado));
 
   return (
     <div>
       <section className="overflow-hidden rounded-[1.75rem] bg-surface-2 sticker">
-        <div className="flex items-center justify-between border-b-2 border-outline bg-surface px-5 py-3">
+        <div className="flex items-center justify-between gap-3 border-b-2 border-outline bg-surface px-5 py-3">
           <p className="font-display text-lg font-extrabold">
             Pedido <span className="tabular">#{pedido.number}</span>
           </p>
-          <p className="text-sm text-ink-soft">Hecho a las {hora(pedido.created_at)}</p>
+          <p className="text-sm text-ink-soft">
+            {tipo === "recoger" ? "Para recoger · " : ""}Hecho a las {hora(pedido.created_at)}
+          </p>
         </div>
 
         <div className="flex flex-col items-center px-5 pt-6 pb-6 text-center">
@@ -113,10 +164,17 @@ export function SeguimientoPedido({ inicial, mascota = "tato" }: { inicial: Pedi
             <p key={`${estado}-t`} className="aparecer mx-auto mt-2 max-w-[34ch] text-ink-soft [animation-delay:60ms]">
               {copia.texto}
             </p>
+            {estado === "listo_recoger" && restaurante.mapa && (
+              <a href={restaurante.mapa} target="_blank" rel="noopener" className="btn mt-4">
+                Cómo llegar
+              </a>
+            )}
           </div>
         </div>
 
-        {estado !== "cancelado" && <CaminoPedido indice={indice} />}
+        {estado !== "cancelado" && (
+          <CaminoPedido indice={indice} pasos={pasos.map((p) => p.corto)} icono={tipo === "domicilio" ? "moto" : "bolsa"} />
+        )}
       </section>
 
       <section className="mt-6 rounded-[1.75rem] border-2 border-line bg-surface p-5">
@@ -132,22 +190,34 @@ export function SeguimientoPedido({ inicial, mascota = "tato" }: { inicial: Pedi
           ))}
         </ul>
         <dl className="tabular mt-2 space-y-1 border-t-2 border-outline pt-3 text-[15px]">
-          <div className="flex justify-between text-ink-soft">
-            <dt>Domicilio</dt>
-            <dd>{pedido.delivery_fee > 0 ? cop(pedido.delivery_fee) : "Gratis"}</dd>
-          </div>
+          {tipo === "domicilio" && (
+            <div className="flex justify-between text-ink-soft">
+              <dt>Domicilio</dt>
+              <dd>{pedido.delivery_fee > 0 ? cop(pedido.delivery_fee) : "Gratis"}</dd>
+            </div>
+          )}
           <div className="flex justify-between text-lg font-extrabold">
             <dt>Total</dt>
             <dd>{cop(pedido.total)}</dd>
           </div>
         </dl>
         <dl className="mt-4 grid gap-3 rounded-2xl bg-surface-2 p-4 text-sm sm:grid-cols-2">
+          {tipo === "domicilio" ? (
+            <div>
+              <dt className="font-bold">Entrega en</dt>
+              <dd className="break-words text-ink-soft">{pedido.address}</dd>
+            </div>
+          ) : tipo === "recoger" ? (
+            <div>
+              <dt className="font-bold">Recoges en</dt>
+              <dd className="break-words text-ink-soft">
+                {restaurante.direccion ?? restaurante.nombre}
+                {pedido.pickup_at ? ` · hacia las ${horaDe(pedido.pickup_at, restaurante.timezone)}` : ""}
+              </dd>
+            </div>
+          ) : null}
           <div>
-            <dt className="font-bold">Entrega en</dt>
-            <dd className="break-words text-ink-soft">{pedido.address}</dd>
-          </div>
-          <div>
-            <dt className="font-bold">Pago al recibir</dt>
+            <dt className="font-bold">{tipo === "recoger" ? "Pago al recoger" : "Pago al recibir"}</dt>
             <dd className="text-ink-soft">{pedido.payment_method === "efectivo" ? "Efectivo" : "Transferencia"}</dd>
           </div>
         </dl>

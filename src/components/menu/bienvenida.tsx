@@ -27,7 +27,12 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
               Ver el menú <Flecha />
             </a>
             <p className="hidden text-sm font-semibold text-band-soft sm:block">
-              Domicilio {ajustes.delivery_fee > 0 ? cop(ajustes.delivery_fee) : "gratis"}
+              {[
+                ajustes.mod_delivery && `Domicilio ${ajustes.delivery_fee > 0 ? cop(ajustes.delivery_fee) : "gratis"}`,
+                ajustes.mod_pickup && "o recoge sin costo",
+              ]
+                .filter(Boolean)
+                .join(" ")}
             </p>
           </div>
         </div>
