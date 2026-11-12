@@ -1,65 +1,62 @@
 @import "tailwindcss";
 
 /* =====================================================================
-   Paleta "Verde selva": verde profundo de marca, el naranja de Tato
-   como protagonista (complementarios), lima de acento y el contorno
-   negro grueso del dibujo.
+   Paleta "Casa de almuerzos": marfil cálido, verde bosque casi negro,
+   mostaza de acento y líneas finas. Tranquila, para que mande la comida.
    ===================================================================== */
 :root {
-  --bg: #f6fbf4;
-  --surface: #ffffff;
-  --surface-2: #ecf5d6; /* crema de la barriga */
-  --ink: #16201a; /* contorno */
-  --ink-soft: #55624f;
-  --line: #d6e5cf;
-  --brand: #f28c28; /* pelaje */
-  --brand-strong: #d9711a;
-  --coral: #e8664a; /* delantal */
-  --coral-soft: #fde3da;
-  --coral-ink: #a83a22; /* coral oscuro para texto: 5.5:1 sobre coral-soft */
-  --outline: #16201a;
-  --shadow: #16201a;
-  --ok: #1d7046;
-  /* Verde hoja: contrapunto frío del naranja de Tato */
-  --hoja: #1d7046;
-  --hoja-soft: #dcf0df;
-  --hoja-ink: #135235;
-  /* Textura del mundo de Tato: ramitas, hojas, tronco y tenedor, casi invisible */
-  --patron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%231f5a3a' stroke-opacity='0.13' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 74c18-14 34-22 56-26'/%3E%3Cpath d='M48 60c3-12 14-18 24-15-3 11-13 17-24 15z'/%3E%3Cpath d='M60 52c-4-9-1-17 6-21 3 8 0 16-6 21z'/%3E%3Ccircle cx='160' cy='48' r='16'/%3E%3Ccircle cx='160' cy='48' r='9'/%3E%3Ccircle cx='160' cy='48' r='3'/%3E%3Cpath d='M140 160c14-6 30-4 44 6'/%3E%3Cpath d='M152 158c-2-9 2-16 10-18 1 9-3 15-10 18z'/%3E%3Cpath d='M52 150v26M46 150v8a6 6 0 0 0 12 0v-8M52 176v14'/%3E%3Cpath d='M110 108h.01M196 116h.01M98 196h.01M14 128h.01M200 196h.01' stroke-width='4'/%3E%3C/svg%3E");
+  --bg: #f6f1e7; /* marfil */
+  --surface: #fffcf6;
+  --surface-2: #efe7d6; /* lino */
+  --ink: #1f2420;
+  --ink-soft: #5e6158;
+  --line: #e4dbc8;
+  --brand: #c9973f; /* mostaza: botones de pedir */
+  --brand-strong: #b4832f;
+  --coral: #d9785b; /* terracota */
+  --coral-soft: #f7e2d8;
+  --coral-ink: #9c3c22;
+  --outline: #cdbf9f; /* borde fino, un poco más marcado que la línea */
+  --shadow: transparent; /* sin sombras duras: las tarjetas usan --sombra-suave */
+  --sombra-suave: 0 1px 2px rgb(31 36 32 / 0.05), 0 12px 32px -18px rgb(31 36 32 / 0.28);
+  --ok: #2f6b4c;
+  --hoja: #2f5d46;
+  --hoja-soft: #e2eadf;
+  --hoja-ink: #234a37;
+  --patron: none;
   /* Franja oscura de marca (portada y pie) */
-  --band: #0f5132;
-  /* Lima: fondo del panel de Tato y acentos sobre la franja verde */
-  --lima: #c6e86b;
-  --band-ink: #fff7e6;
-  --band-soft: #b9d6c2;
-  --patron-panel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23ffffff' stroke-opacity='0.32' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 74c18-14 34-22 56-26'/%3E%3Cpath d='M48 60c3-12 14-18 24-15-3 11-13 17-24 15z'/%3E%3Cpath d='M60 52c-4-9-1-17 6-21 3 8 0 16-6 21z'/%3E%3Ccircle cx='160' cy='48' r='16'/%3E%3Ccircle cx='160' cy='48' r='9'/%3E%3Ccircle cx='160' cy='48' r='3'/%3E%3Cpath d='M140 160c14-6 30-4 44 6'/%3E%3Cpath d='M152 158c-2-9 2-16 10-18 1 9-3 15-10 18z'/%3E%3Cpath d='M52 150v26M46 150v8a6 6 0 0 0 12 0v-8M52 176v14'/%3E%3Cpath d='M110 108h.01M196 116h.01M98 196h.01M14 128h.01M200 196h.01' stroke-width='4'/%3E%3C/svg%3E");
+  --band: #1c2b24;
+  --lima: #c9973f;
+  --band-ink: #f4ecdc;
+  --band-soft: #b8c1b3;
+  --patron-panel: none;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0e1511;
-    --surface: #16201a;
-    --surface-2: #1f2c22;
-    --ink: #f1f7e8;
-    --ink-soft: #a9bba6;
-    --line: #2a3a2e;
-    --brand: #f59a3e;
-    --brand-strong: #f8b067;
-    --coral: #f07e5f;
-    --coral-soft: #3f2219;
-    --coral-ink: #ff9d82;
-    --outline: #060a07;
-    --shadow: #000000;
-    --ok: #7cc792;
-    --hoja: #2f9a62;
-    --hoja-soft: #183326;
-    --hoja-ink: #9fdcb5;
-    --patron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23f1f7e8' stroke-opacity='0.06' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 74c18-14 34-22 56-26'/%3E%3Cpath d='M48 60c3-12 14-18 24-15-3 11-13 17-24 15z'/%3E%3Cpath d='M60 52c-4-9-1-17 6-21 3 8 0 16-6 21z'/%3E%3Ccircle cx='160' cy='48' r='16'/%3E%3Ccircle cx='160' cy='48' r='9'/%3E%3Ccircle cx='160' cy='48' r='3'/%3E%3Cpath d='M140 160c14-6 30-4 44 6'/%3E%3Cpath d='M152 158c-2-9 2-16 10-18 1 9-3 15-10 18z'/%3E%3Cpath d='M52 150v26M46 150v8a6 6 0 0 0 12 0v-8M52 176v14'/%3E%3Cpath d='M110 108h.01M196 116h.01M98 196h.01M14 128h.01M200 196h.01' stroke-width='4'/%3E%3C/svg%3E");
-    --band: #08261a;
-    --lima: #b5dc55;
-    --band-ink: #fff7e6;
-    --band-soft: #a8c7b2;
+    --bg: #121714;
+    --surface: #1a201c;
+    --surface-2: #222a25;
+    --ink: #f1ebdf;
+    --ink-soft: #aeb2a7;
+    --line: #2d3530;
+    --brand: #d6a752;
+    --brand-strong: #e2b968;
+    --coral: #e28a6e;
+    --coral-soft: #3a231b;
+    --coral-ink: #f3a58c;
+    --outline: #46504a;
+    --shadow: transparent;
+    --sombra-suave: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -18px rgb(0 0 0 / 0.6);
+    --ok: #7fbf98;
+    --hoja: #4f8c6a;
+    --hoja-soft: #1d2d24;
+    --hoja-ink: #a9d6b9;
+    --band: #0c120f;
+    --lima: #d6a752;
+    --band-ink: #f4ecdc;
+    --band-soft: #a9b3a5;
     color-scheme: dark;
   }
 }
@@ -148,10 +145,24 @@ a {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
-/* ---------- Estilo "calcomanía": borde de contorno + sombra sólida ---------- */
+/* ---------- Títulos: serif fina y elegante (manda sobre font-extrabold de los títulos) ---------- */
+.font-display {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+/* Etiqueta pequeña y espaciada encima de los títulos */
+.antetitulo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* ---------- Tarjeta: línea fina + sombra suave ---------- */
 .sticker {
-  border: 2px solid var(--outline);
-  box-shadow: 3px 3px 0 var(--shadow);
+  border: 1px solid var(--line);
+  box-shadow: var(--sombra-suave);
 }
 
 /* Botón principal */
@@ -161,22 +172,23 @@ a {
   justify-content: center;
   gap: 0.5rem;
   min-height: 3.25rem;
-  padding: 0 1.25rem;
-  border-radius: 999px;
-  border: 2px solid var(--outline);
+  padding: 0 1.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
   background: var(--brand);
   color: #1e1a17;
-  font-weight: 700;
-  box-shadow: 3px 3px 0 var(--shadow);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   transition:
     transform 140ms var(--ease-out),
-    box-shadow 140ms var(--ease-out),
-    background-color 160ms ease;
+    background-color 160ms ease,
+    border-color 160ms ease;
   user-select: none;
 }
 .btn:active {
-  transform: translate(2px, 2px) scale(0.98);
-  box-shadow: 1px 1px 0 var(--shadow);
+  transform: scale(0.98);
 }
 .btn:disabled {
   opacity: 0.55;
@@ -184,7 +196,8 @@ a {
   transform: none;
 }
 .btn-ghost {
-  background: var(--surface);
+  background: transparent;
+  border-color: var(--ink);
   color: var(--ink);
 }
 @media (hover: hover) and (pointer: fine) {
@@ -203,7 +216,7 @@ a {
   width: 2.75rem; /* 44 px: área táctil cómoda */
   height: 2.75rem;
   border-radius: 999px;
-  border: 2px solid var(--outline);
+  border: 1px solid var(--outline);
   background: var(--surface);
   color: var(--ink);
   transition: transform 120ms var(--ease-out);
@@ -213,6 +226,7 @@ a {
 }
 .btn-icon.is-add {
   background: var(--brand);
+  border-color: var(--brand);
   color: #1e1a17;
 }
 
@@ -220,8 +234,8 @@ a {
 .campo {
   width: 100%;
   min-height: 3.25rem;
-  border-radius: 0.875rem;
-  border: 2px solid var(--line);
+  border-radius: 0.5rem;
+  border: 1px solid var(--outline);
   background: var(--surface);
   color: var(--ink);
   padding: 0.75rem 0.9rem;
@@ -233,7 +247,7 @@ a {
 }
 .campo:focus {
   outline: none;
-  border-color: var(--outline);
+  border-color: var(--ink);
 }
 .campo[aria-invalid="true"] {
   border-color: var(--coral);
@@ -369,7 +383,7 @@ a {
 
 /* Sombra en el piso que acompaña a Tato */
 .tato-piso {
-  background: radial-gradient(closest-side, color-mix(in oklab, var(--shadow) 22%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--ink) 18%, transparent), transparent);
 }
 
 /* Globito de Tato: entra desde su cara (abajo a la izquierda), sale más rápido de lo que entra */
@@ -442,7 +456,7 @@ a {
 @media (hover: hover) and (pointer: fine) {
   .levanta:hover {
     transform: translateY(-2px);
-    box-shadow: 4px 5px 0 var(--shadow);
+    box-shadow: 0 2px 4px rgb(31 36 32 / 0.06), 0 18px 40px -20px rgb(31 36 32 / 0.35);
   }
 }
 

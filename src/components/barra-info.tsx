@@ -7,7 +7,7 @@ export function BarraInfo({ ajustes }: { ajustes: Ajustes }) {
   const { abierto, corto } = textoApertura(ajustes);
   const horario = resumenHorario(ajustes.horario)[0];
   return (
-    <div className="bg-band pt-[env(safe-area-inset-top)] text-[13px] font-semibold text-band-ink">
+    <div className="bg-band pt-[env(safe-area-inset-top)] text-[12px] font-normal tracking-[0.08em] text-band-ink">
       <div className="mx-auto flex h-9 w-full max-w-6xl items-center justify-between gap-4 px-4">
         <p className="flex min-w-0 items-center gap-2">
           <span

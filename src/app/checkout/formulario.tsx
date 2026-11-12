@@ -130,7 +130,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
                 <label
                   key={valor}
                   className={`flex min-h-16 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 py-3 transition-colors duration-150 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
-                    campos.tipo === valor ? "border-outline bg-surface-2" : "border-line bg-surface"
+                    campos.tipo === valor ? "border-ink bg-surface-2" : "border-line bg-surface"
                   }`}
                 >
                   <input
@@ -250,7 +250,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
               <label
                 key={valor}
                 className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 font-bold transition-colors duration-150 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-brand ${
-                  campos.pago === valor ? "border-outline bg-surface-2" : "border-line bg-surface"
+                  campos.pago === valor ? "border-ink bg-surface-2" : "border-line bg-surface"
                 }`}
               >
                 <input

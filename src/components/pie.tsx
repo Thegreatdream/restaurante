@@ -40,23 +40,26 @@ export function Pie({ ajustes }: { ajustes: Ajustes }) {
     ]);
 
   return (
-    <footer className="pb-safe mt-auto border-t-2 border-outline bg-band text-band-ink">
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 pt-10 pb-28 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:pb-12">
+    <footer className="pb-safe mt-auto bg-band text-band-ink">
+      <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 pt-16 pb-28 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:pb-16">
         <div>
           <div className="flex items-center gap-4">
-            <Logo r={ajustes} className="size-16" />
+            <Logo r={ajustes} className="size-14 text-xl" />
             <div>
-              <p className="font-display text-3xl leading-none font-extrabold tracking-tight">{ajustes.name}</p>
-              {ajustes.tagline && <p className="mt-1.5 text-band-soft">{ajustes.tagline}</p>}
+              <p className="font-display text-4xl leading-none tracking-wide uppercase">{ajustes.name}</p>
+              {ajustes.tagline && <p className="mt-2 font-light text-band-soft">{ajustes.tagline}</p>}
             </div>
           </div>
-          <BotonesContacto ajustes={ajustes} className="mt-6 [&_.btn]:bg-surface-2 [&_.btn]:text-[#1e1a17]" />
+          <BotonesContacto
+            ajustes={ajustes}
+            className="mt-8 [&_.btn]:border-band-ink/50 [&_.btn]:bg-transparent [&_.btn]:text-band-ink [&_.btn:hover]:!bg-band-ink [&_.btn:hover]:!text-band"
+          />
         </div>
-        <dl className="grid gap-x-8 gap-y-4 text-[15px] sm:grid-cols-2">
+        <dl className="grid gap-x-10 gap-y-6 text-[15px] sm:grid-cols-2">
           {datos.map(([k, v]) => (
             <div key={k}>
-              <dt className="text-xs font-bold tracking-wide text-band-soft uppercase">{k}</dt>
-              <dd className="mt-0.5 font-semibold">{v}</dd>
+              <dt className="antetitulo text-[11px] text-band-soft">{k}</dt>
+              <dd className="mt-1.5 font-light">{v}</dd>
             </div>
           ))}
         </dl>

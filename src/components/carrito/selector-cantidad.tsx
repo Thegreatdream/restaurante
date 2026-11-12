@@ -28,7 +28,7 @@ export function SelectorCantidad({
       <button
         type="button"
         onClick={agregar}
-        className="btn-icon is-add shadow-[2px_2px_0_var(--shadow)]"
+        className="btn-icon is-add"
         aria-label={`Agregar ${producto.name}`}
       >
         <Mas />

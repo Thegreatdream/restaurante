@@ -45,7 +45,7 @@ export function CarritoMovil({
     <Drawer.Root open={abierto} onOpenChange={setAbierto}>
       {/* La barra solo existe cuando hay platos: nunca muestra un total con el carrito vacío. */}
       {visible && (
-        <div className="barra-entra pb-safe fixed inset-x-0 bottom-0 z-30 px-4 pt-3 md:hidden">
+        <div className="barra-entra pb-safe fixed inset-x-0 bottom-0 z-30 px-4 pt-3 lg:hidden">
           <Drawer.Trigger asChild>
             <button type="button" className="btn w-full justify-between pr-5 pl-3">
               <span className="flex items-center gap-2.5">
@@ -74,11 +74,11 @@ export function CarritoMovil({
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-40 bg-black/45" />
         <Drawer.Content
-          className="pb-safe fixed inset-x-0 bottom-0 z-50 flex max-h-[88dvh] flex-col rounded-t-[1.75rem] border-2 border-b-0 border-outline bg-bg outline-none"
+          className="pb-safe fixed inset-x-0 bottom-0 z-50 flex max-h-[88dvh] flex-col rounded-t-2xl border border-b-0 border-line bg-bg outline-none"
           aria-describedby={undefined}
         >
           <div aria-hidden className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-line" />
-          <Drawer.Title className="px-5 pt-3 font-display text-2xl font-extrabold">Tu pedido</Drawer.Title>
+          <Drawer.Title className="px-5 pt-3 font-display text-3xl tracking-wide uppercase">Tu pedido</Drawer.Title>
           <div className="overflow-y-auto overscroll-contain px-5 pb-2">
             {contenido ?? <ResumenCarrito ajustes={ajustes} />}
           </div>

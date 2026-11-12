@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Categoria } from "@/lib/tipos";
-import { IconoCategoria } from "@/components/iconos-categoria";
 
 /** Pestañas de categorías: se quedan arriba al bajar y marcan la sección visible. */
 export function NavCategorias({ categorias }: { categorias: Categoria[] }) {
@@ -33,9 +32,9 @@ export function NavCategorias({ categorias }: { categorias: Categoria[] }) {
   return (
     <nav
       aria-label="Categorías del menú"
-      className="barra-material sticky top-0 z-10 -mx-4 mt-5 px-4 pt-[env(safe-area-inset-top)] md:mx-0 md:px-0"
+      className="barra-material sticky top-0 z-10 -mx-4 mt-14 mb-10 border-b border-line px-4 pt-[env(safe-area-inset-top)] md:mx-0 md:mt-20 md:px-0"
     >
-      <div ref={barra} className="flex gap-2 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div ref={barra} className="flex gap-7 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {categorias.map((c) => {
           const esActiva = c.slug === activa;
           return (
@@ -45,13 +44,10 @@ export function NavCategorias({ categorias }: { categorias: Categoria[] }) {
               data-slug={c.slug}
               aria-current={esActiva ? "true" : undefined}
               onClick={() => setActiva(c.slug)}
-              className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full border-2 pr-4 pl-3 text-sm font-bold whitespace-nowrap transition-colors duration-150 ${
-                esActiva
-                  ? "border-outline bg-ink text-bg [--icono-relleno:var(--brand)]"
-                  : "border-line bg-surface text-ink [--icono-relleno:var(--surface-2)]"
+              className={`-mb-px flex min-h-12 shrink-0 items-center border-b-2 text-[13px] font-medium tracking-[0.16em] whitespace-nowrap uppercase transition-colors duration-150 ${
+                esActiva ? "border-brand text-ink" : "border-transparent text-ink-soft hover:text-ink"
               }`}
             >
-              <IconoCategoria slug={c.slug} className="size-5 shrink-0" />
               {c.name}
             </a>
           );

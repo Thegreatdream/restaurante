@@ -4,58 +4,49 @@ import { useCarrito } from "@/lib/carrito";
 import { cop } from "@/lib/formato";
 import type { Categoria } from "@/lib/tipos";
 import { SelectorCantidad } from "@/components/carrito/selector-cantidad";
-import { IconoCategoria } from "@/components/iconos-categoria";
 import { ImagenPlato } from "./imagen-plato";
 
+/**
+ * La carta por categorías. Cada plato es una tarjeta con su foto arriba:
+ * una columna en el celular, dos en tableta y computador, tres en pantallas anchas.
+ */
 export function ListaMenu({ categorias }: { categorias: Categoria[] }) {
   const { items } = useCarrito();
   const cantidadDe = (id: string) => items.find((i) => i.id === id)?.qty ?? 0;
 
   return (
-    <div className="space-y-9 pb-16">
-      {categorias.map((c) => (
+    <div className="space-y-16 pb-20 md:space-y-20">
+      {categorias.map((c, i) => (
         <section key={c.id} id={c.slug} aria-labelledby={`t-${c.slug}`} className="scroll-mt-20">
-          <h2 id={`t-${c.slug}`} className="flex items-center gap-3 font-display text-2xl font-extrabold tracking-tight">
-            <span
-              aria-hidden
-              className="grid size-10 shrink-0 place-items-center rounded-full border-2 border-outline bg-brand text-[#1e1a17] [--icono-relleno:var(--surface)]"
-            >
-              <IconoCategoria slug={c.slug} className="size-6" />
-            </span>
+          <p className="antetitulo text-ink-soft">{String(i + 1).padStart(2, "0")}</p>
+          <h2 id={`t-${c.slug}`} className="mt-1 font-display text-4xl tracking-wide uppercase md:text-[2.75rem]">
             {c.name}
           </h2>
-          {/* Celular: una lista continua. Computador ancho: dos columnas de tarjetas. */}
-          <ul className="mt-3 divide-y-2 divide-line overflow-hidden rounded-2xl border-2 border-line bg-surface xl:grid xl:grid-cols-2 xl:gap-3 xl:divide-y-0 xl:overflow-visible xl:rounded-none xl:border-0 xl:bg-transparent">
+          <ul className="mt-6 grid gap-5 @lg:grid-cols-2 @5xl:grid-cols-3">
             {c.products.map((p) => {
               const cantidad = cantidadDe(p.id);
               return (
                 <li
                   key={p.id}
-                  className={`flex gap-3.5 p-4 transition-colors duration-200 xl:rounded-2xl xl:border-2 ${
-                    cantidad > 0 ? "bg-surface-2/60 xl:border-outline" : "xl:border-line xl:bg-surface"
+                  className={`levanta flex flex-col overflow-hidden rounded-lg border bg-surface shadow-[var(--sombra-suave)] transition-colors duration-200 ${
+                    cantidad > 0 ? "border-brand" : "border-line"
                   }`}
                 >
                   <ImagenPlato
                     slug={c.slug}
                     nombre={p.name}
                     imagen={p.image_url}
-                    sizes="88px"
-                    className="size-[76px] shrink-0 rounded-xl border-2 border-outline md:size-[88px]"
+                    sizes="(min-width: 1024px) 340px, (min-width: 640px) 50vw, 100vw"
+                    className="aspect-[16/10]"
                   />
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <h3 className="text-[17px] leading-tight font-bold break-words">{p.name}</h3>
-                      {p.badge && (
-                        <span className="rounded-full bg-hoja-soft px-2 py-0.5 text-[11px] font-bold tracking-wide text-hoja-ink uppercase">
-                          {p.badge}
-                        </span>
-                      )}
+                  <div className="flex flex-1 flex-col p-5">
+                    <div className="flex-1 pb-5">
+                      {p.badge && <span className="antetitulo mb-2 block text-[11px] text-hoja">{p.badge}</span>}
+                      <h3 className="font-display text-[1.65rem] leading-tight break-words">{p.name}</h3>
+                      {p.description && <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{p.description}</p>}
                     </div>
-                    {p.description && (
-                      <p className="mt-1 line-clamp-2 text-sm leading-snug text-ink-soft">{p.description}</p>
-                    )}
-                    <div className="mt-auto flex items-center justify-between gap-3 pt-2">
-                      <p className="tabular text-[15px] font-extrabold whitespace-nowrap">{cop(p.price)}</p>
+                    <div className="flex items-center justify-between gap-3 border-t border-line pt-4">
+                      <p className="tabular text-[17px] font-medium whitespace-nowrap">{cop(p.price)}</p>
                       <SelectorCantidad producto={{ id: p.id, name: p.name, price: p.price, badge: p.badge }} cantidad={cantidad} />
                     </div>
                   </div>

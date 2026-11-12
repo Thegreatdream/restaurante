@@ -1,16 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Figtree } from "next/font/google";
+import { Cormorant_Garamond, Jost } from "next/font/google";
 import { obtenerAjustes } from "@/lib/menu";
 import { urlSitio } from "@/lib/sitio";
 import "./globals.css";
 
-const titulo = Bricolage_Grotesque({
+// Títulos: serif clásica, fina y elegante. Texto: sans geométrica, limpia y fácil de leer en el celular.
+const titulo = Cormorant_Garamond({
   variable: "--font-titulo",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["500", "600"],
 });
 
-const cuerpo = Figtree({
+const cuerpo = Jost({
   variable: "--font-cuerpo",
   subsets: ["latin"],
 });
@@ -36,8 +37,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#0f5132" },
-    { media: "(prefers-color-scheme: dark)", color: "#08261a" },
+    { media: "(prefers-color-scheme: light)", color: "#1c2b24" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c120f" },
   ],
 };
 

@@ -2,22 +2,7 @@ import Image from "next/image";
 import { IconoCategoria } from "@/components/iconos-categoria";
 
 /**
- * Color del dibujo según la categoría. Solo tres fondos que se alternan
- * (naranja de Tato, verde hoja suave y crema) para que el menú se vea ordenado.
- */
-const NARANJA = "bg-brand text-[#1e1a17] [--icono-relleno:#f6fbf4]";
-const VERDE = "bg-hoja-soft text-ink [--icono-relleno:var(--brand)]";
-const CREMA = "bg-surface-2 text-ink [--icono-relleno:var(--hoja-soft)]";
-const FONDO: Record<string, string> = {
-  "platos-del-dia": NARANJA,
-  hamburguesas: VERDE,
-  acompanantes: CREMA,
-  bebidas: VERDE,
-  postres: NARANJA,
-};
-
-/**
- * La foto del plato si existe; si no, un dibujo de su categoría sobre un fondo con ramitas.
+ * La foto del plato si existe; si no, un recuadro de lino con el dibujo de su categoría en trazo suave.
  * Así la web se ve terminada hoy y mejora sola cuando se suban las fotos.
  */
 export function ImagenPlato({
@@ -26,7 +11,7 @@ export function ImagenPlato({
   imagen,
   sizes,
   className = "",
-  iconoClassName = "size-[42%]",
+  iconoClassName = "size-[34%]",
 }: {
   slug: string;
   nombre: string;
@@ -36,11 +21,11 @@ export function ImagenPlato({
   iconoClassName?: string;
 }) {
   return (
-    <div className={`marco-foto relative overflow-hidden ${className}`}>
+    <div className={`marco-foto relative overflow-hidden bg-surface-2 ${className}`}>
       {imagen ? (
         <Image src={imagen} alt={nombre} fill sizes={sizes} className="object-cover" />
       ) : (
-        <div className={`patron-panel grid size-full place-items-center ${FONDO[slug] ?? NARANJA}`}>
+        <div className="grid size-full place-items-center text-ink-soft/55 [--icono-relleno:transparent] [&_svg]:[stroke-width:1.3]">
           <IconoCategoria slug={slug} className={iconoClassName} />
         </div>
       )}
