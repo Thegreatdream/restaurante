@@ -13,10 +13,11 @@ export function EncabezadoPanel({
 }: {
   ajustes: Ajustes;
   rol: RolMiembro;
-  actual: "pedidos" | "meseros" | "mesas" | "domiciliarios" | "reservas" | "ajustes";
+  actual: "pedidos" | "menu" | "meseros" | "mesas" | "domiciliarios" | "reservas" | "ajustes";
 }) {
   const secciones = [
     { id: "pedidos", texto: "Pedidos", href: "/cocina", ver: rol === "admin" || rol === "cocina" },
+    { id: "menu", texto: "Menú", href: "/cocina/menu", ver: rol === "admin" },
     { id: "meseros", texto: "Meseros", href: "/cocina/meseros", ver: ajustes.mod_table && (rol === "admin" || rol === "mesero") },
     { id: "mesas", texto: "Mesas", href: "/cocina/mesas", ver: ajustes.mod_table && rol === "admin" },
     { id: "reservas", texto: "Reservas", href: "/cocina/reservas", ver: ajustes.mod_reservations && (rol === "admin" || rol === "mesero") },
