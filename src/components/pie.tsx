@@ -3,6 +3,7 @@ import { cop, resumenHorario } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
 import { BotonesContacto, redesDe, telefonoVisible } from "@/components/contacto";
 import { Logo } from "@/components/encabezado";
+import { LogoCasa } from "@/components/logo-casa";
 
 /** Pie de página en la franja oscura de marca. Solo muestra los datos que estén configurados. */
 export function Pie({ ajustes }: { ajustes: Ajustes }) {
@@ -43,13 +44,15 @@ export function Pie({ ajustes }: { ajustes: Ajustes }) {
     <footer className="pb-safe mt-auto bg-band text-band-ink">
       <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 pt-16 pb-28 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:pb-16">
         <div>
-          <div className="flex items-center gap-4">
-            <Logo r={ajustes} className="size-14 text-xl" />
-            <div>
+          {ajustes.logo_url ? (
+            <div className="flex items-center gap-4">
+              <Logo r={ajustes} className="size-14" />
               <p className="font-display text-4xl leading-none tracking-wide uppercase">{ajustes.name}</p>
-              {ajustes.tagline && <p className="mt-2 font-light text-band-soft">{ajustes.tagline}</p>}
             </div>
-          </div>
+          ) : (
+            <LogoCasa nombre={ajustes.name} variante="sello" className="size-40" />
+          )}
+          {ajustes.tagline && <p className="mt-5 font-light text-band-soft">{ajustes.tagline}</p>}
           <BotonesContacto
             ajustes={ajustes}
             className="mt-8 [&_.btn]:border-band-ink/50 [&_.btn]:bg-transparent [&_.btn]:text-band-ink [&_.btn:hover]:!bg-band-ink [&_.btn:hover]:!text-band"

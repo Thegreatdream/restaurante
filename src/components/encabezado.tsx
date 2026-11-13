@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { obtenerAjustes } from "@/lib/menu";
+import { LogoCasa } from "@/components/logo-casa";
 
 /** Encabezado del sitio del cliente: logo (o monograma) y el nombre del restaurante, con enlaces finos. */
 export async function Encabezado({
@@ -39,18 +40,7 @@ export async function Encabezado({
   );
 }
 
-/** Iniciales del nombre, sin artículos ("Don Gabriel" → "DG"). */
-function iniciales(nombre: string) {
-  const palabras = nombre
-    .split(/\s+/)
-    .filter((p) => p && !/^(de|del|la|las|el|los|y)$/i.test(p));
-  return palabras
-    .slice(0, 2)
-    .map((p) => p[0]!.toUpperCase())
-    .join("");
-}
-
-/** Logo del restaurante si lo tiene; si no, un monograma con sus iniciales en un círculo fino. */
+/** Logo subido en Ajustes si lo hay; si no, el emblema de la casa (gorro y cubiertos). */
 export function Logo({
   r,
   className = "size-10",
@@ -65,11 +55,9 @@ export function Logo({
       <img src={r.logo_url} alt="" className={`shrink-0 object-contain ${className}`} />
     );
   return (
-    <span
-      aria-hidden
-      className={`grid shrink-0 place-items-center rounded-full border border-current font-display text-[1.05em] leading-none tracking-wider transition-transform duration-200 ease-[var(--ease-out)] group-active:scale-95 ${className}`}
-    >
-      {iniciales(r.name)}
-    </span>
+    <LogoCasa
+      nombre={r.name}
+      className={`shrink-0 transition-transform duration-200 ease-[var(--ease-out)] group-active:scale-95 ${className}`}
+    />
   );
 }
