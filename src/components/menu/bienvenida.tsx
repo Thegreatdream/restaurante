@@ -34,7 +34,6 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
               fill
               priority
               sizes="100vw"
-              quality={80}
               className="portada-zoom object-cover object-[50%_48%]"
             />
           </div>
