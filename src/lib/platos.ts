@@ -33,6 +33,7 @@ export function buscarPlato(categorias: Categoria[], slug: string): PlatoConCate
 const FOTOS_MUESTRA: Record<string, string> = {
   "bandeja-de-la-casa": "/platos-muestra/bandeja-recortada.webp",
   "hamburguesa-tato": "/platos-muestra/hamburguesa-tato-recortada.webp",
+  "hamburguesa-clasica": "/platos-muestra/hamburguesa-clasica-recortada.webp",
 };
 
 export function fotoDePlato(p: { name: string; image_url?: string | null }): string | null {
