@@ -70,26 +70,26 @@ export function PanelDomiciliario({ token, inicial, restaurante }: { token: stri
   return (
     <main className="mx-auto min-h-dvh w-full max-w-xl px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-16">
       <p className="text-sm font-bold text-ink-soft">{restaurante}</p>
-      <h1 className="font-display text-3xl font-extrabold tracking-tight">Hola, {vista.name.split(" ")[0]}</h1>
+      <h1 className="font-display text-3xl tracking-tight">Hola, {vista.name.split(" ")[0]}</h1>
       <p className="mt-1 text-sm text-ink-soft">Guarda este enlace: aquí te llegan los domicilios. Se actualiza solo.</p>
 
-      {mensaje && <p className="mt-4 rounded-2xl bg-coral-soft px-4 py-3 text-sm font-semibold text-coral-ink">{mensaje}</p>}
+      {mensaje && <p className="mt-4 rounded-lg bg-coral-soft px-4 py-3 text-sm font-semibold text-coral-ink">{mensaje}</p>}
 
       <section className="mt-6" aria-labelledby="t-disp">
-        <h2 id="t-disp" className="font-display text-xl font-extrabold">
+        <h2 id="t-disp" className="font-display text-xl">
           Para tomar <span className="tabular text-ink-soft">({vista.offered.length})</span>
         </h2>
         {vista.offered.length === 0 ? (
-          <p className="mt-2 rounded-2xl border-2 border-dashed border-line px-4 py-8 text-center text-sm text-ink-soft">
+          <p className="mt-2 rounded-lg border border-dashed border-line px-4 py-8 text-center text-sm text-ink-soft">
             No hay domicilios disponibles ahora. Cuando haya uno, suena un pitido.
           </p>
         ) : (
           <ul className="mt-3 space-y-3">
             {vista.offered.map((o) => (
-              <li key={o.id} className="aparecer rounded-[1.5rem] bg-surface p-4 sticker">
+              <li key={o.id} className="aparecer rounded-lg bg-surface p-4 sticker">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-display text-lg font-extrabold">
+                    <p className="font-display text-lg">
                       Pedido <span className="tabular">#{o.number}</span>
                     </p>
                     <p className="mt-0.5 break-words text-sm">{o.address}</p>
@@ -97,7 +97,7 @@ export function PanelDomiciliario({ token, inicial, restaurante }: { token: stri
                       {o.items} {o.items === 1 ? "plato" : "platos"} · ofrecido a las {hora(o.offered_at)}
                     </p>
                   </div>
-                  <span className="tabular shrink-0 font-display text-lg font-extrabold">{cop(o.total)}</span>
+                  <span className="tabular shrink-0 font-display text-lg">{cop(o.total)}</span>
                 </div>
                 <button type="button" className="btn mt-3 w-full" disabled={tomando} onClick={() => tomar(o.id)}>
                   {tomando ? "Tomando…" : "Lo llevo yo"}
@@ -109,7 +109,7 @@ export function PanelDomiciliario({ token, inicial, restaurante }: { token: stri
       </section>
 
       <section className="mt-8" aria-labelledby="t-mias">
-        <h2 id="t-mias" className="font-display text-xl font-extrabold">
+        <h2 id="t-mias" className="font-display text-xl">
           Mis entregas <span className="tabular text-ink-soft">({vista.mine.length})</span>
         </h2>
         {vista.mine.length === 0 ? (
@@ -120,7 +120,7 @@ export function PanelDomiciliario({ token, inicial, restaurante }: { token: stri
               <li key={o.id}>
                 <Link
                   href={`/entrega/${o.delivery_token}`}
-                  className="levanta flex items-center justify-between gap-3 rounded-2xl border-2 border-outline bg-surface-2 p-4"
+                  className="levanta flex items-center justify-between gap-3 rounded-lg border border-outline bg-surface-2 p-4"
                 >
                   <span className="min-w-0">
                     <span className="block font-bold">

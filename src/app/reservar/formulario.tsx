@@ -88,7 +88,7 @@ export function FormularioReserva({ ajustes }: { ajustes: Ajustes }) {
   return (
     <form onSubmit={reservar} noValidate className="mt-6 space-y-7">
       <fieldset>
-        <legend className="text-[15px] font-bold">Día</legend>
+        <legend className="text-[15px] font-semibold">Día</legend>
         <div className="carril -mx-4 mt-2 flex gap-2 overflow-x-auto px-4 pb-1">
           {dias.map((f, i) => {
             const e = etiquetaDia(f, i);
@@ -99,11 +99,11 @@ export function FormularioReserva({ ajustes }: { ajustes: Ajustes }) {
                 type="button"
                 onClick={() => setFecha(f)}
                 aria-pressed={activo}
-                className={`flex min-h-16 w-[4.5rem] shrink-0 flex-col items-center justify-center rounded-2xl border-2 transition-colors ${
-                  activo ? "border-outline bg-ink text-bg" : "border-line bg-surface"
+                className={`flex min-h-16 w-[4.5rem] shrink-0 flex-col items-center justify-center rounded-lg border transition-colors ${
+                  activo ? "border-band bg-band text-band-ink" : "border-line bg-surface"
                 }`}
               >
-                <span className="text-xs font-bold">{e.arriba}</span>
+                <span className="text-xs font-semibold tracking-[0.08em] uppercase">{e.arriba}</span>
                 <span className="tabular text-sm font-semibold">{e.abajo}</span>
               </button>
             );
@@ -125,7 +125,7 @@ export function FormularioReserva({ ajustes }: { ajustes: Ajustes }) {
       </fieldset>
 
       <div className="max-w-xs">
-        <label htmlFor="r-personas" className="mb-1.5 block text-[15px] font-bold">
+        <label htmlFor="r-personas" className="mb-1.5 block text-[15px] font-semibold">
           ¿Cuántos son?
         </label>
         <select id="r-personas" className="campo" value={personas} onChange={(e) => setPersonas(Number(e.target.value))}>
@@ -139,15 +139,15 @@ export function FormularioReserva({ ajustes }: { ajustes: Ajustes }) {
       </div>
 
       <fieldset>
-        <legend className="text-[15px] font-bold">Hora</legend>
+        <legend className="text-[15px] font-semibold">Hora</legend>
         {franjas === null ? (
           <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5" aria-hidden>
             {Array.from({ length: 5 }, (_, i) => (
-              <div key={i} className="h-12 animate-pulse rounded-xl bg-line" />
+              <div key={i} className="h-12 animate-pulse rounded-md bg-line" />
             ))}
           </div>
         ) : franjas.length === 0 ? (
-          <p className="mt-2 rounded-2xl bg-surface-2 px-4 py-3 text-sm">No hay horas para reservar este día. Prueba con otro.</p>
+          <p className="mt-2 rounded-lg bg-surface-2 px-4 py-3 text-sm">No hay horas para reservar este día. Prueba con otro.</p>
         ) : (
           <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
             {franjas.map((f) => {
@@ -160,8 +160,8 @@ export function FormularioReserva({ ajustes }: { ajustes: Ajustes }) {
                   disabled={!alcanza}
                   onClick={() => setInicio(f.start)}
                   aria-pressed={activo}
-                  className={`tabular min-h-12 rounded-xl border-2 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40 disabled:line-through ${
-                    activo ? "border-outline bg-brand text-[#1e1a17]" : "border-line bg-surface"
+                  className={`tabular min-h-12 rounded-md border text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 disabled:line-through ${
+                    activo ? "border-brand bg-brand text-[#1e1a17]" : "border-line bg-surface"
                   }`}
                   title={alcanza ? undefined : "Sin cupo para ese número de personas"}
                 >
@@ -185,7 +185,7 @@ export function FormularioReserva({ ajustes }: { ajustes: Ajustes }) {
             ] as const
           ).map(([k, etiqueta, props]) => (
             <div key={k}>
-              <label htmlFor={`r-${k}`} className="mb-1.5 block text-[15px] font-bold">
+              <label htmlFor={`r-${k}`} className="mb-1.5 block text-[15px] font-semibold">
                 {etiqueta}
               </label>
               <input id={`r-${k}`} className="campo" value={d[k]} onChange={(e) => set(k, e.target.value)} aria-invalid={Boolean(errores[k])} {...props} />
@@ -193,7 +193,7 @@ export function FormularioReserva({ ajustes }: { ajustes: Ajustes }) {
             </div>
           ))}
           <div>
-            <label htmlFor="r-nota" className="mb-1.5 flex items-baseline gap-2 text-[15px] font-bold">
+            <label htmlFor="r-nota" className="mb-1.5 flex items-baseline gap-2 text-[15px] font-semibold">
               Nota <span className="text-xs font-semibold text-ink-soft">Opcional</span>
             </label>
             <textarea
@@ -206,7 +206,7 @@ export function FormularioReserva({ ajustes }: { ajustes: Ajustes }) {
               onChange={(e) => set("nota", e.target.value)}
             />
           </div>
-          <label className={`flex cursor-pointer gap-3 rounded-2xl border-2 bg-surface p-4 text-sm leading-snug ${errores.autorizo ? "border-coral" : "border-line"}`}>
+          <label className={`flex cursor-pointer gap-3 rounded-lg border bg-surface p-4 text-sm leading-snug ${errores.autorizo ? "border-coral" : "border-line"}`}>
             <input type="checkbox" checked={autorizo} onChange={(e) => setAutorizo(e.target.checked)} className="mt-0.5 size-5 shrink-0" />
             <span>
               Autorizo a {ajustes.legal_name || ajustes.name} a usar mis datos para gestionar esta reserva, según la{" "}
@@ -217,7 +217,7 @@ export function FormularioReserva({ ajustes }: { ajustes: Ajustes }) {
             </span>
           </label>
           {mensaje && (
-            <p role="alert" className="rounded-2xl bg-coral-soft px-4 py-3 text-sm font-semibold text-coral-ink">
+            <p role="alert" className="rounded-lg bg-coral-soft px-4 py-3 text-sm font-semibold text-coral-ink">
               {mensaje}
             </p>
           )}

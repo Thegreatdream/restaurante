@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { supabaseServidor } from "@/lib/supabase/server";
 import { obtenerAjustes, supabaseConfigurado } from "@/lib/menu";
+import { huellaOrigen } from "@/lib/origen";
 
 const esquema = z
   .object({
@@ -12,10 +13,19 @@ const esquema = z
       .string()
       .transform((v) => v.replace(/\D/g, ""))
       .pipe(z.string().regex(/^3\d{9}$/, "Escribe un celular de 10 dígitos que empiece por 3.")),
-    correo: z.string().trim().toLowerCase().email("Revisa el correo, parece incompleto.").max(120),
+    // Opcional: sin correo no se envían avisos, pero el pedido se recibe igual.
+    correo: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .max(120)
+      .refine((v) => !v || z.string().email().safeParse(v).success, "Revisa el correo, parece incompleto.")
+      .optional()
+      .default(""),
     direccion: z.string().trim().max(200).optional().default(""),
     horaRecogida: z.string().optional().default(""),
     indicaciones: z.string().trim().max(300, "Máximo 300 caracteres.").optional().default(""),
+    notas: z.string().trim().max(300, "Máximo 300 caracteres.").optional().default(""),
     pago: z.enum(["efectivo", "transferencia"], { message: "Elige cómo vas a pagar." }),
     pagaCon: z
       .string()
@@ -52,6 +62,7 @@ const ERRORES_BD: Record<string, string> = {
   PRODUCTO_NO_DISPONIBLE: "Uno de los platos ya no está disponible. Vuelve al menú y revisa tu pedido.",
   PEDIDO_MINIMO: "Tu pedido no alcanza el mínimo.",
   DEMASIADOS_ITEMS: "Son demasiados platos para un solo pedido.",
+  DEMASIADOS_PEDIDOS: "Ya recibimos varios pedidos tuyos hace poco. Espera unos minutos o escríbenos para ayudarte.",
 };
 
 export async function crearPedido(datos: DatosPedido): Promise<ResultadoPedido> {
@@ -89,7 +100,7 @@ export async function crearPedido(datos: DatosPedido): Promise<ResultadoPedido> 
     p_type: d.tipo,
     p_name: d.nombre,
     p_phone: d.celular,
-    p_email: d.correo,
+    p_email: d.correo || null,
     p_address: d.direccion,
     p_address_notes: d.indicaciones,
     p_payment_method: d.pago,
@@ -97,6 +108,8 @@ export async function crearPedido(datos: DatosPedido): Promise<ResultadoPedido> 
     p_items: items,
     p_consent: d.autorizo,
     p_pickup_at: d.tipo === "recoger" ? d.horaRecogida : null,
+    p_notes: d.notas || null,
+    p_origin: await huellaOrigen(restaurante.id),
   });
 
   if (error || !id) {

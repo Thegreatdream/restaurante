@@ -9,14 +9,18 @@ import { CarritoMovil } from "@/components/carrito/carrito-movil";
 import { Pie } from "@/components/pie";
 import { AvisoDemo } from "@/components/aviso-demo";
 import { obtenerMenu } from "@/lib/menu";
+import { SincronizarCarrito } from "@/components/carrito/sincronizar-carrito";
+import { DatosRestaurante } from "@/components/datos-restaurante";
 
 export const revalidate = 60; // el menú se refresca como máximo cada minuto
 
 export default async function Inicio() {
   const { categorias, ajustes, demo } = await obtenerMenu();
+  const productos = categorias.flatMap((c) => c.products.map((p) => ({ id: p.id, name: p.name, price: p.price })));
 
   return (
     <>
+      {!demo && <DatosRestaurante ajustes={ajustes} categorias={categorias} />}
       <BarraInfo ajustes={ajustes} />
       <Encabezado debajoDeBarra />
       {demo && (
@@ -29,6 +33,7 @@ export default async function Inicio() {
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12">
         <div className="@container min-w-0">
+          {!demo && <SincronizarCarrito productos={productos} className="mt-8" />}
           <Destacados categorias={categorias} />
           <div id="menu" className="scroll-mt-4">
             <NavCategorias categorias={categorias} />

@@ -57,7 +57,10 @@ function suscribir(o: () => void) {
   };
 }
 
-/** Aviso de "se agregó algo" (lo usa el globito de Tato). */
+/** Lo que cambió al poner el carrito al día con el menú. */
+export type CambiosCarrito = { quitados: string[]; precios: string[] };
+
+/** Aviso de "se agregó algo". */
 export type EventoAgregar = { nombre: string; favorito: boolean; esNuevo: boolean; totalPlatos: number };
 const oyentesAgregar = new Set<(e: EventoAgregar) => void>();
 export function escucharAgregar(fn: (e: EventoAgregar) => void) {
@@ -78,7 +81,7 @@ export const carrito = {
     });
     const evento: EventoAgregar = {
       nombre: p.name,
-      favorito: Boolean(p.badge && /tato/i.test(p.badge)),
+      favorito: Boolean(p.badge && /favorit/i.test(p.badge)),
       esNuevo: !existe,
       totalPlatos: estado.items.reduce((n, i) => n + i.qty, 0),
     };
@@ -96,6 +99,31 @@ export const carrito = {
   },
   vaciar() {
     guardar(VACIO);
+  },
+  /**
+   * Pone el carrito al día con los platos disponibles hoy: quita los que ya no están
+   * y actualiza nombre y precio. Devuelve qué cambió para avisarle al cliente.
+   */
+  sincronizar(productos: { id: string; name: string; price: number }[]): CambiosCarrito {
+    cargar();
+    const menu = new Map(productos.map((p) => [p.id, p]));
+    const quitados: string[] = [];
+    const precios: string[] = [];
+    let cambio = false;
+    const items = estado.items.flatMap((i) => {
+      const p = menu.get(i.id);
+      if (!p) {
+        quitados.push(i.name);
+        cambio = true;
+        return [];
+      }
+      if (p.price !== i.price) precios.push(p.name);
+      if (p.price === i.price && p.name === i.name) return [i];
+      cambio = true;
+      return [{ ...i, name: p.name, price: p.price }];
+    });
+    if (cambio) guardar({ items });
+    return { quitados, precios };
   },
 };
 

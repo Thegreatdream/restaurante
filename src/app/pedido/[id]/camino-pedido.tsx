@@ -4,8 +4,8 @@ import { Check } from "@/components/iconos";
 function Moto({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth={2.25} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
-      <circle cx="8" cy="22" r="4" fill="#f6fbf4" />
-      <circle cx="24.5" cy="22" r="4" fill="#f6fbf4" />
+      <circle cx="8" cy="22" r="4" fill="#fffcf6" />
+      <circle cx="24.5" cy="22" r="4" fill="#fffcf6" />
       <path d="M8 22h9l4-8h-5" />
       <path d="M21 14l3.5 8" />
       <path d="M22 9h3l-2 5" />
@@ -18,7 +18,7 @@ function Moto({ className }: { className?: string }) {
 function BolsaPedido({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth={2.25} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
-      <path d="M7 11h18l-1.5 15h-15Z" fill="#f6fbf4" />
+      <path d="M7 11h18l-1.5 15h-15Z" fill="#fffcf6" />
       <path d="M12 11V9a4 4 0 0 1 8 0v2" />
       <path d="M12.5 18.5c1.5 2 5.5 2 7 0" />
     </svg>
@@ -46,7 +46,7 @@ export function CaminoPedido({
   const andando = icono === "moto" && actual === ultimo - 1;
 
   return (
-    <div className="border-t-2 border-outline bg-surface px-7 pt-5 pb-4 sm:px-10">
+    <div className="border-t border-outline bg-surface px-7 pt-5 pb-4 sm:px-10">
       <p className="sr-only">
         Paso {actual + 1} de {pasos.length}: {pasos[actual]}
       </p>
@@ -64,7 +64,7 @@ export function CaminoPedido({
           return (
             <span
               key={paso}
-              className={`absolute top-1/2 grid size-5 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 transition-colors duration-500 ${
+              className={`absolute top-1/2 grid size-5 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border transition-colors duration-500 ${
                 hecho ? "border-outline bg-hoja text-white" : i === actual ? "border-outline bg-surface" : "border-line bg-surface"
               }`}
               style={{ left: `${(i / ultimo) * 100}%` }}
@@ -77,7 +77,7 @@ export function CaminoPedido({
         {/* El marcador avanza sobre el ancho de la pista (unidades del contenedor) */}
         <div className="absolute inset-0 [container-type:inline-size]">
           <span
-            className={`camino-moto absolute top-1/2 left-0 grid size-12 place-items-center rounded-full border-2 border-outline text-[#1e1a17] shadow-[2px_2px_0_var(--shadow)] ${
+            className={`camino-moto absolute top-1/2 left-0 grid size-12 place-items-center rounded-full border border-outline text-[#1e1a17] ${
               llego ? "bg-hoja text-white" : "bg-brand"
             }`}
             style={{ transform: `translate(calc(${progreso} * 100cqw - 50%), -50%)` }}

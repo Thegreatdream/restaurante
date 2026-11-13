@@ -5,7 +5,7 @@ import { supabaseNavegador } from "@/lib/supabase/navegador";
 import { celular, cop, hora } from "@/lib/formato";
 import type { Domiciliario, PedidoCocina, TipoPedido } from "@/lib/tipos";
 import { enlaceWhatsapp } from "@/lib/whatsapp";
-import { avanzarPedido, borrarPedidosPrueba, despacharCon } from "./acciones";
+import { avanzarPedido, borrarPedidosPrueba, cancelarPedido, despacharCon } from "./acciones";
 import { Chevron } from "@/components/iconos";
 import { cargarPedidosCocina, type PedidosCocina } from "./datos";
 
@@ -260,6 +260,12 @@ function TarjetaPedido({
           </li>
         ))}
       </ul>
+      {p.notes && (
+        <p className="mx-4 mb-3 rounded-lg bg-brand/25 px-3 py-2 text-[15px] font-semibold break-words">
+          <span className="block text-xs font-bold tracking-wide uppercase">Notas del cliente</span>
+          {p.notes}
+        </p>
+      )}
 
       <dl className="mt-auto space-y-2 border-t-2 border-line px-4 py-3 text-sm">
         <div>
@@ -302,6 +308,9 @@ function TarjetaPedido({
             {enviando ? "Guardando…" : mesa ? "Listo, llevar a la mesa" : recoger ? "Marcar como listo" : "Marcar como despachado"}
           </button>
         )}
+        <div className="mt-2">
+          <BotonCancelar id={p.id} alTerminar={alFallar} />
+        </div>
       </div>
     </li>
   );
@@ -340,7 +349,51 @@ function FilaPorEntregar({
       <button type="button" onClick={() => avanzar("entregado")} disabled={enviando} className="btn btn-ghost min-h-11 w-full text-sm">
         {enviando ? "Guardando…" : mesa ? "Servido en la mesa" : recoger ? "Ya lo recogió" : "Marcar como entregado"}
       </button>
+      <BotonCancelar id={p.id} alTerminar={alFallar} />
     </li>
+  );
+}
+
+/** Cancelar un pedido en dos pasos (pedir y confirmar), para que nadie lo haga por error. */
+function BotonCancelar({ id, alTerminar }: { id: string; alTerminar: () => void }) {
+  const [confirmar, setConfirmar] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [enviando, iniciar] = useTransition();
+
+  const cancelar = () =>
+    iniciar(async () => {
+      setError(null);
+      const r = await cancelarPedido(id);
+      if (!r.ok) setError(r.mensaje ?? "Error");
+      setConfirmar(false);
+      alTerminar();
+    });
+
+  if (!confirmar)
+    return (
+      <div className="text-center">
+        {error && <p className="mb-1 text-sm font-semibold text-coral-ink">{error}</p>}
+        <button
+          type="button"
+          onClick={() => setConfirmar(true)}
+          className="min-h-11 px-3 text-sm font-semibold text-ink-soft underline underline-offset-4"
+        >
+          Cancelar pedido
+        </button>
+      </div>
+    );
+  return (
+    <div className="rounded-lg bg-coral-soft p-3">
+      <p className="text-sm font-semibold text-coral-ink">¿Cancelar este pedido? El cliente lo verá cancelado en su pantalla.</p>
+      <div className="mt-2 flex gap-2">
+        <button type="button" onClick={() => setConfirmar(false)} disabled={enviando} className="btn btn-ghost min-h-11 flex-1 px-3 text-sm">
+          No
+        </button>
+        <button type="button" onClick={cancelar} disabled={enviando} className="btn min-h-11 flex-1 bg-coral px-3 text-sm">
+          {enviando ? "Cancelando…" : "Sí, cancelar"}
+        </button>
+      </div>
+    </div>
   );
 }
 

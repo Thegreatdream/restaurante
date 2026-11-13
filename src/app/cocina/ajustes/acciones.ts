@@ -52,6 +52,11 @@ const esquema = z.object({
   reservation_lead_minutes: z.number().int().min(0).max(2880),
   reservation_auto_confirm: z.boolean(),
   pickup_lead_minutes: z.number().int().min(5).max(180),
+  transfer_info: z
+    .string()
+    .trim()
+    .max(300, "Máximo 300 caracteres.")
+    .transform((v) => v || null),
   address: texto(160),
   phone: z
     .string()

@@ -30,7 +30,7 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-4 pb-12 md:pt-10">
         <SeguimientoPedido
           inicial={data as PedidoPublico}
-          mascota={ajustes.mascot}
+          hayContacto={hayContacto}
           restaurante={{
             nombre: ajustes.name,
             direccion: ajustes.address,
@@ -39,8 +39,8 @@ export default async function Pedido({ params }: { params: Promise<{ id: string 
           }}
         />
         {hayContacto && (
-          <section className="mt-6 rounded-[1.75rem] border-2 border-line bg-surface p-5">
-            <h2 className="font-display text-xl font-extrabold">¿Dudas con tu pedido?</h2>
+          <section className="mt-6 rounded-lg border border-line bg-surface p-5">
+            <h2 className="font-display text-2xl">¿Dudas con tu pedido?</h2>
             <p className="mt-1 text-sm text-ink-soft">Escríbenos o llámanos y te ayudamos.</p>
             <BotonesContacto ajustes={ajustes} className="mt-4" />
           </section>

@@ -39,10 +39,10 @@ export function DetalleReserva({
 
   return (
     <div>
-      <section className={`rounded-[1.75rem] p-6 sticker ${e.clase}`}>
-        <p className="text-sm font-bold">{restaurante.nombre}</p>
-        <h1 className="mt-1 font-display text-3xl leading-tight font-extrabold tracking-tight">{e.titulo}</h1>
-        <p className="mt-4 text-xl font-bold first-letter:uppercase">
+      <section className={`rounded-lg p-6 sticker ${e.clase}`}>
+        <p className="antetitulo text-ink-soft">{restaurante.nombre}</p>
+        <h1 className="mt-2 font-display text-4xl leading-tight">{e.titulo}</h1>
+        <p className="mt-4 text-xl font-semibold first-letter:uppercase">
           {fechaLarga(reserva.slot_start, restaurante.timezone)} · {horaDe(reserva.slot_start, restaurante.timezone)}
         </p>
         <p className="mt-1 text-ink-soft">
@@ -53,8 +53,8 @@ export function DetalleReserva({
       </section>
 
       {restaurante.direccion && estado !== "cancelada" && (
-        <section className="mt-5 rounded-[1.5rem] border-2 border-line bg-surface p-5">
-          <p className="text-xs font-bold tracking-wide text-ink-soft uppercase">Dónde</p>
+        <section className="mt-5 rounded-lg border border-line bg-surface p-5">
+          <p className="antetitulo text-[11px] text-ink-soft">Dónde</p>
           <p className="mt-0.5 font-semibold">{restaurante.direccion}</p>
           {restaurante.mapa && (
             <a href={restaurante.mapa} target="_blank" rel="noopener" className="btn btn-ghost mt-3 min-h-11 text-sm">
@@ -67,7 +67,7 @@ export function DetalleReserva({
       {error && <p className="mt-4 text-sm font-semibold text-coral-ink">{error}</p>}
       {puedeCancelar &&
         (confirmar ? (
-          <div className="mt-6 rounded-2xl bg-surface-2 p-4">
+          <div className="mt-6 rounded-lg bg-surface-2 p-4">
             <p className="font-bold">¿Seguro que quieres cancelar la reserva?</p>
             <div className="mt-3 flex gap-2">
               <button type="button" className="btn btn-ghost min-h-12 flex-1" onClick={() => setConfirmar(false)} disabled={enviando}>

@@ -27,6 +27,7 @@ const VACIO: Campos = {
   correo: "",
   direccion: "",
   indicaciones: "",
+  notas: "",
   pago: "",
   pagaCon: "",
   autorizo: false,
@@ -54,7 +55,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
         // El tipo guardado solo se respeta si el restaurante lo sigue ofreciendo
         const tipo = g.tipo && tipos.includes(g.tipo) ? g.tipo : tipos[0] ?? "domicilio";
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setCampos((c) => ({ ...c, ...g, tipo, horaRecogida: "", pagaCon: "", autorizo: false }));
+        setCampos((c) => ({ ...c, ...g, tipo, horaRecogida: "", pagaCon: "", notas: "", autorizo: false }));
       }
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,10 +90,11 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
         return;
       }
       try {
-        const { autorizo: _a, pagaCon: _p, horaRecogida: _h, ...recordar } = campos;
+        const { autorizo: _a, pagaCon: _p, horaRecogida: _h, notas: _n, ...recordar } = campos;
         void _a;
         void _p;
         void _h;
+        void _n;
         localStorage.setItem(CLAVE_DATOS, JSON.stringify(recordar));
       } catch {}
       setEnviado(true);
@@ -103,8 +105,8 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
 
   if (hidratado && cantidad === 0 && !enviado && !enviando) {
     return (
-      <div className="mt-8 rounded-2xl border-2 border-line bg-surface p-6 text-center">
-        <p className="font-display text-xl font-bold">Tu carrito está vacío</p>
+      <div className="mt-8 rounded-lg border border-line bg-surface p-6 text-center">
+        <p className="font-display text-2xl">Tu pedido está vacío</p>
         <Link href="/" className="btn mt-4">
           Ver el menú
         </Link>
@@ -119,7 +121,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
       <fieldset disabled={ocupado} className="space-y-5">
         {tipos.length > 1 && (
           <fieldset>
-            <legend className="text-[15px] font-bold">¿Cómo lo quieres?</legend>
+            <legend className="text-[15px] font-semibold">¿Cómo lo quieres?</legend>
             <div className="mt-2 grid grid-cols-2 gap-3">
               {(
                 [
@@ -129,7 +131,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
               ).map(([valor, texto, detalle, icono]) => (
                 <label
                   key={valor}
-                  className={`flex min-h-16 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 py-3 transition-colors duration-150 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
+                  className={`flex min-h-16 cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors duration-150 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
                     campos.tipo === valor ? "border-ink bg-surface-2" : "border-line bg-surface"
                   }`}
                 >
@@ -141,11 +143,11 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
                     onChange={() => set("tipo", valor)}
                     className="sr-only"
                   />
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full border-2 border-outline bg-brand text-[#1e1a17]">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full border border-outline bg-surface text-ink">
                     {icono}
                   </span>
                   <span className="leading-tight">
-                    <span className="block font-bold">{texto}</span>
+                    <span className="block font-semibold">{texto}</span>
                     <span className="tabular block text-sm text-ink-soft">{detalle}</span>
                   </span>
                 </label>
@@ -187,7 +189,10 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
         <Campo
           id="correo"
           etiqueta="Correo"
-          ayuda={esRecoger ? "Te avisamos aquí cuando esté listo." : "Te avisamos aquí cuando tu pedido salga."} error={errores.correo}>
+          opcional
+          ayuda={esRecoger ? "Si lo dejas, te avisamos cuando esté listo." : "Si lo dejas, te avisamos cuando tu pedido salga."}
+          error={errores.correo}
+        >
           <input
             id="f-correo"
             className="campo"
@@ -201,7 +206,6 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
             value={campos.correo}
             onChange={(e) => set("correo", e.target.value)}
             aria-invalid={Boolean(errores.correo)}
-            required
           />
         </Campo>
 
@@ -237,8 +241,21 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
           </>
         )}
 
+        <Campo id="notas" etiqueta="Notas del pedido" opcional ayuda="La cocina las lee antes de preparar." error={errores.notas}>
+          <textarea
+            id="f-notas"
+            className="campo min-h-20 resize-y"
+            placeholder="Sin cebolla, con sopa, jugo en agua…"
+            maxLength={300}
+            rows={2}
+            value={campos.notas}
+            onChange={(e) => set("notas", e.target.value)}
+            aria-invalid={Boolean(errores.notas)}
+          />
+        </Campo>
+
         <fieldset>
-          <legend className="text-[15px] font-bold">Forma de pago</legend>
+          <legend className="text-[15px] font-semibold">Forma de pago</legend>
           <p className="text-sm text-ink-soft">{esRecoger ? "Pagas cuando recoges tu pedido." : "Pagas cuando recibes tu pedido."}</p>
           <div className="mt-2 grid grid-cols-2 gap-3" role="radiogroup" aria-invalid={Boolean(errores.pago)}>
             {(
@@ -249,7 +266,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
             ).map(([valor, texto]) => (
               <label
                 key={valor}
-                className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 px-4 font-bold transition-colors duration-150 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-brand ${
+                className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-lg border px-4 font-semibold transition-colors duration-150 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-brand ${
                   campos.pago === valor ? "border-ink bg-surface-2" : "border-line bg-surface"
                 }`}
               >
@@ -282,22 +299,25 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
           </Campo>
         )}
         {campos.pago === "transferencia" && (
-          <p className="aparecer rounded-2xl bg-surface-2 px-4 py-3 text-sm leading-snug">
-            {esRecoger
-              ? "Al recoger el pedido transfieres en caja por Nequi o Bancolombia."
-              : "Al recibir el pedido le transfieres al domiciliario por Nequi o Bancolombia."}
-          </p>
+          <div className="aparecer rounded-lg bg-surface-2 px-4 py-3 text-sm leading-snug">
+            <p>{esRecoger ? "Transfieres cuando recoges tu pedido." : "Transfieres cuando recibes tu pedido."}</p>
+            {ajustes.transfer_info ? (
+              <p className="mt-2 font-semibold whitespace-pre-line break-words">{ajustes.transfer_info}</p>
+            ) : (
+              <p className="mt-1 text-ink-soft">{esRecoger ? "En caja te damos los datos de la cuenta." : "El domiciliario te da los datos de la cuenta."}</p>
+            )}
+          </div>
         )}
       </fieldset>
 
       <div className="md:sticky md:top-6">
-        <div className="rounded-[1.75rem] bg-surface p-5 sticker">
-          <h2 className="font-display text-xl font-extrabold">Tu pedido</h2>
+        <div className="rounded-lg bg-surface p-5 sticker">
+          <h2 className="font-display text-2xl">Tu pedido</h2>
           <ResumenCarrito ajustes={ajustes} conBoton={false} costoEnvio={esRecoger ? null : costoEnvio} />
         </div>
 
         {mensaje && (
-          <p role="alert" className="mt-4 rounded-2xl bg-coral-soft px-4 py-3 text-sm font-semibold text-coral-ink">
+          <p role="alert" className="mt-4 rounded-lg bg-coral-soft px-4 py-3 text-sm font-semibold text-coral-ink">
             {mensaje}
           </p>
         )}
@@ -305,7 +325,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
         {/* Autorización de tratamiento de datos (Ley 1581 de 2012): obligatoria y nunca marcada por defecto */}
         <label
           htmlFor="f-autorizo"
-          className={`mt-4 flex cursor-pointer gap-3 rounded-2xl border-2 bg-surface p-4 text-sm leading-snug ${
+          className={`mt-4 flex cursor-pointer gap-3 rounded-lg border bg-surface p-4 text-sm leading-snug ${
             errores.autorizo ? "border-coral" : "border-line"
           }`}
         >
@@ -340,7 +360,7 @@ export function FormularioEntrega({ ajustes }: { ajustes: Ajustes }) {
               {ocupado ? "Enviando tu pedido…" : `Confirmar pedido · ${cop(total)}`}
             </button>
           ) : (
-            <p className="rounded-2xl bg-coral-soft px-4 py-3 text-center text-sm font-semibold text-coral-ink">
+            <p className="rounded-lg bg-coral-soft px-4 py-3 text-center text-sm font-semibold text-coral-ink">
               {textoApertura(ajustes).aviso}
             </p>
           )}
@@ -370,9 +390,9 @@ function Campo({
 }) {
   return (
     <div>
-      <label htmlFor={`f-${id}`} className="mb-1.5 flex items-baseline gap-2 text-[15px] font-bold">
+      <label htmlFor={`f-${id}`} className="mb-1.5 flex items-baseline gap-2 text-[15px] font-semibold">
         {etiqueta}
-        {opcional && <span className="text-xs font-semibold text-ink-soft">Opcional</span>}
+        {opcional && <span className="text-xs font-normal text-ink-soft">Opcional</span>}
       </label>
       {children}
       {error ? (
@@ -412,7 +432,7 @@ function RecogerEn({
   return (
     <div className="space-y-5">
       {ajustes.address && (
-        <div className="rounded-2xl bg-surface-2 px-4 py-3 text-sm leading-snug">
+        <div className="rounded-lg bg-surface-2 px-4 py-3 text-sm leading-snug">
           <p className="font-bold">Recoges en {ajustes.name}</p>
           <p className="mt-0.5 text-ink-soft">{ajustes.address}</p>
           {ajustes.maps_url && (
@@ -423,7 +443,7 @@ function RecogerEn({
         </div>
       )}
       <div>
-        <label htmlFor="f-horaRecogida" className="mb-1.5 block text-[15px] font-bold">
+        <label htmlFor="f-horaRecogida" className="mb-1.5 block text-[15px] font-semibold">
           ¿A qué hora pasas?
         </label>
         <select

@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useCarrito, useHidratado } from "@/lib/carrito";
 import { textoApertura } from "@/lib/apertura";
-import { Tato } from "@/components/tato";
 import { cop } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
 import { SelectorCantidad } from "./selector-cantidad";
-import { Flecha } from "@/components/iconos";
+import { Bolsa, Flecha } from "@/components/iconos";
 
 /** Contenido del carrito: lo usan el panel lateral (escritorio) y la hoja inferior (celular). */
 export function ResumenCarrito({
@@ -39,9 +38,11 @@ export function ResumenCarrito({
   if (cantidad === 0) {
     return (
       <div className="flex items-center gap-4 py-4">
-        <Tato pose="libreta" mascota={ajustes.mascot} quieto sizes="56px" className="w-12 shrink-0" />
+        <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-full border border-outline text-ink-soft">
+          <Bolsa />
+        </span>
         <div>
-          <p className="font-display text-lg leading-tight font-bold">{ajustes.mascot === "tato" ? "Tato espera tu pedido" : "Tu pedido está vacío"}</p>
+          <p className="font-display text-2xl leading-tight">Tu pedido está vacío</p>
           <p className="mt-1 text-sm text-ink-soft">Toca + en cualquier plato para agregarlo.</p>
         </div>
       </div>
@@ -50,7 +51,7 @@ export function ResumenCarrito({
 
   return (
     <div>
-      <ul className="divide-y-2 divide-line">
+      <ul className="divide-y divide-line">
         {items.map((i) => (
           <li key={i.id} className="flex items-center gap-3 py-3">
             <div className="min-w-0 flex-1">
@@ -62,7 +63,7 @@ export function ResumenCarrito({
         ))}
       </ul>
 
-      <dl className="tabular mt-3 space-y-1.5 border-t-2 border-outline pt-3 text-[15px]">
+      <dl className="tabular mt-3 space-y-1.5 border-t border-outline pt-3 text-[15px]">
         <div className="flex justify-between text-ink-soft">
           <dt>Subtotal</dt>
           <dd>{cop(subtotal)}</dd>
@@ -73,14 +74,14 @@ export function ResumenCarrito({
             <dd>{envio > 0 ? cop(envio) : "Gratis"}</dd>
           </div>
         )}
-        <div className="flex justify-between pt-1 text-lg font-extrabold">
+        <div className="flex justify-between pt-1 text-lg font-semibold">
           <dt>Total</dt>
           <dd>{cop(total)}</dd>
         </div>
       </dl>
 
       {faltaMinimo && (
-        <p className="mt-3 rounded-xl bg-coral-soft px-3 py-2 text-sm font-semibold text-coral-ink">
+        <p className="mt-3 rounded-md bg-coral-soft px-3 py-2 text-sm font-semibold text-coral-ink">
           El pedido mínimo es {cop(ajustes.min_order)}. Te faltan {cop(ajustes.min_order - subtotal)}.
         </p>
       )}
@@ -95,7 +96,7 @@ export function ResumenCarrito({
             {ajustes.mod_delivery ? "Continuar con la entrega" : "Continuar"} <Flecha />
           </Link>
         ) : (
-          <p className="mt-4 rounded-2xl bg-surface-2 px-4 py-3 text-center text-sm font-semibold">
+          <p className="mt-4 rounded-lg bg-surface-2 px-4 py-3 text-center text-sm font-semibold">
             {textoApertura(ajustes).aviso}
           </p>
         ))}

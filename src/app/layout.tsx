@@ -24,10 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(r.domain ? `https://${r.domain}` : urlSitio()),
     title: { default: `${r.name} · Pide a domicilio`, template: `%s · ${r.name}` },
     description: `${lema}. Pide en línea y sigue tu pedido en tiempo real.`,
+    // La imagen para WhatsApp y redes la genera src/app/opengraph-image.tsx con el sello de la casa.
     openGraph: {
       title: `${r.name} · Pide a domicilio`,
       description: lema,
-      images: [r.logo_url ?? `/${r.mascot}/libreta.png`],
+      siteName: r.name,
+      locale: "es_CO",
+      type: "website",
     },
   };
 }

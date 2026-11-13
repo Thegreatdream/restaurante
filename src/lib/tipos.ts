@@ -80,6 +80,8 @@ export type Ajustes = {
   legal_id: string | null;
   privacy_email: string | null;
   privacy_version: string;
+  /** Datos para transferir (Nequi, cuenta…), texto libre. Vacío = no se muestra. */
+  transfer_info?: string | null;
   horario: Tramo[];
   estado: EstadoApertura;
 };
@@ -116,6 +118,10 @@ export type PedidoPublico = {
   pickup_at: string | null;
   table_label?: string | null;
   prep_delay_minutes: number;
+  /** Notas que dejó el cliente ("sin cebolla"…). */
+  notes?: string | null;
+  /** Si el cliente dejó correo (para saber si se le avisa por ahí). */
+  has_email?: boolean;
   items: { name: string; quantity: number; line_total: number }[];
 };
 
@@ -131,6 +137,8 @@ export type PedidoCocina = {
   table_session_id: string | null;
   address: string | null;
   address_notes: string | null;
+  /** Notas del pedido para la cocina. */
+  notes: string | null;
   pickup_at: string | null;
   payment_method: FormaPago | null;
   cash_change_for: number | null;
@@ -202,6 +210,9 @@ export type Entrega = {
   courier_name: string | null;
   restaurant_name: string;
   restaurant_phone: string | null;
+  notes?: string | null;
+  /** Datos para transferir que configuró el restaurante. */
+  transfer_info?: string | null;
   items: { name: string; quantity: number }[];
 };
 

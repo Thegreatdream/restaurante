@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { supabaseServidor } from "@/lib/supabase/server";
 import { obtenerAjustes } from "@/lib/menu";
 import { enviarCorreoEstado } from "@/lib/correo";
+import { miRol } from "@/lib/panel";
 import type { EstadoPedido, TipoPedido } from "@/lib/tipos";
 
 type Siguiente = "en_camino" | "listo_recoger" | "va_mesa" | "entregado";
@@ -16,6 +17,34 @@ const REGLAS: Record<Siguiente, { desde: EstadoPedido[]; tipos: TipoPedido[] }> 
   entregado: { desde: ["en_camino", "listo_recoger", "va_mesa"], tipos: ["domicilio", "recoger", "mesa"] },
 };
 
+const SIN_PERMISO = "Tu cuenta no tiene permiso para cambiar pedidos.";
+
+/** Cocina o administrador: los únicos que despachan y cancelan. */
+async function esCocina() {
+  const rol = await miRol();
+  return rol === "admin" || rol === "cocina";
+}
+
+/**
+ * Cancela un pedido que no se puede atender (pedido falso, plato agotado, fuera de zona…).
+ * Se puede cancelar mientras no esté entregado. El cliente lo ve de inmediato en su seguimiento.
+ */
+export async function cancelarPedido(id: string): Promise<{ ok: boolean; mensaje?: string }> {
+  if (!(await esCocina())) return { ok: false, mensaje: "Solo la cocina o el administrador pueden cancelar pedidos." };
+  const [supabase, restaurante] = await Promise.all([supabaseServidor(), obtenerAjustes()]);
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ status: "cancelado", offered_at: null })
+    .eq("id", id)
+    .eq("restaurant_id", restaurante.id)
+    .in("status", ["por_confirmar", "recibido", "preparando", "en_camino", "listo_recoger", "va_mesa"])
+    .select("id")
+    .maybeSingle();
+  if (error) return { ok: false, mensaje: "No se pudo cancelar el pedido. Intenta de nuevo." };
+  if (!data) return { ok: false, mensaje: "Este pedido ya cambió de estado. Se actualizó la lista." };
+  return { ok: true };
+}
+
 /**
  * Avanza un pedido al siguiente estado: despachado, listo para recoger o entregado.
  * Al despachar o al quedar listo, se avisa al cliente por correo.
@@ -26,6 +55,7 @@ export async function avanzarPedido(
 ): Promise<{ ok: boolean; correo?: boolean; mensaje?: string }> {
   const regla = REGLAS[siguiente];
   if (!regla) return { ok: false, mensaje: "Acción no válida." };
+  if (!(await miRol())) return { ok: false, mensaje: SIN_PERMISO };
   const [supabase, restaurante] = await Promise.all([supabaseServidor(), obtenerAjustes()]);
 
   // La seguridad (RLS) solo deja actualizar a la cocina y al administrador de ESTE restaurante.
@@ -60,6 +90,7 @@ export async function despacharCon(
   id: string,
   domiciliario: string | "todos",
 ): Promise<{ ok: boolean; mensaje?: string }> {
+  if (!(await esCocina())) return { ok: false, mensaje: SIN_PERMISO };
   const [supabase, restaurante] = await Promise.all([supabaseServidor(), obtenerAjustes()]);
   const token = crypto.randomUUID().replace(/-/g, "");
   const base = supabase.from("orders");

@@ -28,32 +28,37 @@ export function DetalleEntrega({ token, entrega: e }: { token: string; entrega: 
   return (
     <main className="mx-auto min-h-dvh w-full max-w-xl px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-36">
       <p className="text-sm font-bold text-ink-soft">{e.restaurant_name}</p>
-      <h1 className="font-display text-3xl font-extrabold tracking-tight">
+      <h1 className="font-display text-3xl tracking-tight">
         Pedido <span className="tabular">#{e.number}</span>
       </h1>
       {e.courier_name && <p className="text-sm text-ink-soft">Lo lleva {e.courier_name}</p>}
 
       {/* Cobro: lo primero que el domiciliario debe tener claro */}
       <section
-        className={`mt-5 rounded-[1.5rem] p-5 sticker ${pagado ? "bg-hoja-soft" : "bg-brand text-[#1e1a17]"}`}
+        className={`mt-5 rounded-lg p-5 sticker ${pagado ? "bg-hoja-soft" : "bg-brand text-[#1e1a17]"}`}
         aria-label="Cobro"
       >
         {pagado ? (
-          <p className="font-display text-2xl font-extrabold">Ya pagó. No cobres nada.</p>
+          <p className="font-display text-2xl">Ya pagó. No cobres nada.</p>
         ) : (
           <>
             <p className="text-sm font-bold uppercase">Cobra</p>
-            <p className="tabular font-display text-4xl leading-none font-extrabold">{cop(e.total)}</p>
+            <p className="tabular font-display text-4xl leading-none">{cop(e.total)}</p>
             <p className="mt-2 font-semibold">
-              {e.payment_method === "efectivo" ? "En efectivo" : "Por transferencia (Nequi o Bancolombia)"}
+              {e.payment_method === "efectivo" ? "En efectivo" : "Por transferencia"}
               {e.cash_change_for ? ` · paga con ${cop(e.cash_change_for)}` : ""}
             </p>
+            {e.payment_method === "transferencia" && (
+              <p className="mt-2 rounded-md bg-white/45 px-3 py-2 text-sm font-semibold whitespace-pre-line break-words">
+                {e.transfer_info || "Pídele al restaurante los datos de la cuenta para mostrárselos al cliente."}
+              </p>
+            )}
             {vueltas !== null && vueltas > 0 && <p className="tabular mt-1 font-bold">Lleva {cop(vueltas)} de vueltas.</p>}
           </>
         )}
       </section>
 
-      <section className="mt-5 rounded-[1.5rem] border-2 border-line bg-surface p-5" aria-label="Cliente y dirección">
+      <section className="mt-5 rounded-lg border border-line bg-surface p-5" aria-label="Cliente y dirección">
         <p className="text-xs font-bold tracking-wide text-ink-soft uppercase">Cliente</p>
         <p className="mt-0.5 text-lg font-bold">{e.customer_name}</p>
         <p className="mt-3 text-xs font-bold tracking-wide text-ink-soft uppercase">Dirección</p>
@@ -73,16 +78,17 @@ export function DetalleEntrega({ token, entrega: e }: { token: string; entrega: 
         </div>
       </section>
 
-      <section className="mt-5 rounded-[1.5rem] border-2 border-line bg-surface p-5" aria-label="Productos">
+      <section className="mt-5 rounded-lg border border-line bg-surface p-5" aria-label="Productos">
         <p className="text-xs font-bold tracking-wide text-ink-soft uppercase">Lleva</p>
         <ul className="mt-2 space-y-1">
           {e.items.map((i, n) => (
             <li key={n} className="flex gap-2 text-[15px]">
-              <span className="tabular min-w-7 font-extrabold">{i.quantity}×</span>
+              <span className="tabular min-w-7 font-semibold">{i.quantity}×</span>
               {i.name}
             </li>
           ))}
         </ul>
+        {e.notes && <p className="mt-3 border-t border-line pt-3 text-sm break-words">Notas del cliente: “{e.notes}”</p>}
         {e.restaurant_phone && (
           <a href={`tel:+57${e.restaurant_phone}`} className="mt-4 inline-block text-sm font-semibold underline underline-offset-4">
             Llamar al restaurante
@@ -91,7 +97,7 @@ export function DetalleEntrega({ token, entrega: e }: { token: string; entrega: 
       </section>
 
       {/* Barra fija abajo: marcar como entregado (con confirmación) */}
-      <div className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t-2 border-outline bg-bg/95 px-4 pt-3 backdrop-blur-sm">
+      <div className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t border-outline bg-bg/95 px-4 pt-3 backdrop-blur-sm">
         <div className="mx-auto max-w-xl pb-3">
           {error && <p className="mb-2 text-sm font-semibold text-coral-ink">{error}</p>}
           {entregado ? (

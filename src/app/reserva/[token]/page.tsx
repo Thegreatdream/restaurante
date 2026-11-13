@@ -22,7 +22,7 @@ export default async function PaginaReserva({ params }: { params: Promise<{ toke
       <AvisoDemo ajustes={ajustes} />
       <main className="mx-auto w-full max-w-xl flex-1 px-4 pt-6 pb-16 md:pt-10">
         {!reserva || reserva.restaurant_id !== ajustes.id ? (
-          <TarjetaAviso titulo="Reserva no encontrada" texto="Revisa el enlace del correo de confirmación." mascota={ajustes.mascot} />
+          <TarjetaAviso titulo="Reserva no encontrada" texto="Revisa el enlace del correo de confirmación." />
         ) : (
           <DetalleReserva
             token={token}

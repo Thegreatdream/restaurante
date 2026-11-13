@@ -33,10 +33,10 @@ export default async function Privacidad() {
       </Encabezado>
       <AvisoDemo ajustes={a} />
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-8 pb-16">
-        <h1 className="font-display text-3xl font-extrabold tracking-tight md:text-4xl">Política de privacidad</h1>
+        <h1 className="font-display text-4xl leading-tight md:text-5xl">Política de privacidad</h1>
         <p className="mt-2 text-sm text-ink-soft">Vigente desde el {vigencia}.</p>
 
-        <div className="mt-8 space-y-7 text-[15px] leading-relaxed [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-extrabold [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5">
+        <div className="mt-8 space-y-7 text-[15px] leading-relaxed [&_h2]:font-display [&_h2]:text-2xl [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5">
           <section>
             <h2>Quién es el responsable</h2>
             <p className="mt-2">
@@ -55,7 +55,8 @@ export default async function Privacidad() {
           <section>
             <h2>Qué datos recogemos</h2>
             <ul>
-              <li>Nombre, celular y correo electrónico.</li>
+              <li>Nombre y celular; el correo electrónico, solo si decides dejarlo.</li>
+              <li>Una huella técnica de tu conexión (no tu dirección IP), solo para evitar pedidos falsos.</li>
               <li>Dirección e indicaciones de entrega.</li>
               <li>Los platos que pides, la forma de pago y la fecha y hora del pedido.</li>
             </ul>

@@ -22,7 +22,6 @@ export default async function Repartidor({ params }: { params: Promise<{ token: 
           pantallaCompleta
           titulo="Enlace no válido"
           texto="Este enlace de domiciliario no existe o fue desactivado. Pídele uno nuevo al restaurante."
-          mascota={ajustes.mascot}
         />
       </main>
     );

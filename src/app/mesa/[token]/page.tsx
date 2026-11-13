@@ -36,7 +36,7 @@ export default async function Mesa({ params }: { params: Promise<{ token: string
       <AvisoDemo ajustes={ajustes} />
       {problema || !sesion ? (
         <main className="flex flex-1 flex-col">
-          <TarjetaAviso titulo="No pudimos abrir la mesa" texto={problema ?? ""} mascota={ajustes.mascot} />
+          <TarjetaAviso titulo="No pudimos abrir la mesa" texto={problema ?? ""} />
         </main>
       ) : (
         <MesaCliente sesion={sesion} ajustes={ajustes} categorias={categorias} />

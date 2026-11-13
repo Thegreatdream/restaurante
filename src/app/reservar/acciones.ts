@@ -5,6 +5,7 @@ import { supabaseServidor } from "@/lib/supabase/server";
 import { obtenerAjustes } from "@/lib/menu";
 import { enviarCorreoReserva } from "@/lib/correo";
 import { urlPublica } from "@/lib/sitio";
+import { huellaOrigen } from "@/lib/origen";
 
 const esquema = z.object({
   inicio: z.string().datetime({ offset: true, message: "Elige una hora." }),
@@ -27,6 +28,7 @@ const ERRORES: Record<string, string> = {
   PERSONAS_INVALIDAS: "Revisa el número de personas.",
   MODULO_INACTIVO: "Las reservas no están disponibles en este momento.",
   SIN_AUTORIZACION: "Para reservar necesitamos tu autorización de datos.",
+  DEMASIADAS_RESERVAS: "Ya tienes reservas pendientes con este celular. Cancela una desde el enlace de tu correo o escríbenos.",
 };
 
 export async function crearReserva(
@@ -49,6 +51,7 @@ export async function crearReserva(
     p_email: d.correo,
     p_note: d.nota,
     p_consent: d.autorizo,
+    p_origin: await huellaOrigen(restaurante.id),
   });
   if (error || !data) {
     const codigo = Object.keys(ERRORES).find((k) => error?.message.includes(k));

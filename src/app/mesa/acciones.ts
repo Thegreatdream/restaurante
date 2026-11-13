@@ -8,6 +8,7 @@ const esquema = z.object({
   sesion: z.string().uuid(),
   codigo: z.string().min(10).max(64),
   nombre: z.string().trim().min(2, "Escribe tu nombre para saber de quién es cada plato.").max(40),
+  notas: z.string().trim().max(300, "Máximo 300 caracteres.").optional().default(""),
   autorizo: z.literal(true, { message: "Para enviar el pedido necesitamos tu autorización de datos." }),
   items: z
     .array(z.object({ product_id: z.string().uuid(), quantity: z.number().int().min(1).max(20) }))
@@ -23,6 +24,7 @@ const ERRORES: Record<string, string> = {
   MODULO_INACTIVO: "El pedido en mesa no está disponible en este momento.",
   PRODUCTO_NO_DISPONIBLE: "Uno de los platos ya no está disponible. Revisa tu pedido.",
   SIN_AUTORIZACION: "Para enviar el pedido necesitamos tu autorización de datos.",
+  DEMASIADOS_PEDIDOS: "Ya hay varios pedidos esperando al mesero. Llámalo para que confirme la mesa.",
 };
 
 /** Pedido desde la mesa: se suma a la cuenta abierta de esa mesa. */
@@ -58,6 +60,7 @@ export async function crearPedidoMesa(
     p_consent: d.autorizo,
     p_table_session: d.sesion,
     p_access_code: d.codigo,
+    p_notes: d.notas || null,
   });
   if (error || !id) {
     const codigo = Object.keys(ERRORES).find((k) => error?.message.includes(k));

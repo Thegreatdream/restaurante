@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { carrito, useCarrito, useHidratado } from "@/lib/carrito";
 import { supabaseNavegador } from "@/lib/supabase/navegador";
 import { cop } from "@/lib/formato";
@@ -10,6 +10,7 @@ import { NavCategorias } from "@/components/menu/nav-categorias";
 import { ListaMenu } from "@/components/menu/lista-menu";
 import { ResumenCarrito } from "@/components/carrito/resumen-carrito";
 import { CarritoMovil } from "@/components/carrito/carrito-movil";
+import { SincronizarCarrito } from "@/components/carrito/sincronizar-carrito";
 import { crearPedidoMesa } from "../acciones";
 import { Check } from "@/components/iconos";
 
@@ -64,6 +65,10 @@ export function MesaCliente({
   const { cuenta, recargar } = useCuenta(sesion);
   const [cerrarHoja, setCerrarHoja] = useState(0);
   const cerrada = cuenta?.status === "cerrada";
+  const productos = useMemo(
+    () => categorias.flatMap((c) => c.products.map((p) => ({ id: p.id, name: p.name, price: p.price }))),
+    [categorias],
+  );
   const confirmada = cuenta?.confirmed ?? sesion.confirmed;
 
   const alEnviar = () => {
@@ -73,13 +78,12 @@ export function MesaCliente({
 
   return (
     <>
-      <section className="border-b-2 border-outline bg-band text-band-ink">
-        <div className="mx-auto w-full max-w-6xl px-4 py-6 md:py-8">
-          <p className="font-display text-[2.6rem] leading-none font-extrabold tracking-tight uppercase md:text-6xl">
-            Mesa {sesion.table_label}
-            <span className="text-brand">.</span>
-          </p>
-          <p className="mt-2 max-w-[44ch] text-band-soft">
+      <section className="bg-band text-band-ink">
+        <div className="mx-auto w-full max-w-6xl px-4 py-8 md:py-10">
+          <p className="antetitulo text-band-soft">Pedido en la mesa</p>
+          <p className="mt-2 font-display text-5xl leading-none tracking-[0.04em] uppercase md:text-6xl">Mesa {sesion.table_label}</p>
+          <span aria-hidden className="mt-4 block h-px w-12 bg-brand" />
+          <p className="mt-4 max-w-[44ch] font-light text-band-ink/90">
             {cerrada
               ? "Esta cuenta ya se cerró. Gracias por tu visita."
               : confirmada
@@ -100,6 +104,7 @@ export function MesaCliente({
       ) : (
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-32 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:gap-10 md:pb-16">
           <div className="min-w-0">
+            <SincronizarCarrito productos={productos} className="mt-6" />
             <MiCuenta cuenta={cuenta} className="mt-6 md:hidden" />
             <div id="menu">
               <NavCategorias categorias={categorias} />
@@ -108,8 +113,8 @@ export function MesaCliente({
           </div>
           <aside className="hidden md:block" aria-label="Tu pedido">
             <div className="sticky top-6 mt-8 space-y-6">
-              <div className="rounded-[1.75rem] bg-surface p-5 sticker">
-                <h2 className="font-display text-2xl font-extrabold">Tu pedido</h2>
+              <div className="rounded-lg bg-surface p-5 sticker">
+                <h2 className="font-display text-3xl">Tu pedido</h2>
                 <FormularioMesa sesion={sesion} ajustes={ajustes} alEnviar={alEnviar} />
               </div>
               <MiCuenta cuenta={cuenta} />
@@ -188,11 +193,11 @@ function BotonesMesa({ sesion, cuenta, alAvisar }: { sesion: SesionMesa; cuenta:
 function MiCuenta({ cuenta, className = "" }: { cuenta: CuentaMesa | null; className?: string }) {
   if (!cuenta || cuenta.orders.length === 0) return null;
   return (
-    <section className={`rounded-[1.75rem] border-2 border-line bg-surface p-5 ${className}`} aria-labelledby="t-cuenta">
-      <h2 id="t-cuenta" className="font-display text-xl font-extrabold">
+    <section className={`rounded-lg border border-line bg-surface p-5 ${className}`} aria-labelledby="t-cuenta">
+      <h2 id="t-cuenta" className="font-display text-2xl">
         Cuenta de la mesa
       </h2>
-      <ul className="mt-3 divide-y-2 divide-line">
+      <ul className="mt-3 divide-y divide-line">
         {cuenta.orders.map((o) => (
           <li key={o.id} className="py-3">
             <div className="flex items-center justify-between gap-3">
@@ -205,7 +210,7 @@ function MiCuenta({ cuenta, className = "" }: { cuenta: CuentaMesa | null; class
           </li>
         ))}
       </ul>
-      <p className="tabular mt-2 flex justify-between border-t-2 border-outline pt-3 text-lg font-extrabold">
+      <p className="tabular mt-2 flex justify-between border-t border-outline pt-3 text-lg font-semibold">
         <span>Total</span>
         <span>{cop(cuenta.total)}</span>
       </p>
@@ -219,6 +224,7 @@ function FormularioMesa({ sesion, ajustes, alEnviar }: { sesion: SesionMesa; aju
   const { items, cantidad } = useCarrito();
   const hidratado = useHidratado();
   const [nombre, setNombre] = useState("");
+  const [notas, setNotas] = useState("");
   const [autorizo, setAutorizo] = useState(false);
   const [mensaje, setMensaje] = useState<{ tipo: "ok" | "error"; texto: string } | null>(null);
   const [enviando, iniciar] = useTransition();
@@ -238,6 +244,7 @@ function FormularioMesa({ sesion, ajustes, alEnviar }: { sesion: SesionMesa; aju
         sesion: sesion.session_id,
         codigo: sesion.access_code,
         nombre,
+        notas,
         autorizo: autorizo as true,
         items: items.map((i) => ({ product_id: i.id, quantity: i.qty })),
       });
@@ -249,6 +256,7 @@ function FormularioMesa({ sesion, ajustes, alEnviar }: { sesion: SesionMesa; aju
         localStorage.setItem(CLAVE_NOMBRE, nombre.trim());
       } catch {}
       carrito.vaciar();
+      setNotas("");
       setAutorizo(false);
       setMensaje({ tipo: "ok", texto: "¡Listo! Tu pedido se sumó a la cuenta de la mesa." });
       alEnviar();
@@ -258,7 +266,7 @@ function FormularioMesa({ sesion, ajustes, alEnviar }: { sesion: SesionMesa; aju
   if (hidratado && cantidad === 0) {
     return (
       <div className="py-2">
-        {mensaje?.tipo === "ok" && <p className="mb-3 rounded-2xl bg-hoja-soft px-4 py-3 text-sm font-semibold text-hoja-ink">{mensaje.texto}</p>}
+        {mensaje?.tipo === "ok" && <p className="mb-3 rounded-lg bg-hoja-soft px-4 py-3 text-sm font-semibold text-hoja-ink">{mensaje.texto}</p>}
         <ResumenCarrito ajustes={ajustes} conBoton={false} costoEnvio={null} />
       </div>
     );
@@ -267,7 +275,7 @@ function FormularioMesa({ sesion, ajustes, alEnviar }: { sesion: SesionMesa; aju
   return (
     <form onSubmit={enviar} noValidate>
       <ResumenCarrito ajustes={ajustes} conBoton={false} costoEnvio={null} />
-      <label htmlFor="m-nombre" className="mt-4 mb-1.5 block text-[15px] font-bold">
+      <label htmlFor="m-nombre" className="mt-4 mb-1.5 block text-[15px] font-semibold">
         Tu nombre
       </label>
       <input
@@ -281,7 +289,20 @@ function FormularioMesa({ sesion, ajustes, alEnviar }: { sesion: SesionMesa; aju
         onChange={(e) => setNombre(e.target.value)}
         disabled={enviando}
       />
-      <label className="mt-3 flex cursor-pointer gap-3 rounded-2xl border-2 border-line p-3 text-sm leading-snug">
+      <label htmlFor="m-notas" className="mt-4 mb-1.5 flex items-baseline gap-2 text-[15px] font-semibold">
+        Notas para la cocina <span className="text-xs font-normal text-ink-soft">Opcional</span>
+      </label>
+      <textarea
+        id="m-notas"
+        className="campo min-h-20 resize-y"
+        placeholder="Sin cebolla, con sopa, jugo en agua…"
+        maxLength={300}
+        rows={2}
+        value={notas}
+        onChange={(e) => setNotas(e.target.value)}
+        disabled={enviando}
+      />
+      <label className="mt-3 flex cursor-pointer gap-3 rounded-lg border border-line p-3 text-sm leading-snug">
         <input type="checkbox" checked={autorizo} onChange={(e) => setAutorizo(e.target.checked)} className="mt-0.5 size-5 shrink-0" />
         <span>
           Autorizo a {ajustes.legal_name || ajustes.name} a usar mi nombre para preparar este pedido, según la{" "}
@@ -294,7 +315,7 @@ function FormularioMesa({ sesion, ajustes, alEnviar }: { sesion: SesionMesa; aju
       {mensaje && (
         <p
           role="alert"
-          className={`mt-3 rounded-2xl px-4 py-3 text-sm font-semibold ${
+          className={`mt-3 rounded-lg px-4 py-3 text-sm font-semibold ${
             mensaje.tipo === "ok" ? "bg-hoja-soft text-hoja-ink" : "bg-coral-soft text-coral-ink"
           }`}
         >
@@ -306,7 +327,7 @@ function FormularioMesa({ sesion, ajustes, alEnviar }: { sesion: SesionMesa; aju
           {enviando ? "Enviando…" : "Enviar a la cocina"}
         </button>
       ) : (
-        <p className="mt-4 rounded-2xl bg-coral-soft px-4 py-3 text-center text-sm font-semibold text-coral-ink">
+        <p className="mt-4 rounded-lg bg-coral-soft px-4 py-3 text-center text-sm font-semibold text-coral-ink">
           {textoApertura(ajustes).aviso}
         </p>
       )}

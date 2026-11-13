@@ -54,6 +54,7 @@ function inicial(a: Ajustes, horarioReservas: Tramo[]): Estado {
     reservation_auto_confirm: a.reservation_auto_confirm,
     horarioReservas: aDias(horarioReservas, ["12:00", "17:00"]),
     pickup_lead_minutes: a.pickup_lead_minutes,
+    transfer_info: v(a.transfer_info ?? null),
     address: v(a.address),
     phone: v(a.phone),
     whatsapp: a.whatsapp?.replace(/^57(?=3\d{9}$)/, "") ?? "",
@@ -180,6 +181,28 @@ export function FormularioAjustes({ ajustes, horarioReservas = [] }: { ajustes: 
               ))}
             </select>
           </div>
+        </div>
+        <div>
+          <label htmlFor="a-transfer_info" className="mb-1.5 block text-[15px] font-bold">
+            Datos para transferencia
+          </label>
+          <textarea
+            id="a-transfer_info"
+            className="campo min-h-24 resize-y"
+            rows={3}
+            maxLength={300}
+            placeholder={"Nequi 300 123 4567 a nombre de…\nBancolombia ahorros 123-456789-00"}
+            value={d.transfer_info ?? ""}
+            onChange={(e) => set("transfer_info", e.target.value)}
+            aria-invalid={Boolean(errores.transfer_info)}
+          />
+          {errores.transfer_info ? (
+            <p className="mt-1.5 text-sm font-semibold text-coral-ink">{errores.transfer_info}</p>
+          ) : (
+            <p className="mt-1.5 text-sm text-ink-soft">
+              El cliente lo ve al elegir “Transferencia” y el domiciliario en su pantalla de entrega. Vacío = no se muestra.
+            </p>
+          )}
         </div>
       </Seccion>
 
@@ -319,7 +342,7 @@ export function FormularioAjustes({ ajustes, horarioReservas = [] }: { ajustes: 
           "logo_url",
           "Logo (enlace)",
           { inputMode: "url", placeholder: "https://…", spellCheck: false },
-          "Si lo dejas vacío se usa la cara de la mascota. La subida de imágenes llega más adelante.",
+          "Si lo dejas vacío se usa el sello de la casa. La subida de imágenes llega más adelante.",
         )}
         <div className="grid grid-cols-3 gap-3">
           {(
