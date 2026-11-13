@@ -11,6 +11,7 @@ import { AvisoDemo } from "@/components/aviso-demo";
 import { obtenerMenu } from "@/lib/menu";
 import { SincronizarCarrito } from "@/components/carrito/sincronizar-carrito";
 import { DatosRestaurante } from "@/components/datos-restaurante";
+import { DesplazamientoSuave } from "@/components/desplazamiento-suave";
 
 export const revalidate = 60; // el menú se refresca como máximo cada minuto
 
@@ -20,6 +21,7 @@ export default async function Inicio() {
 
   return (
     <>
+      <DesplazamientoSuave />
       {!demo && <DatosRestaurante ajustes={ajustes} categorias={categorias} />}
       <BarraInfo ajustes={ajustes} />
       <Encabezado debajoDeBarra />

@@ -512,6 +512,47 @@ a {
   }
 }
 
+/* Ficha del plato: lo de arriba espera oculto a que GSAP lo anime (respaldo a los 2,5 s, como en la portada) */
+.ficha-anim [data-ficha="lados"],
+.ficha-anim [data-ficha="titulo"],
+.ficha-anim [data-ficha="plato"],
+.ficha-anim [data-ficha="compra"] {
+  visibility: hidden;
+  animation: portada-respaldo 0s 2.5s forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ficha-anim [data-ficha] {
+    visibility: visible;
+    animation: none;
+  }
+}
+
+/*
+  Plato flotante: recorta la foto (tomada desde arriba) en el óvalo del plato, sin la mesa,
+  con una sombra suave debajo. Provisional hasta tener fotos con fondo transparente.
+*/
+.plato-flotante {
+  filter: drop-shadow(0 22px 28px rgb(31 36 32 / 0.28)) drop-shadow(0 4px 6px rgb(31 36 32 / 0.18));
+}
+.plato-flotante > img {
+  clip-path: ellipse(37.6% 38.2% at 48.9% 49.6%);
+}
+
+/* Lenis (desplazamiento suave): estilos base que pide la librería */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
 /* Carril de destacados: se desliza con el dedo, con imán suave */
 .carril {
   scroll-snap-type: x mandatory;

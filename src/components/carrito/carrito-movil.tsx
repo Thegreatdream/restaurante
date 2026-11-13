@@ -74,6 +74,7 @@ export function CarritoMovil({
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-40 bg-black/45" />
         <Drawer.Content
+          data-lenis-prevent
           className="pb-safe fixed inset-x-0 bottom-0 z-50 flex max-h-[88dvh] flex-col rounded-t-2xl border border-b-0 border-line bg-bg outline-none"
           aria-describedby={undefined}
         >

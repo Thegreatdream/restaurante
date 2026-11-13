@@ -5,6 +5,8 @@ import { cop } from "@/lib/formato";
 import type { Categoria, Producto } from "@/lib/tipos";
 import { SelectorCantidad } from "@/components/carrito/selector-cantidad";
 import { ImagenPlato } from "./imagen-plato";
+import Link from "next/link";
+import { fotoDePlato, rutaPlato } from "@/lib/platos";
 
 /** Elige hasta 6: primero los que tienen etiqueta (favorito, nuevo), luego el primero de cada categoría. */
 function elegir(categorias: Categoria[]): (Producto & { slug: string })[] {
@@ -34,10 +36,16 @@ export function Destacados({ categorias, titulo = "Recomendados de la casa" }: {
           const cantidad = items.find((i) => i.id === p.id)?.qty ?? 0;
           return (
             <li key={p.id} className="levanta flex w-[272px] shrink-0 flex-col overflow-hidden rounded-lg bg-surface sticker md:w-[300px]">
-              <ImagenPlato slug={p.slug} nombre={p.name} imagen={p.image_url} sizes="300px" className="aspect-[4/3]" />
+              <Link href={rutaPlato(p.name)} tabIndex={-1} aria-hidden className="block">
+                <ImagenPlato slug={p.slug} nombre={p.name} imagen={fotoDePlato(p)} sizes="300px" className="aspect-[4/3]" />
+              </Link>
               <div className="flex flex-1 flex-col p-5">
                 {p.badge && <span className="antetitulo mb-2 block text-[11px] text-hoja">{p.badge}</span>}
-                <h3 className="font-display text-2xl leading-tight">{p.name}</h3>
+                <h3 className="font-display text-2xl leading-tight">
+                  <Link href={rutaPlato(p.name)} className="underline-offset-4 hover:underline">
+                    {p.name}
+                  </Link>
+                </h3>
                 <div className="mt-auto flex items-center justify-between gap-3 pt-4">
                   <p className="tabular text-base font-medium whitespace-nowrap">{cop(p.price)}</p>
                   <SelectorCantidad producto={{ id: p.id, name: p.name, price: p.price, badge: p.badge }} cantidad={cantidad} />
