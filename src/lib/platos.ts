@@ -31,9 +31,9 @@ export function buscarPlato(categorias: Categoria[], slug: string): PlatoConCate
  * Solo se usan cuando el plato no tiene foto propia. Hay que cambiarlas por fotos reales antes de vender.
  */
 const FOTOS_MUESTRA: Record<string, string> = {
-  "bandeja-de-la-casa": "/platos-muestra/bandeja-recortada.webp",
-  "hamburguesa-tato": "/platos-muestra/hamburguesa-tato-recortada.webp",
-  "hamburguesa-clasica": "/platos-muestra/hamburguesa-clasica-recortada.webp",
+  "bandeja-de-la-casa": "/platos-muestra/bandeja-v2-recortada.webp",
+  "hamburguesa-tato": "/platos-muestra/hamburguesa-tato-v2-recortada.webp",
+  "hamburguesa-clasica": "/platos-muestra/hamburguesa-clasica-v2-recortada.webp",
 };
 
 export function fotoDePlato(p: { name: string; image_url?: string | null }): string | null {

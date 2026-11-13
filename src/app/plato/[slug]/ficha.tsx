@@ -35,6 +35,17 @@ export type PlatoOtro = {
 };
 
 /**
+ * Tamaño del nombre gigante según su palabra más larga, para que nunca se salga de la pantalla:
+ * "Bandeja" va enorme; "Hamburguesa" o "Sobrebarriga" se achican lo justo para caber (también en 360 px).
+ */
+function tamanoTitulo(nombre: string) {
+  const larga = Math.max(...nombre.split(/\s+/).map((p) => p.length), 1);
+  const vw = Math.min(15, 108 / larga).toFixed(2);
+  const rem = Math.min(10.5, 92 / larga).toFixed(2);
+  return `clamp(2.25rem, ${vw}vw, ${rem}rem)`;
+}
+
+/**
  * Ficha del plato, al estilo de una página de producto editorial:
  * nombre gigante que entra letra por letra, el plato como protagonista (gira apenas al bajar),
  * información en columnas, el botón para pedirlo y "otros platos" para seguir antojándose.
@@ -102,7 +113,8 @@ export function FichaPlato({ plato, otros }: { plato: PlatoFicha; otros: PlatoOt
 
         <h1
           data-ficha="titulo"
-          className="mt-4 text-center font-display text-[clamp(3rem,15vw,10.5rem)] leading-[0.86] font-medium tracking-[0.01em] text-band uppercase"
+          className="mt-4 text-center font-display leading-[0.86] font-medium tracking-[0.01em] text-band uppercase"
+          style={{ fontSize: tamanoTitulo(plato.nombre) }}
         >
           {plato.nombre}
         </h1>
