@@ -493,6 +493,27 @@ a {
   animation-delay: 240ms;
 }
 
+/* Foto de la portada: acercamiento muy lento de ida y vuelta (Ken Burns), solo transform */
+@keyframes portada-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+.portada-zoom {
+  transform-origin: 50% 48%;
+  animation: portada-zoom 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .portada-zoom {
+    animation: none;
+    will-change: auto;
+  }
+}
+
 /* Carril de destacados: se desliza con el dedo, con imán suave */
 .carril {
   scroll-snap-type: x mandatory;

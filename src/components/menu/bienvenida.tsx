@@ -1,14 +1,14 @@
+import Image from "next/image";
 import { Flecha } from "@/components/iconos";
 import { textoApertura } from "@/lib/apertura";
 import { cop } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
 
 /**
- * Foto de la portada. Cuando llegue la foto del restaurante, guárdala en `public/portada.jpg`
- * y cambia esta línea a: const FOTO_PORTADA: string | null = "/portada.jpg";
- * Mientras tanto la portada se ve sobre el verde oscuro de la marca.
+ * Foto de fondo de la portada (en `public/`). Para cambiarla, reemplaza el archivo o esta ruta;
+ * con null la portada queda sobre el verde oscuro de la marca.
  */
-const FOTO_PORTADA: string | null = null;
+const FOTO_PORTADA: string | null = "/comida/mesa-compartida.webp";
 
 /** Portada: amplia y tranquila, con el nombre en letra clásica y los dos caminos (pedir o reservar). */
 export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
@@ -23,9 +23,23 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
     <section className="relative isolate overflow-hidden bg-band text-band-ink">
       {FOTO_PORTADA && (
         <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={FOTO_PORTADA} alt="" className="absolute inset-0 -z-10 size-full object-cover" fetchPriority="high" />
-          <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-black/45 via-black/35 to-black/65" />
+          {/* Foto decorativa: la bandeja queda al centro en celular y computador */}
+          <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
+            <Image
+              src={FOTO_PORTADA}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              quality={80}
+              className="portada-zoom object-cover object-[50%_48%]"
+            />
+          </div>
+          {/* Velo oscuro: más denso en el centro y abajo, donde están el título, el texto y los botones */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgb(12_18_15/0.72)_0%,rgb(12_18_15/0.58)_55%,rgb(12_18_15/0.5)_100%),linear-gradient(to_bottom,rgb(12_18_15/0.25),rgb(12_18_15/0.6))]"
+          />
         </>
       )}
 
