@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Flecha } from "@/components/iconos";
+import { PortadaAnimada } from "./portada-animada";
 import { textoApertura } from "@/lib/apertura";
 import { cop } from "@/lib/formato";
 import type { Ajustes } from "@/lib/tipos";
@@ -20,11 +21,13 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
   ].filter(Boolean) as string[];
 
   return (
+    <PortadaAnimada>
     <section className="relative isolate overflow-hidden bg-band text-band-ink">
       {FOTO_PORTADA && (
         <>
-          {/* Foto decorativa: la bandeja queda al centro en celular y computador */}
-          <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
+          {/* Foto decorativa: la bandeja queda al centro en celular y computador.
+              Sobresale un poco por arriba para que el efecto de profundidad al bajar no deje borde. */}
+          <div aria-hidden data-anim="foto" className="absolute inset-x-0 -top-[12%] bottom-0 -z-10 overflow-hidden">
             <Image
               src={FOTO_PORTADA}
               alt=""
@@ -43,16 +46,21 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
         </>
       )}
 
-      <div className="portada-entra mx-auto flex min-h-[min(78svh,640px)] w-full max-w-4xl flex-col items-center justify-center px-6 py-20 text-center md:py-28">
-        <p className="antetitulo text-band-soft">Almuerzos caseros · hechos cada día</p>
-        <h1 className="mt-6 font-display text-[3.25rem] leading-[0.95] font-medium tracking-[0.04em] uppercase sm:text-7xl md:text-[6.5rem]">
+      <div className="mx-auto flex min-h-[min(78svh,640px)] w-full max-w-4xl flex-col items-center justify-center px-6 py-20 text-center md:py-28">
+        <p data-anim="etiqueta" className="antetitulo text-band-soft">
+          Almuerzos caseros · hechos cada día
+        </p>
+        <h1
+          data-anim="titulo"
+          className="mt-6 font-display text-[3.25rem] leading-[0.95] font-medium tracking-[0.04em] uppercase sm:text-7xl md:text-[6.5rem]"
+        >
           {ajustes.name}
         </h1>
-        <span aria-hidden className="mt-7 block h-px w-16 bg-brand" />
-        <p className="mt-7 max-w-[34ch] text-lg leading-relaxed font-light text-band-ink/90 md:text-xl">
+        <span aria-hidden data-anim="linea" className="mt-7 block h-px w-16 bg-brand" />
+        <p data-anim="resto" className="mt-7 max-w-[34ch] text-lg leading-relaxed font-light text-band-ink/90 md:text-xl">
           {ajustes.tagline ?? "El almuerzo de la casa, con sazón de siempre. Para comer aquí, recoger o pedir a domicilio."}
         </p>
-        <div className="mt-10 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:gap-4">
+        <div data-anim="resto" className="mt-10 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:gap-4">
           <a href="#menu" className="btn w-full sm:w-auto">
             Ver el menú <Flecha />
           </a>
@@ -66,7 +74,9 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
           )}
         </div>
         {servicio.length > 0 && (
-          <p className="mt-8 text-[13px] tracking-[0.14em] text-band-soft uppercase">{servicio.join("  ·  ")}</p>
+          <p data-anim="resto" className="mt-8 text-[13px] tracking-[0.14em] text-band-soft uppercase">
+            {servicio.join("  ·  ")}
+          </p>
         )}
       </div>
 
@@ -74,5 +84,6 @@ export function Bienvenida({ ajustes }: { ajustes: Ajustes }) {
         <p className="relative border-t border-white/10 bg-black/20 px-4 py-3 text-center text-sm text-band-ink">{aviso}</p>
       )}
     </section>
+    </PortadaAnimada>
   );
 }

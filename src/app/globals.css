@@ -470,27 +470,25 @@ a {
   }
 }
 
-/* Entrada única de la portada al cargar */
-@keyframes portada-entra {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
+/*
+  Entrada de la portada (la hace GSAP en portada-animada.tsx).
+  Los textos esperan ocultos para no "parpadear" antes de que GSAP arranque;
+  si por algo GSAP no corriera, este respaldo los muestra a los 2,5 s.
+*/
+@keyframes portada-respaldo {
+  to {
+    visibility: visible;
   }
 }
-.portada-entra > * {
-  animation: portada-entra 520ms var(--ease-out) both;
+.portada-anim [data-anim]:not([data-anim="foto"]) {
+  visibility: hidden;
+  animation: portada-respaldo 0s 2.5s forwards;
 }
-.portada-entra > :nth-child(2) {
-  animation-delay: 60ms;
-}
-.portada-entra > :nth-child(3) {
-  animation-delay: 120ms;
-}
-.portada-entra > :nth-child(4) {
-  animation-delay: 180ms;
-}
-.portada-entra > :nth-child(5) {
-  animation-delay: 240ms;
+@media (prefers-reduced-motion: reduce) {
+  .portada-anim [data-anim]:not([data-anim="foto"]) {
+    visibility: visible;
+    animation: none;
+  }
 }
 
 /* Foto de la portada: acercamiento muy lento de ida y vuelta (Ken Burns), solo transform */
@@ -529,9 +527,6 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .portada-entra > * {
-    animation: tato-solo-opacidad 240ms ease both;
-  }
   .levanta,
   .levanta:hover,
   .levanta:hover .marco-foto > * {
