@@ -9,6 +9,7 @@ import { CON_MOVIMIENTO, gsap, SplitText, useGSAP } from "@/lib/gsap";
 import { SelectorCantidad } from "@/components/carrito/selector-cantidad";
 import { ImagenPlato } from "@/components/menu/imagen-plato";
 import { Atras, Flecha } from "@/components/iconos";
+import { esFotoRecortada } from "@/lib/platos";
 
 export type PlatoFicha = {
   id: string;
@@ -108,8 +109,19 @@ export function FichaPlato({ plato, otros }: { plato: PlatoFicha; otros: PlatoOt
 
         {/* El plato, protagonista: recortado en óvalo para que flote sobre el fondo */}
         <div data-ficha="plato" className="relative z-10 mx-auto -mt-[4vw] w-full max-w-[640px] md:-mt-16">
-          <div data-ficha="giro" className="relative aspect-[4/3]">
-            {plato.foto ? (
+          <div data-ficha="giro" className={`relative ${esFotoRecortada(plato.foto) ? "aspect-square" : "aspect-[4/3]"}`}>
+            {plato.foto && esFotoRecortada(plato.foto) ? (
+              <div className="plato-sombra absolute inset-0">
+                <Image
+                  src={plato.foto}
+                  alt={plato.nombre}
+                  fill
+                  priority
+                  sizes="(min-width: 768px) 640px, 92vw"
+                  className="object-contain"
+                />
+              </div>
+            ) : plato.foto ? (
               <div className="plato-flotante absolute inset-0">
                 <Image
                   src={plato.foto}

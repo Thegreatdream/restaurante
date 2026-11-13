@@ -537,6 +537,13 @@ a {
 .plato-flotante > img {
   clip-path: ellipse(37.6% 38.2% at 48.9% 49.6%);
 }
+/* Plato con fondo transparente: solo la sombra (más suave en las tarjetas pequeñas) */
+.plato-sombra {
+  filter: drop-shadow(0 22px 26px rgb(31 36 32 / 0.26)) drop-shadow(0 4px 6px rgb(31 36 32 / 0.16));
+}
+.marco-foto .plato-sombra {
+  filter: drop-shadow(0 10px 12px rgb(31 36 32 / 0.22)) drop-shadow(0 2px 3px rgb(31 36 32 / 0.14));
+}
 
 /* Lenis (desplazamiento suave): estilos base que pide la librería */
 html.lenis,

@@ -31,11 +31,19 @@ export function buscarPlato(categorias: Categoria[], slug: string): PlatoConCate
  * Solo se usan cuando el plato no tiene foto propia. Hay que cambiarlas por fotos reales antes de vender.
  */
 const FOTOS_MUESTRA: Record<string, string> = {
-  "bandeja-de-la-casa": "/platos-muestra/bandeja.webp",
+  "bandeja-de-la-casa": "/platos-muestra/bandeja-recortada.webp",
 };
 
 export function fotoDePlato(p: { name: string; image_url?: string | null }): string | null {
   return p.image_url || FOTOS_MUESTRA[slugPlato(p.name)] || null;
+}
+
+/**
+ * Fotos "recortadas": el plato solo, con fondo transparente (terminan en "-recortada.webp").
+ * Se muestran completas sobre el color de la página, sin cortarlas, como un producto flotando.
+ */
+export function esFotoRecortada(src: string | null | undefined) {
+  return Boolean(src && /-recortada\.(webp|png)(\?|$)/.test(src));
 }
 
 /** Textos extra de la ficha. Si un plato no tiene, la ficha muestra solo su descripción. */

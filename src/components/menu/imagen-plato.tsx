@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { IconoCategoria } from "@/components/iconos-categoria";
+import { esFotoRecortada } from "@/lib/platos";
 
 /**
  * La foto del plato si existe; si no, un recuadro de lino con el dibujo de su categoría en trazo suave.
@@ -22,7 +23,12 @@ export function ImagenPlato({
 }) {
   return (
     <div className={`marco-foto relative overflow-hidden bg-surface-2 ${className}`}>
-      {imagen ? (
+      {imagen && esFotoRecortada(imagen) ? (
+        // Plato recortado (fondo transparente): completo y flotando sobre el lino, con sombra suave
+        <div className="plato-sombra absolute inset-[5%]">
+          <Image src={imagen} alt={nombre} fill sizes={sizes} className="object-contain" />
+        </div>
+      ) : imagen ? (
         <Image src={imagen} alt={nombre} fill sizes={sizes} className="object-cover" />
       ) : (
         <div className="grid size-full place-items-center text-ink-soft/55 [--icono-relleno:transparent] [&_svg]:[stroke-width:1.3]">
